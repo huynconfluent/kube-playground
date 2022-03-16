@@ -10,3 +10,12 @@ Focus will be using k3d for the local kubernetes deployment.
 
 ## TODO
 - [ ] Create initial k3d deployment helper
+
+## Install k3d
+This assumes you already have k3d installed.
+Follow the installation instruction on [k3d.io](https://k3d.io)
+
+For Mac (Using Homebrew)
+```
+brew install k3d
+```
