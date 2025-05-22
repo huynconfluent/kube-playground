@@ -1,0 +1,45 @@
+# config file is considered alpha-state by k3d development. May need to stick with CLI parameters instead.
+# https://k3d.io/v5.3.0/usage/configfile/
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+metadata:
+  # named is always prefixed with "k3d-"
+  name: $K3D_CLUSTER_NAME
+# k3s "servers" = controlplane nodes
+servers: $K3D_CLUSTER_SERVERS
+# k3s "agents" = kubelet nodes (can be 1 or more)
+agents: $K3D_CLUSTER_AGENTS
+# I should probably make the image a variable
+#image: rancher/k3s:v1.20.4-k3s1
+kubeAPI:
+  hostIP: "127.0.0.1"
+  hostPort: "6445"
+# subnet k3s node ip
+subnet: "172.69.0.0/16"
+options:
+  k3d:
+    wait: true
+    timeout: "60s"
+    disableLoadbalancer: true
+    #disableImageVolume: false
+    #disableRollback: false
+    #loadbalancer:
+    #  configOverrides:
+    #    - settings.workerConnections=2048
+  k3s:
+    extraArgs:
+      - arg: --tls-san=my.host.domain
+        nodeFilters:
+          - server:*
+      - arg: --kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%
+        nodeFilters:
+          - agent:*
+      - arg: --kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%
+        nodeFilters:
+          - agent:*
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
