@@ -1,0 +1,4 @@
+{
+    "zookeeper": "zookeeper-secret",
+    "kafka": "kafka-secret"
+}
