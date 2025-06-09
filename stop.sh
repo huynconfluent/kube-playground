@@ -15,5 +15,5 @@ for PKG in $REQUIRED_PKG; do
 done
 
 # delete k3d
-printf "\nDeleting K3D Cluster......."
+printf "\nDeleting K3D Cluster.......\n"
 k3d cluster delete $K3D_CLUSTER_NAME
