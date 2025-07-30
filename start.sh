@@ -113,10 +113,12 @@ if [ "$AUTOGEN_SSL" == "true" ]; then
     source ./scripts/helper/deploy-ssl.sh
 fi
 
-# Call deploy_ldap
+# Call deploy-ldap
 source ./scripts/helper/deploy-ldap.sh
-# Call deploy_idp
+# Call deploy-idp
 source ./scripts/helper/deploy-idp.sh
+# Call deploy-hashicorp-vault
+source ./scripts/helper/deploy-hashicorp-vault.sh
 
 # check if we are setting a CFK Helm Version or Image Version
 printf "\n=Determine CFK Version to Deploy=\n"
