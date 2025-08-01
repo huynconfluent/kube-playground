@@ -42,6 +42,12 @@ Start|Stop|Restart
 sudo brew services start|stop|restart chipmk/tap/docker-mac-net-connect
 ```
 
+## Prerequisites
+Make sure you make a copy of the `.env.example` file and configure it for automatic deployment of extra
+```
+cp .env.example .env
+```
+
 ## Usage
 You can deploy base k3s environment using the following command
 ```
