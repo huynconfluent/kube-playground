@@ -32,7 +32,7 @@ for PKG in $REQUIRED_PKG; do
 done
 
 # create generated directories if missing
-mkdir -p $GEN_DIR/{files}
+mkdir -p $GEN_DIR/files
 
 # generate p12 truststore
 rm -f "$TRUSTSTORE_FILE"
