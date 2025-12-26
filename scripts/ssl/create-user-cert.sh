@@ -43,7 +43,7 @@ for PKG in $REQUIRED_PKG; do
 done
 
 # Checking that ca cert and key exist
-if [ ! -f "$CA_CERT" ] && [ ! -f "$CA_KEY" ] [ ! -f "$CA_CHAIN" ]; then
+if [[ ! -f "$CA_CERT" ]] && [[ ! -f "$CA_KEY" ]] && [[ ! -f "$CA_CHAIN" ]]; then
     printf "\nroot_ca Cert, Key and/or CA Cert Chain not found, exiting...\n"
     exit 1
 fi
@@ -55,7 +55,7 @@ mkdir -p $GEN_DIR/{templates,components,files}
 jq --arg expiry "$EXPIRY" '.signing.profiles.server.expiry = $expiry | .signing.profiles.client.expiry = $expiry | .signing.profiles.server_and_client.expiry = $expiry' "$TEMPLATE_PROFILE" > "$GEN_DIR/templates/profile.json"
 # create server json
 printf "Creating %s Server Cert JSON...\n" "$CN"
-jq --arg cn "$CN" --argjson hosts "$SAN" --argjson names "$DN" --arg key_algo "$KEY_ALGO" --argjson key_size "$KEY_SIZE" '.CN = $cn | .hosts += $hosts | .names[] += $names | .key.algo += $key_algo | .key.size += $key_size' "$TEMPLATE_CERT" > "$GEN_DIR/templates/component_$SHORT_NAME.json"
+jq --arg cn "$CN" --argjson hosts "$SAN" --argjson names "$DN" --arg key_algo "$KEY_ALGO" --argjson key_size "$KEY_SIZE" '.CN = $cn | .hosts += $hosts | .names[] += $names | .key.algo = $key_algo | .key.size = $key_size' "$TEMPLATE_CERT" > "$GEN_DIR/templates/component_$SHORT_NAME.json"
 # generate server cert
 printf "Creating %s Server Cert PEM files...\n" "$CN"
 cfssl gencert -ca "$CA_CERT" -ca-key "$CA_KEY" -config "$GEN_DIR/templates/profile.json" -profile $CERT_PROFILE "$GEN_DIR/templates/component_$SHORT_NAME.json" | cfssljson -bare "$GEN_DIR/components/$SHORT_NAME"
@@ -65,5 +65,5 @@ printf "Creating %s Full Chain PEM file...\n" "$CN"
 cat "$GEN_DIR/components/$SHORT_NAME.pem" "$CA_CHAIN" > "$GEN_DIR/components/$SHORT_NAME-fullchain.pem"
 
 # create keystore file
-printf "Creating Keystore and Truststore files...\n"
-source $BASE_DIR/scripts/ssl/create-keystore-new.sh "$SHORT_NAME" "$GEN_DIR/components/$SHORT_NAME-key.pem" "$GEN_DIR/components/$SHORT_NAME-fullchain.pem" "topsecret"
+#printf "Creating Keystore and Truststore files...\n"
+#source $BASE_DIR/scripts/ssl/create-keystore.sh "$SHORT_NAME" "$GEN_DIR/components/$SHORT_NAME-key.pem" "$GEN_DIR/components/$SHORT_NAME-fullchain.pem" "topsecret"
