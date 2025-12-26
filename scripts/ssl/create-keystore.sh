@@ -33,7 +33,7 @@ for PKG in $REQUIRED_PKG; do
 done
 
 # create generated directories if missing
-mkdir -p $GEN_DIR/{files}
+mkdir -p $GEN_DIR/files
 
 # generate p12 with private key and public fullchain, must use -legacy option for OpenSSL 3.x
 rm -f "$KEYSTORE_FILE"
