@@ -42,7 +42,6 @@ fi
 # create generated directories if missing
 mkdir -p $GEN_DIR/{templates,intermediate_ca,files}
 
-
 for (( i=1; i<=$CHAIN_COUNT; ++i)); do
     # set PATHLEN
     if [ "$i" -eq "$CHAIN_COUNT" ]; then
