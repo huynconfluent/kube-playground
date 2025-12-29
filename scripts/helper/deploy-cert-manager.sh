@@ -91,7 +91,7 @@ printf "\n\tCert Manager Helm version: %s\n" "$CERT_MANAGER_VERSION"
 # create namespace
 create_namespace
 
-# deploy CFK
+# deploy cert-manager
 deploy_cert_manager
 
 # validation
