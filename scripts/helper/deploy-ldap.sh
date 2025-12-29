@@ -17,7 +17,8 @@ for PKG in $REQUIRED_PKG; do
     fi
 done
 
-printf "\n=======Deploying OpenLDAP========"
+#printf "\n=======Deploying OpenLDAP========"
+source $BASE_DIR/scripts/system/header.sh -t "Deploying OpenLDAP"
 
 if [[ $DEPLOY_LDAP == "true" ]]; then
     # check that openldap namespace hasn't been created yet

@@ -1,10 +1,17 @@
 #!/bin/sh
 
+# ./deploy-idp.sh -v values.yaml
+
 BASE_DIR=$(pwd)
 REQUIRED_PKG="kubectl helm"
+GEN_DIR="$BASE_DIR/generated/keycloak"
 IDP_HELM_CHART_PATH="$BASE_DIR/configs/keycloak/helm"
-IDP_HELM_CHART_VALUES_FILE="$IDP_HELM_CHART_PATH/myvalues.yaml"
-CUSTOM_HELM_CHART_VALUES_FILE="$BASE_DIR/generated/keycloak/customvalues.yaml"
+DEFAULT_HELM_VALUES_FILE="$IDP_HELM_CHART_PATH/default.yaml"
+KEYCLOAK_FULLCHAIN_FILE="$BASE_DIR/generated/ssl/components/keycloak-fullchain.pem"
+KEYCLOAK_PRIVKEY_FILE="$BASE_DIR/generated/ssl/components/keycloak-key.pem"
+KEYCLOAK_CA_FILE="$BASE_DIR/generated/ssl/files/cacerts.pem"
+CUSTOM_VALUES=false
+# custom path
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -18,83 +25,108 @@ for PKG in $REQUIRED_PKG; do
     fi
 done
 
-printf "\n=========Deploying IDP==========="
+# flags
+usage () {
+    printf "Usage: $0 [-v] [values.yaml]\n"
+    printf "\t-v custom_values.yaml                (optional) values yaml\n"
+    exit 1
+}
 
-## Deploy Keycloak IDP
-if [[ $DEPLOY_IDP == "true" ]]; then
-    # check that keycloak namespace hasn't been created yet
-    if [ $(kubectl get ns | grep -ic $IDP_NAMESPACE) -eq 0 ]; then
-        printf "\nCreating Namespace %s for Keycloak Deployment......\n" "${IDP_NAMESPACE}"
+while getopts "v:" opt; do
+    case $opt in
+        v)
+            HELM_VALUES_FILE=$OPTARG
+            CUSTOM_VALUES=true
+            printf "Deploying with provided yaml file...\n"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
-        kubectl create namespace $IDP_NAMESPACE
-    fi
+# set the default if not set
+if [ -z "$HELM_VALUES_FILE" ]; then
+    HELM_VALUES_FILE=$DEFAULT_HELM_VALUES_FILE
+fi
+
+source $BASE_DIR/scripts/system/header.sh -t "Deploying IDP (Keycloak)"
+#printf "\n=========Deploying IDP==========="
+
+# check that keycloak namespace hasn't been created yet
+if [ $(kubectl get ns | grep -ic $IDP_NAMESPACE) -eq 0 ]; then
+    printf "\nCreating Namespace %s for Keycloak Deployment......\n" "${IDP_NAMESPACE}"
+
+    kubectl create namespace $IDP_NAMESPACE
+fi
     
-    # check that keycloak hasn't been deployed yet
-    if [ $(kubectl -n $IDP_NAMESPACE get sts 2>&1 | grep -ic "${KUBE_IDP_HELM_NAME}") -eq 0 ]; then
+# check that keycloak hasn't been deployed yet
+if [ $(kubectl -n $IDP_NAMESPACE get sts 2>&1 | grep -ic "${KUBE_IDP_HELM_NAME}") -eq 0 ]; then
 
-        printf "\nDeploying %s in %s Namespace....\n" "$KUBE_IDP_HELM_NAME" "$IDP_NAMESPACE"
+    printf "\nDeploying %s in %s Namespace....\n" "$KUBE_IDP_HELM_NAME" "$IDP_NAMESPACE"
         
-        # set myvalues.yaml depending if ssl certs have been generated
-        if [ -f "$BASE_DIR/generated/ssl/root_ca/certs/ca.pem" ]; then
-            # check if new values yaml exists
-            if [ ! -d "$BASE_DIR/generated/keycloak" ]; then
-                mkdir -p "$BASE_DIR/generated/keycloak"
-            fi
-            
-            if [ ! -f "$CUSTOM_HELM_CHART_VALUES_FILE" ]; then
-                printf "ports:\n  http: 80\n  https: 443\ntls:\n  enabled: true\n" > $CUSTOM_HELM_CHART_VALUES_FILE
-
-                printf "  fullchain: |\n" >> $CUSTOM_HELM_CHART_VALUES_FILE
-
-                while IFS= read -r line; do
-                    printf "    %s\n" "$line" >> $CUSTOM_HELM_CHART_VALUES_FILE
-                done < "$BASE_DIR/generated/ssl/component/certs/keycloak-fullchain.pem"
-
-                printf "  privkey: |\n" >> $CUSTOM_HELM_CHART_VALUES_FILE
-
-                while IFS= read -r line; do
-                    printf "    %s\n" "$line" >> $CUSTOM_HELM_CHART_VALUES_FILE
-                done < "$BASE_DIR/generated/ssl/component/private/keycloak.key"
-
-                printf "  cacerts: |\n" >> $CUSTOM_HELM_CHART_VALUES_FILE
-
-                while IFS= read -r line; do
-                    printf "    %s\n" "$line" >> $CUSTOM_HELM_CHART_VALUES_FILE
-                done < "$BASE_DIR/generated/ssl/intermediate_ca/certs/fullchain.pem"
-                
-            fi
-
-            helm upgrade --install $KUBE_IDP_HELM_NAME -f $CUSTOM_HELM_CHART_VALUES_FILE $IDP_HELM_CHART_PATH -n $IDP_NAMESPACE
-        else
-            helm upgrade --install $KUBE_IDP_HELM_NAME -f $IDP_HELM_CHART_VALUES_FILE $IDP_HELM_CHART_PATH -n $IDP_NAMESPACE
+    # generate a custom values file if we're not provided a values.yaml AND we have ssl files
+    if [ -f "$KEYCLOAK_CA_FILE" ] && [ -f "$KEYCLOAK_FULLCHAIN_FILE" ] && [ -f "$KEYCLOAK_PRIVKEY_FILE" ] && [ "$CUSTOM_VALUES" == "false" ]; then
+        printf "Generating a custom values.yaml....\n\n"
+        # check if new values yaml exists
+        if [ ! -d "$GEN_DIR" ]; then
+            mkdir -p "$GEN_DIR"
         fi
 
-        if [ $(echo $?) -ne 0 ]; then
-            printf "\nEncountered an error, exiting....\n"
+        # set the HELM_VALUES_FILE path to the generated one
+        HELM_VALUES_FILE="$GEN_DIR/values.yaml"
+
+        printf "ports:\n  http: 80\n  https: 443\ntls:\n  enabled: true\n" > $HELM_VALUES_FILE
+
+        printf "  fullchain: |\n" >> $HELM_VALUES_FILE
+
+        while IFS= read -r line; do
+            printf "    %s\n" "$line" >> $HELM_VALUES_FILE
+        done < "$KEYCLOAK_FULLCHAIN_FILE"
+
+        printf "  privkey: |\n" >> $HELM_VALUES_FILE
+
+        while IFS= read -r line; do
+            printf "    %s\n" "$line" >> $HELM_VALUES_FILE
+        done < "$KEYCLOAK_PRIVKEY_FILE"
+
+        printf "  cacerts: |\n" >> $HELM_VALUES_FILE
+
+        while IFS= read -r line; do
+            printf "    %s\n" "$line" >> $HELM_VALUES_FILE
+        done < "$KEYCLOAK_CA_FILE"
+        
+        # uncomment to debug
+        #cat $HELM_VALUES_FILE
+        printf "\n"
+    fi
+
+    # Deploy Keycloak
+    printf "Deploying Keycloak...\n"
+    helm upgrade --install $KUBE_IDP_HELM_NAME -f $HELM_VALUES_FILE $IDP_HELM_CHART_PATH -n $IDP_NAMESPACE
+
+    if [ $(echo $?) -ne 0 ]; then
+        printf "\nEncountered an error executing helm command, exiting....\n"
+        exit 1
+    fi
+
+    # wait for keycloak to be ready
+    timeout=180
+    sleep_in_seconds=5
+    while [ "$(kubectl -n ${IDP_NAMESPACE} get pod keycloak-0 | grep -c '1/1')" -lt 1 ]; do
+        if [ $timeout -le 0 ]; then
+            printf "\nTimed out waiting on %s, %s seconds\n" "$KUBE_IDP_HELM_NAME" "$timeout"
             exit 1
         fi
+        printf "\nWaiting for %s to be ready..." "$KUBE_IDP_HELM_NAME"
+        sleep $sleep_in_seconds
+        timeout=$((timeout-sleep_in_seconds))
+    done
 
-        # wait for OpenLDAP to be ready
-        timeout=120
-        sleep_in_seconds=5
-        while [ "$(kubectl -n ${IDP_NAMESPACE} get pod keycloak-0 | grep -c '1/1')" -lt 1 ]; do
-            if [ $timeout -le 0 ]; then
-                printf "\nTimed out waiting on %s, %s seconds\n" "$KUBE_IDP_HELM_NAME" "$timeout"
-                exit 1
-            fi
-            printf "\nWaiting for %s to be ready..." "$KUBE_IDP_HELM_NAME"
-            sleep $sleep_in_seconds
-            timeout=$((timeout-sleep_in_seconds))
-        done
+    printf "\n"
 
-        printf "\n"
-
-
-    else
-        printf "\n%s is already deployed in %s namespace, skipping deployment....\n" "$KUBE_IDP_HELM_NAME" "$IDP_NAMESPACE"
-    fi
-
-    # Todo: generate a user creds for cfk
 else
-    printf "\nSkipping Keycloak Deployment....\n"
+    printf "\n%s is already deployed in %s namespace, skipping deployment....\n" "$KUBE_IDP_HELM_NAME" "$IDP_NAMESPACE"
 fi
+
+# Todo: generate a user creds for cfk
