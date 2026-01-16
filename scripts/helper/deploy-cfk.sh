@@ -8,7 +8,6 @@ REQUIRED_PKG="kubectl helm jq"
 CFK_IMAGE_VERSION=$1
 CFK_HELM_REPO="confluentinc/confluent-for-kubernetes"
 CFK_HELM_INSTALL_OPTS="--set namespaced=false"
-#OPTIND=1
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -24,7 +23,7 @@ done
 
 usage() {
     printf "Usage: $0 [-v] [CFK_VERSION]\n"
-    printf "\t-v 0.1263.8|3.0.0      (required) Specifies CFK Version|Image Tag Version to deploy\n"
+    printf "\t-v 0.1263.8|3.0.0      (optonal) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
     exit 1
 }
 
@@ -39,33 +38,36 @@ while getopts "v:" opt; do
     esac
 done
 
-# clear flags
-#shift $((OPTIND -1))
-
 # Required Flag usage
 if [ -z "$1" ]; then
-    usage
-    exit 1
+    # if nothing given, install latest available
+    CFK_IMAGE_VERSION="latest"
+    #usage
+    #exit 1
 fi
 
 # Determine CFK Helm Version
-if [ "$(grep -c $CFK_IMAGE_VERSION $BASE_DIR/configs/cfk/version_mapping.json)" -ge 1 ]; then
-    CFK_HELM_VERSION=$(jq -r 'to_entries[] | select(.value == '\"$CFK_IMAGE_VERSION\"') | .key' $BASE_DIR/configs/cfk/version_mapping.json)
-    # if results is empty, it means that provided input is not an image tag version, e.g. 3.0.0, so let's do a different check
-    if [ -z "$CFK_HELM_VERSION" ]; then
-        CFK_HELM_VERSION=$CFK_IMAGE_VERSION
-        CFK_IMAGE_VERSION=$(jq -r 'to_entries[] | select(.key == '\"$CFK_HELM_VERSION\"') | .value' $BASE_DIR/configs/cfk/version_mapping.json)
-    fi
+if [ "$CFK_IMAGE_VERSION" == "latest" ]; then
+    printf "\nNo Version provided, will attempt to deploy latest CFK\n"
+else
+    if [ "$(grep -c $CFK_IMAGE_VERSION $BASE_DIR/configs/cfk/version_mapping.json)" -ge 1 ]; then
+        CFK_HELM_VERSION=$(jq -r 'to_entries[] | select(.value == '\"$CFK_IMAGE_VERSION\"') | .key' $BASE_DIR/configs/cfk/version_mapping.json)
+        # if results is empty, it means that provided input is not an image tag version, e.g. 3.0.0, so let's do a different check
+        if [ -z "$CFK_HELM_VERSION" ]; then
+            CFK_HELM_VERSION=$CFK_IMAGE_VERSION
+            CFK_IMAGE_VERSION=$(jq -r 'to_entries[] | select(.key == '\"$CFK_HELM_VERSION\"') | .value' $BASE_DIR/configs/cfk/version_mapping.json)
+        fi
 
-    # Conditional checking in case both are the same values
-    if [ "$CFK_HELM_VERSION" == "$CFK_IMAGE_VERSION" ]; then
-        printf "\nCFK Version could not be determined correctly...\n"
-        printf "IMAGE VERSION %s\nHELM VERSION %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION"
+        # Conditional checking in case both are the same values
+        if [ "$CFK_HELM_VERSION" == "$CFK_IMAGE_VERSION" ]; then
+            printf "\nCFK Version could not be determined correctly...\n"
+            printf "IMAGE VERSION %s\nHELM VERSION %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION"
+            exit 1
+        fi
+    else
+        printf "\nCFK Version could not be determined, exiting....\n"
         exit 1
     fi
-else
-    printf "\nCFK Version could not be determined, exiting....\n"
-    exit 1
 fi
 
 update_helm_repo () {
@@ -106,7 +108,8 @@ deploy_cfk () {
         fi
         
         # add version
-        if [ ! -z "$CFK_IMAGE_VERSION" ]; then
+        #if [ ! -z "$CFK_IMAGE_VERSION" ]; then
+        if [ "$CFK_IMAGE_VERSION" != "latest" ]; then
             operator_cmd="$operator_cmd --version=$CFK_IMAGE_VERSION"
         fi
 
@@ -141,7 +144,11 @@ deploy_cfk () {
 }
 
 printf "\nAttempting to install CFK....\n"
-printf "\n\tImage Version: %s\n\tHelm Version: %s\n\tNamespace: %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION" "$CFK_NAMESPACE"
+if [ "$CFK_IMAGE_VERSION" == "latest" ]; then
+    printf "\n\tImage Version: %s\n\tHelm Version: %s\n\tNamespace: %s\n" "$CFK_IMAGE_VERSION" "$CFK_NAMESPACE"
+else
+    printf "\n\tImage Version: %s\n\tHelm Version: %s\n\tNamespace: %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION" "$CFK_NAMESPACE"
+fi
 
 # call to update helm repo
 update_helm_repo
