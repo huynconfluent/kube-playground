@@ -171,11 +171,16 @@ If the version differs, it would be advised to replace the old mapping at `$BASE
 
 ## Deploy LDAP
 
-Default deployment of LDAP is configurable from the `.env` file
+By default OpenLDAP will be deployed to the `identity` namespace. You can modify this via the `.env` file.
 
 ```
 LDAP_NAMESPACE="identity"
-DEPLOY_LDAP="true"
+```
+
+When running `start.sh` you can specify a flag to auto-deploy OpenLDAP.
+
+```
+./start.sh -e ldap
 ```
 
 Alternatively if you need to deploy it after the fact you can do so with
@@ -186,11 +191,16 @@ source ./scripts/helper/deploy-ldap.sh
 
 ## Deploy IDP
 
-Default deployment of IDP (Keycloak) from the `.env` file
+By default Keycloak is the IDP that will be deployed into the `identity` namespace. You can modify this via the `.env` file.
 
 ```
 IDP_NAMESPACE="identity"
-DEPLOY_IDP="true"
+```
+
+When running `start.sh` you can specify a flag to auto-deploy Keycloak
+
+```
+./start.sh -e idp
 ```
 
 Alternatively if you need to deploy it after the fact you can do so with
