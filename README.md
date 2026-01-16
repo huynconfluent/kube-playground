@@ -17,27 +17,6 @@ Focus will be using k3d for the local kubernetes deployment.
 - jq
 - cfssl
 - [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) \*For MacOS based deployments
-- [jinjanator](https://github.com/kpfleming/jinjanator)
-
-### Install Jinjanator
-
-This is a python application but there's no homebrew package yet, so you can use the following method to install it via `pipx`.
-
-```
-pipx install jinjanator
-```
-
-Of course this means you might need to install `pipx` via brew
-
-```
-brew install pipx
-```
-
-With `pipx` and `jinjanator` installed, you may need to include the path to this in your BASHRC or ZSHRC file
-
-```
-pipx ensurepath
-```
 
 ## TODO
 
