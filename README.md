@@ -50,7 +50,15 @@ pipx ensurepath
 - [x] Add workflow for using multipass vm for k3d instead of local k3d deployment
 - [ ] Add workflow for Openshift connection
 - [ ] Create CR Generator
-- [ ] Add Terraform workflow (e.g. Openshift)?
+- [ ] Add Terraform workflow
+  - [ ] AWS (EKS)
+  - [ ] ~~AWS (ROSA) needs subscription~~
+  - [ ] Azure (AKS)
+  - [ ] Azure (Openshift)
+- [ ] Add REST helper scripts (get Bearer Token)
+- [x] Add Flink Deployment
+- [ ] ~~Add USM deployment~~
+- [ ] Add setup for Confluent Private Cloud Gateway
 
 ## Default Kubernetes Cluster
 
@@ -100,7 +108,7 @@ sudo env DOCKER_API_VERSION=1.44 docker-mac-net-connect
 
 ## Prerequisites
 
-Make sure you make a copy of the `.env.example` file and configure it for automatic deployment of extra
+Make sure you make a copy of the `.env.example` file and configure it for defaults
 
 ```
 cp .env.example .env
@@ -173,14 +181,14 @@ This will allow you to re-create the kubernetes secret on new cluster deployment
 
 ## Run CFK Version Extractor
 
-This is used to creation a json file for CFK version to Image Mapping.
+While kube-playground stores a manual copy of CFK Version to Image Tag mapping, it may not always be up to date. You can use the following script to manually generate a new mapping combining default mapping with what we pull from [Confluent Documentation](https://docs.confluent.io/operator/current/co-plan.html#co-long-image-tags) thus creating a brand new mapping.
 
 ```
 export BASE_DIR=$(pwd)
 ./scripts/helper/cfk-version-extractor.sh
 ```
 
-If the version differs, it would be advised to replace the old mapping at `$BASE_DIR/configs/cfk/version_mapping.json` with the new file from `$BASE_DIR/generated/cfk/version_mapping.json`
+If the version differs, it would be advised to replace the old mapping at `$BASE_DIR/configs/cfk/version_mapping.json` with the new file from `$BASE_DIR/generated/cfk/version_mapping.json` until kube-playground is updated with this new copy.
 
 ## Deploy LDAP
 
