@@ -4,7 +4,7 @@
 # ./generate-ssl-scripts.sh -c <component> -d <gen_dir> -n <namespace> -f <fullchain> -p <privkey> -a <cacerts>
 #
 
-HOME_DIR=$(pwd)
+BASE_DIR=$(pwd)
 # reset
 OPTIND=1
 set -o allexport; source .env; set +o allexport
