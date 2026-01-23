@@ -10,6 +10,18 @@ fi
 
 set -o allexport; source $BASE_DIR/.env; set +o allexport
 
+REQUIRED_PKG="keytool cfssl openssl"
+# check for prerequisites
+for PKG in $REQUIRED_PKG; do
+    if [ -z "$(which ${PKG})" ]; then
+        printf "REQUIRED: %s" "${PKG}"
+        printf "\nPlease install %s" "${PKG}"
+        printf "\nUsing Brew:"
+        printf "\n\tbrew install %s" "${PKG}"
+        exit 1
+    fi
+done
+
 # A bunch of defaults
 OPTIND=1
 DEPLOY_CLEAN=false
@@ -35,6 +47,7 @@ TRUSTSTORE_PASSWORD="$KEYSTORE_PASSWORD"
 KUBE_SAN_BASE="[\"localhost\",\"*.$KUBE_BASEDOMAIN\",\"*.$CFK_NAMESPACE.svc.cluster.local\"]"
 KUBE_IDENTITY_SAN_BASE="[\"*.$IDENTITY_NAMESPACE.svc.cluster.local\",\"*.openldap.$IDENTITY_NAMESPACE.svc.cluster.local\",\"*.keycloak.$IDENTITY_NAMESPACE.svc.cluster.local\",\"*.keycloak.$KUBE_BASEDOMAIN\",\"*.openldap.$KUBE_BASEDOMAIN\"]"
 KUBE_CP_SAN_BASE="[\"*.zookeeper.$CFK_NAMESPACE.svc.cluster.local\",\"*.kraftcontroller.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.connect.$CFK_NAMESPACE.svc.cluster.local\",\"*.schemaregistry.$CFK_NAMESPACE.svc.cluster.local\",\"*.controlcenter.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkarestproxy.$CFK_NAMESPACE.svc.cluster.local\",\"*.ksqldb.$CFK_NAMESPACE.svc.cluster.local\",\"*.replicator.$CFK_NAMESPACE.svc.cluster.local\",\"*.zookeeper.$KUBE_BASEDOMAIN\",\"*.kraftcontroller.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\",\"*.connect.$KUBE_BASEDOMAIN\",\"*.schemaregistry.$KUBE_BASEDOMAIN\",\"*.kafkarestproxy.$KUBE_BASEDOMAIN\",\"*.controlcenter.$KUBE_BASEDOMAIN\",\"*.ksqldb.$KUBE_BASEDOMAIN\",\"*.replicator.$KUBE_BASEDOMAIN\"]"
+KUBE_FLINK_SAN_BASE="[\"*.flink.$FLINK_NAMESPACE.svc.cluster.local\",\"*.flink.$KUBE_BASEDOMAIN\"]"
 
 GENERATED_DIR="$BASE_DIR/generated/ssl"
 SCRIPT_DIR="$BASE_DIR/scripts/ssl"
@@ -148,11 +161,13 @@ else
     combined_san=$(echo "[\"zookeeper\",\"zookeeper.$KUBE_BASEDOMAIN\",\"zookeeper.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "zookeeper" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-    combined_san=$(echo "[\"kraftcontroller\",\"kraftcontroller.$KUBE_BASEDOMAIN\",\"kraftcontroller.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
-    generate_key_and_trust "kraftcontroller" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
+    # this will include both kafkacontroller and kraftcontroller
+    combined_san=$(echo "[\"kraftcontroller\",\"kraftcontroller.$KUBE_BASEDOMAIN\",\"kraftcontroller.svc.cluster.local\",\"kafkacontroller\",\"kafkacontroller.$KUBE_BASEDOMAIN\",\"kafkacontroller.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "kafkacontroller" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-    combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
-    generate_key_and_trust "kafka" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
+    # should include both kafka and kafkabroker
+    combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\",\"kafkabroker\",\"kafkabroker.$KUBE_BASEDOMAIN\",\"kafkabroker.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "kafkabroker" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     combined_san=$(echo "[\"schemaregistry\",\"schemaregistry.$KUBE_BASEDOMAIN\",\"schemaregistry.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "schemaregistry" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -172,16 +187,43 @@ else
     combined_san=$(echo "[\"controlcenter\",\"controlcenter.$KUBE_BASEDOMAIN\",\"controlcenter.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "controlcenter" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-    # TODO: ssl assets for ldap users and idp
+    combined_san=$(echo "[\"flink\",\"flink.$KUBE_BASEDOMAIN\",\"flink.svc.cluster.local\"] $KUBE_FLINK_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "flink" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-    l_component_base='{"C": "US","O":"Confluent Demo","OU":"KSQLDB Team"}'
-    combined_san=$(echo "[\"ksqldeveloper\"]")   
-    generate_key_and_trust "ksqldeveloper" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
-    combined_san=$(echo "[\"kafkarestclass\"]")   
-    generate_key_and_trust "kafkarestclass" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+    # Generateing service certs
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
+    combined_san=$(echo "[\"mds\",\"mds.$KUBE_BASEDOMAIN\",\"mds.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "mds" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
+    combined_san=$(echo "[\"metricsreporter\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "metricsreporter" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
+    combined_san=$(echo "[\"auditlogger\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "auditlogger" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
+    combined_san=$(echo "[\"kafkacli\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    generate_key_and_trust "kafkacli" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Data Governance Service"}'
+    combined_san=$(echo "[\"srconsumer\"]")   
+    generate_key_and_trust "srconsumer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Data Governance Service"}'
+    combined_san=$(echo "[\"srproducer\"]")   
+    generate_key_and_trust "srproducer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Data Governance Service"}'
+    combined_san=$(echo "[\"sradmin\"]")   
+    generate_key_and_trust "sradmin" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+    
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Data Governance Service"}'
+    combined_san=$(echo "[\"srexporter\"]")   
+    generate_key_and_trust "srexporter" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+    
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"Kafka REST API Service"}'
     combined_san=$(echo "[\"krpdeveloper\"]")   
     generate_key_and_trust "krpdeveloper" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -193,16 +235,69 @@ else
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"Kafka REST API Service"}'
     combined_san=$(echo "[\"krpproducer\"]")   
     generate_key_and_trust "krpproducer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+ 
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Kafka REST API Service"}'
+    combined_san=$(echo "[\"krpadmin\"]")   
+    generate_key_and_trust "krpadmin" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
     
-    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Data Governance Service"}'
-    combined_san=$(echo "[\"schemaexporter\"]")   
-    generate_key_and_trust "schemaexporter" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
-    
-    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Security Service"}'
-    combined_san=$(echo "[\"auditlogger\"]")   
-    generate_key_and_trust "auditlogger" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Kafka REST API Service"}'
+    combined_san=$(echo "[\"connectconsumer\"]")   
+    generate_key_and_trust "connectconsumer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+ 
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Kafka REST API Service"}'
+    combined_san=$(echo "[\"connectproducer\"]")   
+    generate_key_and_trust "connectproducer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+ 
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Kafka REST API Service"}'
+    combined_san=$(echo "[\"connectadmin\"]")   
+    generate_key_and_trust "connectadmin" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+ 
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"KSQLDB Team"}'
+    combined_san=$(echo "[\"ksqlcli\"]")   
+    generate_key_and_trust "ksqlcli" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-    # People
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"KSQLDB Team"}'
+    combined_san=$(echo "[\"ksqlconsumer\"]")   
+    generate_key_and_trust "ksqlconsumer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"KSQLDB Team"}'
+    combined_san=$(echo "[\"ksqlproducer\"]")   
+    generate_key_and_trust "ksqlproducer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"KSQLDB Team"}'
+    combined_san=$(echo "[\"ksqladmin\"]")   
+    generate_key_and_trust "ksqladmin" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"KSQLDB Team"}'
+    combined_san=$(echo "[\"ksqldeveloper\"]")   
+    generate_key_and_trust "ksqldeveloper" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Flink Team"}'
+    combined_san=$(echo "[\"flinkconsunmer\"]")   
+    generate_key_and_trust "flinkconsumer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Flink Team"}'
+    combined_san=$(echo "[\"flinkproducer\"]")   
+    generate_key_and_trust "flinkproducer" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Flink Team"}'
+    combined_san=$(echo "[\"flinkadmin\"]")   
+    generate_key_and_trust "flinkadmin" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    # Generating CFK/CMF/CPC service certs
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
+    combined_san=$(echo "[\"kafkarestclass\"]")   
+    generate_key_and_trust "kafkarestclass" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
+    combined_san=$(echo "[\"cpc\"]")   
+    generate_key_and_trust "cpc" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
+    combined_san=$(echo "[\"cmf\"]")   
+    generate_key_and_trust "cmf" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    # Generating User Certificates
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"Users"}'
     combined_san=$(echo "[\"superuser\"]")   
     generate_key_and_trust "superuser" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -235,8 +330,6 @@ else
     combined_san=$(echo "[\"alicelookingglass\"]")   
     generate_key_and_trust "alicelookingglass" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
-
-
     printf "\nSSL Certificate Generation complete!\n"
     
     source $BASE_DIR/scripts/system/header.sh -t "Generating MDS Keypair"
@@ -250,7 +343,7 @@ else
     source $BASE_DIR/scripts/system/header.sh -t "Generating Bash Scripts"
     #printf "\n\n====Generating Bash Scripts======\n"
     
-    COMP="zookeeper kraftcontroller kafka schemaregistry connect kafkarestproxy replicator ksqldb controlcenter"
+    COMP="zookeeper kafkacontroller kafkabroker schemaregistry connect kafkarestproxy replicator ksqldb controlcenter flink"
     
     for component in ${COMP[@]}; do
     
@@ -266,6 +359,20 @@ else
     # check that keycloak values.yaml exists in generated dir
     # if not make directory
     # generate new yaml based on existing cas
+    
+    COMP="mds metricsreporter auditlogger kafkarestclass kafkacli krpconsumer krpproducer krpadmin krpdeveloper connectconsumer connectproducer connectadmin srconsumer srproducer sradmin srexporter ksqlcli ksqlconsumer ksqlproducer ksqladmin ksqldeveloper flinkconsumer flinkproducer flinkadmin cmf cpc"
+    
+    for component in ${COMP[@]}; do
+    
+        fullchain_path="$GENERATED_DIR/components/$component-fullchain.pem"
+        cacerts_path="$GENERATED_DIR/files/cacerts.pem"
+        privkey_path="$GENERATED_DIR/components/$component-key.pem"
+    
+        generate_bash_script "$component" "$fullchain_path" "$cacerts_path" "$privkey_path"
+    
+    done
+
+
     
     #printf "\n\n====Completed SSL Generation=====\n"
     printf "\nSSL Files and bash scripts for kubernetes secret creation have been generated....\n\n"
