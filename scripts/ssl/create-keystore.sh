@@ -13,6 +13,7 @@ KEYSTORE_PASSWORD=$4
 KEYSTORE_FILE="$GEN_DIR/files/$COMPONENT_NAME.keystore.p12"
 KEYSTORE_ALIAS="1"
 KEYSTORE_JKS_FILE="$GEN_DIR/files/$COMPONENT_NAME.keystore.jks"
+PASSWORD_FILE="$GEN_DIR/files/$COMPONENT_NAME.keystore.jksPassword.txt"
 
 # Check number of arguments
 if [ "$#" -ne 4 ]; then
@@ -56,3 +57,7 @@ if [ ! -f "$KEYSTORE_JKS_FILE" ]; then
     printf "JKS Keystore creation encountered an error...\n"
     exit 1
 fi
+
+# generate jksPassword.txt
+printf "Creating jksPassword.txt for %s...\n" "$COMPONENT_NAME"
+printf "jksPassword=%s\n" "$KEYSTORE_PASSWORD" > "$PASSWORD_FILE"

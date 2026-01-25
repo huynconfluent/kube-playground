@@ -91,13 +91,22 @@ generate_key_and_trust () {
     source $SCRIPT_DIR/create-truststore.sh "$l_name" "$l_cacerts" "$TRUSTSTORE_PASSWORD"
 }
 
-generate_bash_script () {
+generate_tls_bash_script () {
     component=$1
     fullchain=$2
     cacerts=$3
     privkey=$4
 
-    eval $BASE_DIR/scripts/helper/generate-ssl-scripts.sh -c "$component" -d "$GENERATED_DIR" -n "$CFK_NAMESPACE" -f "$fullchain" -a "$cacerts" -p "$privkey"
+    eval $BASE_DIR/scripts/helper/generate-ssl-pem-scripts.sh -c "$component" -d "$GENERATED_DIR" -n "$CFK_NAMESPACE" -f "$fullchain" -a "$cacerts" -p "$privkey"
+}
+
+generate_jks_bash_script () {
+    component=$1
+    keystore=$2
+    truststore=$3
+    passwordFile=$4
+
+    eval $BASE_DIR/scripts/helper/generate-ssl-jks-scripts.sh -c "$component" -d "$GENERATED_DIR" -n "$CFK_NAMESPACE" -k "$keystore" -t "$truststore" -p "$passwordFile"
 }
 
 generate_mds_bash_script () {
@@ -346,13 +355,21 @@ else
     COMP="zookeeper kafkacontroller kafkabroker schemaregistry connect kafkarestproxy replicator ksqldb controlcenter flink"
     
     for component in ${COMP[@]}; do
-    
+   
+        # generate scripts for adding pem secrets
         fullchain_path="$GENERATED_DIR/components/$component-fullchain.pem"
         cacerts_path="$GENERATED_DIR/files/cacerts.pem"
         privkey_path="$GENERATED_DIR/components/$component-key.pem"
     
-        generate_bash_script "$component" "$fullchain_path" "$cacerts_path" "$privkey_path"
-    
+        generate_tls_bash_script "$component" "$fullchain_path" "$cacerts_path" "$privkey_path"
+
+        # generate scripts for adding jks secrets, default to using keystore's jksPassword.txt since it "should" be the same as the truststore one too
+        keystore_path="$GENERATED_DIR/files/$component.keystore.jks"
+        truststore_path="$GENERATED_DIR/files/$component.truststore.jks"
+        passwordFile="$GENERATED_DIR/files/$component.keystore.jksPassword.txt"
+
+        generate_jks_bash_script "$component" "$keystore_path" "$truststore_path" "$passwordFile"
+
     done
 
     # add section to generate SSL stuff for LDAP and Keycloak
@@ -364,12 +381,20 @@ else
     
     for component in ${COMP[@]}; do
     
+        # generate scripts for adding pem secrets
         fullchain_path="$GENERATED_DIR/components/$component-fullchain.pem"
         cacerts_path="$GENERATED_DIR/files/cacerts.pem"
         privkey_path="$GENERATED_DIR/components/$component-key.pem"
     
-        generate_bash_script "$component" "$fullchain_path" "$cacerts_path" "$privkey_path"
+        generate_tls_bash_script "$component" "$fullchain_path" "$cacerts_path" "$privkey_path"
     
+        # generate scripts for adding jks secrets, default to using keystore's jksPassword.txt since it "should" be the same as the truststore one too
+        keystore_path="$GENERATED_DIR/files/$component.keystore.jks"
+        truststore_path="$GENERATED_DIR/files/$component.truststore.jks"
+        passwordFile="$GENERATED_DIR/files/$component.keystore.jksPassword.txt"
+
+        generate_jks_bash_script "$component" "$keystore_path" "$truststore_path" "$passwordFile"
+
     done
 
 

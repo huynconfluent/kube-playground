@@ -12,6 +12,7 @@ TRUSTSTORE_PASSWORD=$3
 TRUSTSTORE_FILE="$GEN_DIR/files/$COMPONENT_NAME.truststore.p12"
 TRUSTSTORE_JKS_FILE="$GEN_DIR/files/$COMPONENT_NAME.truststore.jks"
 CA_ALIAS="caroot"
+PASSWORD_FILE="$GEN_DIR/files/$COMPONENT_NAME.truststore.jksPassword.txt"
 
 # Check number of arguments
 if [ "$#" -ne 3 ]; then
@@ -59,3 +60,7 @@ if [ ! -f "$TRUSTSTORE_JKS_FILE" ]; then
     printf "JKS Truststore creation encountered an error...\n"
     exit 1
 fi
+
+# generate jksPassword.txt
+printf "Creating jksPassword.txt for %s...\n" "$COMPONENT_NAME"
+printf "jksPassword=%s\n" "$TRUSTSTORE_PASSWORD" > "$PASSWORD_FILE"
