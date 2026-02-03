@@ -22,15 +22,19 @@ for PKG in $REQUIRED_PKG; do
 done
 
 usage() {
-    printf "Usage: $0 [-v] [CFK_VERSION]\n"
+    printf "Usage: $0 [-v] [CFK_VERSION] [-f]\n"
     printf "\t-v 0.1263.8|3.0.0      (optonal) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
+    printf "\t-f                     (optional) Deploy in FIPS mode\n"
     exit 1
 }
 
-while getopts "v:" opt; do
+while getopts "v:f" opt; do
     case $opt in
         v)
             CFK_IMAGE_VERSION=$OPTARG
+            ;;
+        f)
+            CFK_HELM_INSTALL_OPTS+=" --set fipsmode=true"
             ;;
         *)
             usage

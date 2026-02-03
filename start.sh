@@ -21,6 +21,7 @@ DEPLOY_FLINK=false
 DEPLOY_CMF=false
 NO_INFRA=false
 AUTOGEN_ASSETS=false
+FIPS_ENABLED=false
 #
 set -o allexport; source .env; set +o allexport
 
@@ -48,9 +49,10 @@ fi
 
 # flags
 usage () {
-    printf "Usage: $0 [-m] [-e] [comma separated array] [-s] [-a] [-i]\n"
+    printf "Usage: $0 [-m] [-e] [comma separated array] [-f] [-s] [-z] [-i] [-a]\n"
     printf "\t-m                                    (optional) deploy k3d on multipass vm instead of local k3d\n"
     printf "\t-e [ldap,idp,vault,flink]             (optional) deploy extras, comma seperated string array\n"
+    printf "\t-f                                    (optional) deploys CFK in FIPS mode\n"
     printf "\t-s                                    (optional) skip infrastructre deployment (no k3d, multipass, metallb, etc)\n"
     printf "\t-z                                    (optional) skip cfk deployment\n"
     printf "\t-i                                    (optional) deploy interactively\n"
@@ -59,7 +61,7 @@ usage () {
     exit 1
 }
 
-while getopts "me:siaz" opt; do
+while getopts "me:siazf" opt; do
     case $opt in
         m)
             CLUSTER_TYPE="multipass"
@@ -88,6 +90,10 @@ while getopts "me:siaz" opt; do
                         ;;
                 esac
             done
+            ;;
+        f)
+            # enable FIPs mode
+            FIPS_ENABLED=true
             ;;
         s)
             # No Infrastructure deployment
@@ -162,7 +168,8 @@ create_kube_cluster () {
         sleep $sleep_in_seconds
         timeout=$((timeout-sleep_in_seconds))
     done
-
+    
+    printf "\n"
 }
 
 deploy_metallb () {
@@ -256,11 +263,18 @@ check_cfk_version
 
 # Call deploy_cfk
 if [ "$DEPLOY_CFK" == "true" ]; then
+    deploy_cfk_cmd="$BASE_DIR/scripts/helper/deploy-cfk.sh"
+
     if [ ! -z "$CFK_IMAGE_VERSION" ]; then
-        source $BASE_DIR/scripts/helper/deploy-cfk.sh -v "$CFK_IMAGE_VERSION"
-    else
-        source $BASE_DIR/scripts/helper/deploy-cfk.sh
+        #source $BASE_DIR/scripts/helper/deploy-cfk.sh -v "$CFK_IMAGE_VERSION"
+        deploy_cfk_cmd+=" -v $CFK_IMAGE_VERSION"
     fi
+
+    if [ "$FIPS_ENABLED" == true ]; then
+        deploy_cfk_cmd+=" -f"
+    fi
+
+    source $deploy_cfk_cmd
 else
     printf "\nCFK not needed, Skipping CFK Deployment....\n"
 fi
