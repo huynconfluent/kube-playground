@@ -97,13 +97,15 @@ download_bc_jar () {
     fi
 
     if [ ! -f "$GEN_DIR/jars/$BC_JAR" ]; then
+
         curl "$BC_JAR_URL" -o "$GEN_DIR/jars/$BC_JAR"
+        
+        if [ "$?" -ne 0 ]; then
+            printf "There was an issue downloading the jar, exiting...\n"
+            exit 1
+        fi
     fi
 
-    if [ "$?" -ne 0 ]; then
-        printf "There was an issue downloading the jar, exiting...\n"
-        exit 1
-    fi
 }
 
 create_bc_keystore () {

@@ -93,18 +93,18 @@ download_bc_jar () {
     fi
 
     if [ ! -f "$GEN_DIR/jars/$BC_JAR" ]; then
+
         curl "$BC_JAR_URL" -o "$GEN_DIR/jars/$BC_JAR"
+
+        if [ "$?" -ne 0 ]; then
+            printf "There was an issue downloading the jar, exiting...\n"
+            exit 1
+        fi
     fi
 
-    if [ "$?" -ne 0]; then
-        printf "There was an issue downloading the jar, exiting...\n"
-        exit 1
-    fi
 }
 
 create_bc_truststore () {
-
-    cmd="keytool -noprompt -keystore $TRUSTSTORE_BCFKS_FILE -storetype BCFKS -alias $CA_ALIAS -import -file $CACERTS -storepass $TRUSTSTORE_PASSWORD -keypass $TRUSTSTORE_PASSWORD -providerclass org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider -providerpath $GEN_DIR/jars/$BC_JAR"
 
     if [ -f "$TRUSTSTORE_BCFKS_FILE" ] && [ "$CLEAN_BUILD" == false ]; then
         printf "BCFKS truststore file exists, skipping...\n"
@@ -116,7 +116,7 @@ create_bc_truststore () {
         # create truststore
         printf "Creating BCFKS truststore...\n"
         printf "\n%s\n" "$cmd"
-        eval $cmd
+        keytool -noprompt -keystore $TRUSTSTORE_BCFKS_FILE -storetype BCFKS -alias $CA_ALIAS -import -file $CACERTS -storepass $TRUSTSTORE_PASSWORD -keypass $TRUSTSTORE_PASSWORD -providerclass org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider -providerpath $GEN_DIR/jars/$BC_JAR > /dev/null 2>&1
     fi
 }
 
