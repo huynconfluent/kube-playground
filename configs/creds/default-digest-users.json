@@ -1,4 +1,4 @@
 {
-    "zookeeper": "zookeeper-secret",
-    "kafka": "kafka-secret"
+  "zookeeper": "zookeeper-secret",
+  "kafkabroker": "kafkabroker-secret"
 }
