@@ -2,7 +2,7 @@
 
 # ./create-user-cert.sh "COMMON_NAME" '{"C": "US", "O": "Confluent Demo", "OU": "GTS Support Group"}' '["san_1","san_2","san_3"]' "2190h" "rsa|ecdsa" "2048|4096" "GEN_DIR/root_ca/ca.pem" "GEN_DIR/root_ca/ca-key.pem" "GEN_DIR/files/cacerts.pem" "server|client|server_and_client"
 
-REQUIRED_PKG="cfssl jq"
+REQUIRED_PKG="cfssl openssl jq"
 TEMPLATE_PROFILE="$BASE_DIR/configs/cfssl/template_profile.json"
 TEMPLATE_CERT="$BASE_DIR/configs/cfssl/template_cert.json"
 GEN_DIR="$BASE_DIR/generated/ssl"
@@ -63,7 +63,3 @@ cfssl gencert -ca "$CA_CERT" -ca-key "$CA_KEY" -config "$GEN_DIR/templates/profi
 # create fullchain
 printf "Creating %s Full Chain PEM file...\n" "$CN"
 cat "$GEN_DIR/components/$SHORT_NAME.pem" "$CA_CHAIN" > "$GEN_DIR/components/$SHORT_NAME-fullchain.pem"
-
-# create keystore file
-#printf "Creating Keystore and Truststore files...\n"
-#source $BASE_DIR/scripts/ssl/create-keystore.sh "$SHORT_NAME" "$GEN_DIR/components/$SHORT_NAME-key.pem" "$GEN_DIR/components/$SHORT_NAME-fullchain.pem" "topsecret"
