@@ -25,7 +25,7 @@ done
 
 # flags
 usage () {
-    printf "Usage: $0 [-u] [string] [-n] [string]\n"
+    printf "Usage: $0 [-u] [string] [-i] [string:string] [-n] [string]\n"
     printf "\t-u [path_to_json]                 (required) user json file\n"
     printf "\t-i [string:string]                (required) interbroker username:password\n"
     printf "\t-n namespace                      (required) kubernetes namesapce to use in script, e.g. confluent\n"
