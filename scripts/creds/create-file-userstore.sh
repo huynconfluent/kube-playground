@@ -57,7 +57,7 @@ if [ -z "$ENCRYPTION" ] || [ -z "$CRED_FILE" ] || [ -z "$NAMESPACE" ]; then
     usage
 fi
 
-if [ "$ENCRYPTION" != "none" ] && [ "$ENCRYPTION" != "SHA256" ] && [ "$ENCRYPTION" != "SHA384" ] && [ "$ENCRYPTION" != "SHA512" ] && [ "$ENCRYPTION" != "CRYPT" ] && [ "$ENCRYPTION" != "MD5" ]; then
+if [ "$ENCRYPTION" != "NONE" ] && [ "$ENCRYPTION" != "SHA256" ] && [ "$ENCRYPTION" != "SHA384" ] && [ "$ENCRYPTION" != "SHA512" ] && [ "$ENCRYPTION" != "CRYPT" ] && [ "$ENCRYPTION" != "MD5" ]; then
     printf "Encryption type unknown, must be none|crypt|md5|sha256|sha384|sha512\n"
     usage
 fi
