@@ -25,10 +25,10 @@ Focus will be using k3d for the local kubernetes deployment.
 - [x] Create automated keycloak deployment
 - [x] Create automated CFK deployment
 - [x] Add auto generated ssl helper scripts
-- [ ] Add auto generated credential helper scripts
+- [x] Add auto generated credential helper scripts
 - [x] Add workflow for using multipass vm for k3d instead of local k3d deployment
 - [ ] Add workflow for Openshift connection
-- [ ] Create CR Generator
+- [ ] ~~Create CR Generator~~
 - [ ] Add Terraform workflow
   - [ ] AWS (EKS)
   - [ ] ~~AWS (ROSA) needs subscription~~
@@ -39,8 +39,8 @@ Focus will be using k3d for the local kubernetes deployment.
 - [ ] ~~Add USM deployment~~
 - [ ] Add setup for Confluent Private Cloud Gateway
 - [x] Add FIPs asset generation
-- [x] Added File BASed Userstore creation
-- [ ] Add oidcClientSecret.txt deployment
+- [x] Added File Based Userstore creation
+- [x] Add oidcClientSecret.txt deployment
 
 ## Default Kubernetes Cluster
 
