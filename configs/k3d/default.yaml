@@ -43,3 +43,12 @@ options:
   kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: true
+# container registry
+registries:
+  # using the following container image to hook into local docker registry, this will speed up kubectl commands, assuming the image is already downloaded
+  create:
+    image: ligfx/k3d-registry-dockerd:latest
+    proxy:
+      remoteURL: "*"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
