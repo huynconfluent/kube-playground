@@ -38,6 +38,9 @@ Focus will be using k3d for the local kubernetes deployment.
 - [x] Add Flink Deployment
 - [ ] ~~Add USM deployment~~
 - [ ] Add setup for Confluent Private Cloud Gateway
+- [x] Add FIPs asset generation
+- [x] Added File BASed Userstore creation
+- [ ] Add oidcClientSecret.txt deployment
 
 ## Default Kubernetes Cluster
 
@@ -208,3 +211,43 @@ Alternatively if you need to deploy it after the fact you can do so with
 ```
 source ./scripts/helper/deploy-idp.sh
 ```
+
+# SLOW Confluent Platform Deployment in MacOS ARM varirant
+
+Because of the double vritualization situation when deploying a Kubernetes Cluster (k3s inside docker container) locally on a MacOS (ARM vs x86) it can be extremely slow during the `kubectl image pull` process. This is also even after properly disabling `Resource Saver` AND ensuring VirtioFS configured.
+What we can do to allevate this, is to manually download the images ahead of time and import the images into k3d during runtime.
+
+## Example for cp-server image
+
+1. Download the arm64 variant image
+
+```
+docker image pull confluentinc/cp-server:x.x.x.arm64
+```
+
+2. When k3d is running, import into k3d where the k3d cluster name is `demo`
+
+```
+k3d image import confluentinc/cp-server:x.x.x.arm64 -c demo
+```
+
+## Creating a Local Container Registry
+
+We can improve this further by creating a local container registry in k3d to store the container images in.
+
+## Ultimate Solution
+
+We can use the following project [https://github.com/ligfx/k3d-registry-dockerd](https://github.com/ligfx/k3d-registry-dockerd) to use our local Docker registry instead to transparently deal with this.
+The following is already pre-configured in the k3d config yaml.
+
+```
+registries:
+  create:
+    image: ligfx/k3d-registry-dockerd:latest
+    proxy:
+      remoteURL: "*"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+
+This is great because when k3d pulls an image, it will be stored in our local docker registry for use next time, thus speeding up the process on subsequent runs.
