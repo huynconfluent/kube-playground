@@ -63,7 +63,7 @@ generate_bash_script () {
     l_username=$1
     l_namespace=$2
 
-    cmd="-n \$l_namespace create secret generic bearer-$l_username --from-file=bearer.txt=$GEN_DIR/files/$l_username-bearer.txt"
+    cmd="-n \$NAMESPACE create secret generic bearer-$l_username --from-file=bearer.txt=$GEN_DIR/files/$l_username-bearer.txt"
     file_name="create-bearer-$l_username-secret.sh"
 
     # uncomment to debug
