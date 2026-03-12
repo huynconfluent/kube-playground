@@ -51,7 +51,7 @@ COMPONENT_KEY_SIZE="4096"
 KEYSTORE_PASSWORD="topsecret"
 TRUSTSTORE_PASSWORD="$KEYSTORE_PASSWORD"
 
-KUBE_SAN_BASE="[\"localhost\",\"*.$KUBE_BASEDOMAIN\",\"*.$CFK_NAMESPACE.svc.cluster.local\"]"
+KUBE_SAN_BASE="[\"localhost\"]"
 KUBE_IDENTITY_SAN_BASE="[\"*.$IDENTITY_NAMESPACE.svc.cluster.local\",\"*.openldap.$IDENTITY_NAMESPACE.svc.cluster.local\",\"*.keycloak.$IDENTITY_NAMESPACE.svc.cluster.local\",\"*.keycloak.$KUBE_BASEDOMAIN\",\"*.openldap.$KUBE_BASEDOMAIN\"]"
 KUBE_CP_SAN_BASE="[\"*.zookeeper.$CFK_NAMESPACE.svc.cluster.local\",\"*.kraftcontroller.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.connect.$CFK_NAMESPACE.svc.cluster.local\",\"*.schemaregistry.$CFK_NAMESPACE.svc.cluster.local\",\"*.controlcenter.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkarestproxy.$CFK_NAMESPACE.svc.cluster.local\",\"*.ksqldb.$CFK_NAMESPACE.svc.cluster.local\",\"*.replicator.$CFK_NAMESPACE.svc.cluster.local\",\"*.zookeeper.$KUBE_BASEDOMAIN\",\"*.kraftcontroller.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\",\"*.connect.$KUBE_BASEDOMAIN\",\"*.schemaregistry.$KUBE_BASEDOMAIN\",\"*.kafkarestproxy.$KUBE_BASEDOMAIN\",\"*.controlcenter.$KUBE_BASEDOMAIN\",\"*.ksqldb.$KUBE_BASEDOMAIN\",\"*.replicator.$KUBE_BASEDOMAIN\"]"
 KUBE_FLINK_SAN_BASE="[\"*.flink.$FLINK_NAMESPACE.svc.cluster.local\",\"*.flink.$KUBE_BASEDOMAIN\"]"
@@ -200,62 +200,62 @@ else
     generate_key_and_trust "openldap" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for zookeeper"
-    combined_san=$(echo "[\"zookeeper\",\"zookeeper.$KUBE_BASEDOMAIN\",\"zookeeper.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"zookeeper\",\"zookeeper.$KUBE_BASEDOMAIN\",\"*.zookeeper.$KUBE_BASEDOMAIN\",\"zookeeper.svc.cluster.local\",\"zookeeper.$CFK_NAMESPACE.svc.cluster.local\",\"*.zookeeper.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "zookeeper" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     # this will include both kafkacontroller and kraftcontroller
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kraftcontroller"
-    combined_san=$(echo "[\"kraftcontroller\",\"kraftcontroller.$KUBE_BASEDOMAIN\",\"kraftcontroller.svc.cluster.local\",\"kafkacontroller\",\"kafkacontroller.$KUBE_BASEDOMAIN\",\"kafkacontroller.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"kraftcontroller\",\"kraftcontroller.$KUBE_BASEDOMAIN\",\"*.kraftcontroller.$KUBE_BASEDOMAIN\",\"kraftcontroller.svc.cluster.local\",\"kafkacontroller\",\"kafkacontroller.$KUBE_BASEDOMAIN\",\"*.kafkacontroller.$KUBE_BASEDOMAIN\",\"kafkacontroller.svc.cluster.local\",\"kafkacontroller.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkacontroller.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "kafkacontroller" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     # should include both kafka and kafkabroker
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkabroker"
-    combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\",\"kafkabroker\",\"kafkabroker.$KUBE_BASEDOMAIN\",\"kafkabroker.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluter.local\",\"kafkabroker\",\"kafkabroker.$KUBE_BASEDOMAIN\",\"*.kafkabroker.$KUBE_BASEDOMAIN\",\"kafkabroker.svc.cluster.local\",\"*.kafkabroker.svc.cluster.local\",\"kafkabroker.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkabroker.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "kafkabroker" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for schemaregistry"
-    combined_san=$(echo "[\"schemaregistry\",\"schemaregistry.$KUBE_BASEDOMAIN\",\"schemaregistry.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"schemaregistry\",\"schemaregistry.$KUBE_BASEDOMAIN\",\"*.schemaregistry.$KUBE_BASEDOMAIN\",\"schemaregistry.svc.cluster.local\",\"schemaregistry.$CFK_NAMESPACE.svc.cluster.local\",\"*.schemaregistry.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "schemaregistry" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for connect"
-    combined_san=$(echo "[\"connect\",\"connect.$KUBE_BASEDOMAIN\",\"connect.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"connect\",\"connect.$KUBE_BASEDOMAIN\",\"*.connect.$KUBE_BASEDOMAIN\",\"connect.svc.cluster.local\",\"connect.$CFK_NAMESPACE.svc.cluster.local\",\"*.connect.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "connect" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkarestproxy"
-    combined_san=$(echo "[\"kafkarestproxy\",\"kafkarestproxy.$KUBE_BASEDOMAIN\",\"kafkarestproxy.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"kafkarestproxy\",\"kafkarestproxy.$KUBE_BASEDOMAIN\",\"*.kafkarestproxy.$KUBE_BASEDOMAIN\",\"kafkarestproxy.svc.cluster.local\",\"kafkarestproxy.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkarestproxy.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "kafkarestproxy" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for replicator"
-    combined_san=$(echo "[\"replicator\",\"replicator.$KUBE_BASEDOMAIN\",\"replicator.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"replicator\",\"replicator.$KUBE_BASEDOMAIN\",\"*.replicator.$KUBE_BASEDOMAIN\",\"replicator.svc.cluster.local\",\"replicator.$CFK_NAMESPACE.svc.cluster.local\",\"*.replicator.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "replicator" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for ksqldb"
-    combined_san=$(echo "[\"ksqldb\",\"ksqldb.$KUBE_BASEDOMAIN\",\"ksqldb.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"ksqldb\",\"ksqldb.$KUBE_BASEDOMAIN\",\"*.ksqldb.$KUBE_BASEDOMAIN\",\"ksqldb.svc.cluster.local\",\"ksqldb.$CFK_NAMESPACE.svc.cluster.local\",\"*.ksqldb.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "ksqldb" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for controlcenter"
-    combined_san=$(echo "[\"controlcenter\",\"controlcenter.$KUBE_BASEDOMAIN\",\"controlcenter.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"controlcenter\",\"controlcenter.$KUBE_BASEDOMAIN\",\"*.controlcenter.$KUBE_BASEDOMAIN\",\"controlcenter.svc.cluster.local\",\"controlcenter.$CFK_NAMESPACE.svc.cluster.local\",\"*.controlcenter.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "controlcenter" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for flink"
-    combined_san=$(echo "[\"flink\",\"flink.$KUBE_BASEDOMAIN\",\"flink.svc.cluster.local\"] $KUBE_FLINK_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"flink\",\"flink.$KUBE_BASEDOMAIN\",\"*.flink.$KUBE_BASEDOMAIN\",\"flink.$FLINK_NAMESPACE.svc.cluster.local\",\"*.flink.$FLINK_NAMESPACE.svc.cluster.local\",\"flink.svc.cluster.local\",\"flink.$CFK_NAMESPACE.svc.cluster.local\",\"*.flink.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "flink" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
 
 
     # Generateing service certs
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for mds"
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
-    combined_san=$(echo "[\"mds\",\"mds.$KUBE_BASEDOMAIN\",\"mds.svc.cluster.local\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"mds\",\"mds.$KUBE_BASEDOMAIN\",\"mds.svc.cluster.local\",\"*.mds.$CFK_NAMESPACE.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.mds.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "mds" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for metricsreporter"
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
-    combined_san=$(echo "[\"metricsreporter\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"metricsreporter\",\"metricsreporter.$KUBE_BASEDOMAIN\",\"metricsreporter.svc.cluster.local\",\"*.metricsreporter.svc.cluster.local\",\"*.metricsreporter.$KUBE_BASEDOMAIN\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"kafka.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "metricsreporter" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for auditlogger"
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
-    combined_san=$(echo "[\"auditlogger\"] $KUBE_CP_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"auditlogger\",\"auditlogger.$KUBE_BASEDOMAIN\",\"auditlogger.svc.cluster.local\",\"*.auditlogger.svc.cluster.local\",\"*.auditlogger.$KUBE_BASEDOMAIN\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"kafka.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "auditlogger" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkacli"
