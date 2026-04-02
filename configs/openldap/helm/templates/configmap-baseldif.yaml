@@ -1,0 +1,902 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-confluentdemo-ldifs
+data:
+  00_base.ldif: |-
+    dn: ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: organizationalUnit
+    ou: Users
+
+    dn: ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: organizationalUnit
+    ou: Groups
+
+  01_kafka_controller.ldif: |-
+    dn: cn=kafkacontroller,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: kafkacontroller
+    sn: service
+    givenName: kafkacontroller
+    cn: kafkacontroller
+    displayName: kafkacontroller service
+    uidNumber: 10001
+    gidNumber: 5000
+    userPassword: kafkacontroller-secret
+    gecos: kafkacontroller
+    loginShell: /bin/bash
+    homeDirectory: /home/kafkacontroller
+  01_kafka_broker.ldif: |-
+    dn: cn=kafkabroker,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: kafkabroker
+    sn: service
+    givenName: kafkabroker
+    cn: kafkabroker
+    displayName: kafkabroker service
+    uidNumber: 10002
+    gidNumber: 5000
+    userPassword: kafkabroker-secret
+    gecos: kafkabroker
+    loginShell: /bin/bash
+    homeDirectory: /home/kafkabroker
+  01_mds.ldif: |-
+    dn: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: mds
+    sn: service
+    givenName: mds
+    cn: mds
+    displayName: mds service
+    uidNumber: 10003
+    gidNumber: 5000
+    userPassword: mds-secret
+    gecos: mds
+    loginShell: /bin/bash
+    homeDirectory: /home/mds
+  01_auditlogger.ldif: |-
+    dn: cn=auditlogger,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: auditlogger
+    sn: service
+    givenName: auditlogger
+    cn: auditlogger
+    displayName: auditlogger service
+    uidNumber: 10004
+    gidNumber: 5000
+    userPassword: auditlogger-secret
+    gecos: auditlogger
+    loginShell: /bin/bash
+    homeDirectory: /home/auditlogger
+  01_metricsreporter.ldif: |-
+    dn: cn=metricsreporter,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: metricsreporter
+    sn: metricsreporter
+    givenName: metricsreporter
+    cn: metricsreporter
+    displayName: metricsreporter service
+    uidNumber: 10005
+    gidNumber: 5000
+    userPassword: metricsreporter-secret
+    gecos: metricsreporter
+    loginShell: /bin/bash
+    homeDirectory: /home/metricsreporter
+  02_zookeeper.ldif: |-
+    dn: cn=zookeeper,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: zookeeper
+    sn: service
+    givenName: zookeeper
+    cn: zookeeper
+    displayName: zookeeper service
+    uidNumber: 10006
+    gidNumber: 5000
+    userPassword: zookeeper-secret
+    gecos: zookeeper
+    loginShell: /bin/bash
+    homeDirectory: /home/zookeeper
+  03_kafkarestclass.ldif: |-
+    dn: cn=kafkarestclass,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: kafkarestclass
+    sn: service
+    givenName: kafkarestclass
+    cn: kafkarestclass
+    displayName: kafkarestclass service
+    uidNumber: 10007
+    gidNumber: 5000
+    userPassword: kafkarestclass-secret
+    gecos: kafkarestclass
+    loginShell: /bin/bash
+    homeDirectory: /home/kafkarestclass
+  03_kafkacli.ldif: |-
+    dn: cn=kafkacli,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: kafkacli
+    sn: service
+    givenName: kafkacli
+    cn: kafkacli
+    displayName: kafkacli service
+    uidNumber: 10008
+    gidNumber: 5000
+    userPassword: kafkaclis-secret
+    gecos: kafkacli
+    loginShell: /bin/bash
+    homeDirectory: /home/kafkacli
+  03_cmf.ldif: |-
+    dn: cn=cmf,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: cmf
+    sn: service
+    givenName: cmf
+    cn: cmf
+    displayName: cmf
+    uidNumber: 10031
+    gidNumber: 5000
+    userPassword: cmf-secret
+    gecos: cmf
+    loginShell: /bin/bash
+    homeDirectory: /home/cmf
+  03_cpc.ldif: |-
+    dn: cn=cpc,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: cpc
+    sn: service
+    givenName: cpc
+    cn: cpc
+    displayName: cpc
+    uidNumber: 10032
+    gidNumber: 5000
+    userPassword: cpc-secret
+    gecos: cpc
+    loginShell: /bin/bash
+    homeDirectory: /home/cpc
+  04_kafkarestproxy.ldif: |-
+    dn: cn=kafkarestproxy,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: kafkarestproxy
+    sn: service
+    givenName: kafkarestproxy
+    cn: kafkarestproxy
+    displayName: kafkarestproxy service
+    uidNumber: 10009
+    gidNumber: 5000
+    userPassword: kafkarestproxy-secret
+    gecos: kafkarestproxy
+    loginShell: /bin/bash
+    homeDirectory: /home/kafkarestproxy
+  04_krpconsumer.ldif: |-
+    dn: cn=krpconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: krpconsumer
+    sn: service
+    givenName: krpconsumer
+    cn: krpconsumer
+    displayName: krpconsumer service
+    uidNumber: 10010
+    gidNumber: 5000
+    userPassword: krpconsumer-secret
+    gecos: krpconsumer
+    loginShell: /bin/bash
+    homeDirectory: /home/krpconsumer
+  04_krpproducer.ldif: |-
+    dn: cn=krpproducer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: krpproducer
+    sn: service
+    givenName: krpproducer
+    cn: krpproducer
+    displayName: krpproducer service
+    uidNumber: 10011
+    gidNumber: 5000
+    userPassword: krpproducer-secret
+    gecos: krpproducer
+    loginShell: /bin/bash
+    homeDirectory: /home/krpproducer
+  04_krpadmin.ldif: |-
+    dn: cn=krpadmin,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: krpadmin
+    sn: service
+    givenName: krpadmin
+    cn: krpadmin
+    displayName: krpadmin service
+    uidNumber: 10012
+    gidNumber: 5000
+    userPassword: krpadmin-secret
+    gecos: krpadmin
+    loginShell: /bin/bash
+    homeDirectory: /home/krpadmin
+  04_krpdeveloper.ldif: |-
+    dn: cn=krpdeveloper,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: krpdeveloper
+    sn: service
+    givenName: krpdeveloper
+    cn: krpdeveloper
+    displayName: krpdeveloper service
+    uidNumber: 10013
+    gidNumber: 5000
+    userPassword: krpdeveloper-secret
+    gecos: krpdeveloper
+    loginShell: /bin/bash
+    homeDirectory: /home/krpdeveloper
+  05_connect.ldif: |-
+    dn: cn=connect,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: connect
+    sn: service
+    givenName: connect
+    cn: connect
+    displayName: connect service
+    uidNumber: 10014
+    gidNumber: 5000
+    userPassword: connect-secret
+    gecos: connect
+    loginShell: /bin/bash
+    homeDirectory: /home/connect
+  05_connectconsumer.ldif: |-
+    dn: cn=connectconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: connectconsumer
+    sn: service
+    givenName: connectconsumer
+    cn: connectconsumer
+    displayName: connectconsumer service
+    uidNumber: 10015
+    gidNumber: 5000
+    userPassword: connectconsumer-secret
+    gecos: connectconsumer
+    loginShell: /bin/bash
+    homeDirectory: /home/connectconsumer
+  05_connectproducer.ldif: |-
+    dn: cn=connectproducer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: connectproducer
+    sn: service
+    givenName: connectproducer
+    cn: connectproducer
+    displayName: connectproducer service
+    uidNumber: 10016
+    gidNumber: 5000
+    userPassword: connectproducer-secret
+    gecos: connectproducer
+    loginShell: /bin/bash
+    homeDirectory: /home/connectproducer
+  05_connectadmin.ldif: |-
+    dn: cn=connectadmin,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: connectadmin
+    sn: service
+    givenName: connectadmin
+    cn: connectadmin
+    displayName: connectadmin service
+    uidNumber: 10017
+    gidNumber: 5000
+    userPassword: connectadmin-secret
+    gecos: connectadmin
+    loginShell: /bin/bash
+    homeDirectory: /home/connectadmin
+  05_replicator.ldif: |-
+    dn: cn=replicator,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: replicator
+    sn: service
+    givenName: replicator
+    cn: replicator
+    displayName: replicator service
+    uidNumber: 10018
+    gidNumber: 5000
+    userPassword: replicator-secret
+    gecos: replicator
+    loginShell: /bin/bash
+    homeDirectory: /home/replicator
+  06_schemaregistry.ldif: |-
+    dn: cn=schemaregistry,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: schemaregistry
+    sn: service
+    givenName: schemaregistry
+    cn: schemaregistry
+    displayName: schemaregistry service
+    uidNumber: 10019
+    gidNumber: 5000
+    userPassword: schemaregistry-secret
+    gecos: schemaregistry
+    loginShell: /bin/bash
+    homeDirectory: /home/schemaregistry
+  06_srconsumer.ldif: |-
+    dn: cn=srconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: srconsumer
+    sn: service
+    givenName: srconsumer
+    cn: srconsumer
+    displayName: srconsumer
+    uidNumber: 10020
+    gidNumber: 5000
+    userPassword: srconsumer-secret
+    gecos: srconsumer
+    loginShell: /bin/bash
+    homeDirectory: /home/srconsumer
+  06_srproducer.ldif: |-
+    dn: cn=srproducer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: srproducer
+    sn: service
+    givenName: srproducer
+    cn: srproducer
+    displayName: srproducer
+    uidNumber: 10021
+    gidNumber: 5000
+    userPassword: srproducer-secret
+    gecos: srproducer
+    loginShell: /bin/bash
+    homeDirectory: /home/srproducer
+  06_sradmin.ldif: |-
+    dn: cn=sradmin,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: sradmin
+    sn: service
+    givenName: sradmin
+    cn: sradmin
+    displayName: sradmin
+    uidNumber: 10022
+    gidNumber: 5000
+    userPassword: sradmin-secret
+    gecos: sradmin
+    loginShell: /bin/bash
+    homeDirectory: /home/sradmin
+  06_srexporter.ldif: |-
+    dn: cn=srexporter,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: srexporter
+    sn: service
+    givenName: srexporter
+    cn: srexporter
+    displayName: srexporter
+    uidNumber: 10023
+    gidNumber: 5000
+    userPassword: srexporter-secret
+    gecos: srexporter
+    loginShell: /bin/bash
+    homeDirectory: /home/srexporter
+  07_ksqldb.ldif: |-
+    dn: cn=ksqldb,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ksqldb
+    sn: service
+    givenName: ksqldb
+    cn: ksqldb
+    displayName: ksqldb service
+    uidNumber: 10024
+    gidNumber: 5000
+    userPassword: ksqldb-secret
+    gecos: ksqldb
+    loginShell: /bin/bash
+    homeDirectory: /home/ksqldb
+  07_ksqlconsumer.ldif: |-
+    dn: cn=ksqlconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ksqlconsumer
+    sn: service
+    givenName: ksqlconsumer
+    cn: ksqlconsumer
+    displayName: ksqlconsumer service
+    uidNumber: 10025
+    gidNumber: 5000
+    userPassword: ksqlconsumer-secret
+    gecos: ksqlconsumer
+    loginShell: /bin/bash
+    homeDirectory: /home/ksqlconsumer
+  07_ksqlproducer.ldif: |-
+    dn: cn=ksqlproducer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ksqlproducer
+    sn: service
+    givenName: ksqlproducer
+    cn: ksqlproducer
+    displayName: ksqlproducer service
+    uidNumber: 10026
+    gidNumber: 5000
+    userPassword: ksqlproducer-secret
+    gecos: ksqlproducer
+    loginShell: /bin/bash
+    homeDirectory: /home/ksqlproducer
+  07_ksqladmin.ldif: |-
+    dn: cn=ksqladmin,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ksqladmin
+    sn: service
+    givenName: ksqladmin
+    cn: ksqladmin
+    displayName: ksqladmin service
+    uidNumber: 10027
+    gidNumber: 5000
+    userPassword: ksqladmin-secret
+    gecos: ksqladmin
+    loginShell: /bin/bash
+    homeDirectory: /home/ksqladmin
+  07_ksqlcli.ldif: |-
+    dn: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ksqlcli
+    sn: service
+    givenName: ksqlcli
+    cn: ksqlcli
+    displayName: ksqlcli service
+    uidNumber: 10028
+    gidNumber: 5000
+    userPassword: ksqlcli-secret
+    gecos: ksqlcli
+    loginShell: /bin/bash
+    homeDirectory: /home/ksqlcli
+  07_ksqldeveloper.ldif: |-
+    dn: cn=ksqldeveloper,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ksqldeveloper
+    sn: service
+    givenName: ksqldeveloper
+    cn: ksqldeveloper
+    displayName: ksqldeveloper service
+    uidNumber: 10029
+    gidNumber: 5000
+    userPassword: ksqldeveloper-secret
+    gecos: ksqldeveloper
+    loginShell: /bin/bash
+    homeDirectory: /home/ksqldeveloper
+  08_controlenter.ldif: |-
+    dn: cn=controlcenter,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: controlcenter
+    sn: service
+    givenName: controlcenter
+    cn: controlcenter
+    displayName: controlcenter service
+    uidNumber: 10030
+    gidNumber: 5000
+    userPassword: controlcenter-secret
+    gecos: controlcenter
+    loginShell: /bin/bash
+    homeDirectory: /home/controlcenter
+  09_flink.ldif: |-
+    dn: cn=flink,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: flink
+    sn: service
+    givenName: flink
+    cn: flink
+    displayName: flink service
+    uidNumber: 10033
+    gidNumber: 5000
+    userPassword: flink-secret
+    gecos: flink
+    loginShell: /bin/bash
+    homeDirectory: /home/flink
+  09_flinkconsumer.ldif: |-
+    dn: cn=flinkconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: flinkconsumer
+    sn: service
+    givenName: flinkconsumer
+    cn: flinkconsumer
+    displayName: flinkconsumer service
+    uidNumber: 10034
+    gidNumber: 5000
+    userPassword: flinkconsumer-secret
+    gecos: flinkconsumer
+    loginShell: /bin/bash
+    homeDirectory: /home/flinkconsumer
+  09_flinkproducer.ldif: |-
+    dn: cn=flinkproducer,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: flinkproducer
+    sn: service
+    givenName: flinkproducer
+    cn: flinkproducer
+    displayName: flinkproducer service
+    uidNumber: 10035
+    gidNumber: 5000
+    userPassword: flinkproducer-secret
+    gecos: flinkproducer
+    loginShell: /bin/bash
+    homeDirectory: /home/flinkproducer
+  09_flinkadmin.ldif: |-
+    dn: cn=flinkadmin,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: flinkadmin
+    sn: service
+    givenName: flinkadmin
+    cn: flinkadmin
+    displayName: flinkadmin service
+    uidNumber: 10036
+    gidNumber: 5000
+    userPassword: flinkadmin-secret
+    gecos: flinkadmin
+    loginShell: /bin/bash
+    homeDirectory: /home/flinkadmin
+
+  10_servicegroup.ldif: |-
+    dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: service
+    gidNumber: 5000
+  10_developergroup.ldif: |-
+    dn: cn=developers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: developers
+    gidNumber: 5001
+  10_c3group.ldif: |-
+    dn: cn=c3users,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: c3users
+    gidNumber: 5002
+  10_krpusers.ldif: |-
+    dn: cn=krpusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: krpusers
+    gidNumber: 5002
+  10_connectusers.ldif: |-
+    dn: cn=connectusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: connectusers
+    gidNumber: 5003
+  10_srusers.ldif: |-
+    dn: cn=srusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: srusers
+    gidNumber: 5004
+  10_ksqlusers.ldif: |-
+    dn: cn=ksqlusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: ksqlusers
+    gidNumber: 5005
+  10_readonlyusers.ldif: |-
+    dn: cn=readonlyusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: readonlyusers
+    gidNumber: 5006
+  10_adminusers.ldif: |-
+    dn: cn=adminusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: adminusers
+    gidNumber: 5007
+  10_flinkusers.ldif: |-
+    dn: cn=flinkusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: flinkusers
+    gidNumber: 5008
+
+  777_superuser.ldif: |-
+    dn: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: superuser
+    sn: superuser
+    givenName: superuser
+    cn: superuser
+    displayName: super user
+    uidNumber: 1000
+    gidNumber: 5002
+    userPassword: superuser-secret
+    gecos: superuser
+    loginShell: /bin/bash
+    homeDirectory: /home/superuser
+  777_baduser.ldif: |-
+    dn: cn=baduser,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: baduser
+    sn: baduser
+    givenName: baduser
+    cn: baduser
+    displayName: bad user
+    uidNumber: 11000
+    gidNumber: 5002
+    userPassword: baduser-secret
+    gecos: baduser
+    loginShell: /bin/bash
+    homeDirectory: /home/baduser
+  777_barnierubble.ldif: |-
+    dn: cn=barnie rubble,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: barnierubble
+    sn: rubble
+    givenName: barnie
+    cn: barnierubble
+    displayName: barnie rubble
+    uidNumber: 11001
+    gidNumber: 5002
+    userPassword: barnierubble-secret
+    gecos: barnierubble
+    loginShell: /bin/bash
+    homeDirectory: /home/barnierubble
+  777_charliesheen.ldif: |-
+    dn: cn=charlie sheen,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: charliesheen
+    sn: sheen
+    givenName: charlie
+    cn: charliesheen
+    displayName: charlie sheen
+    uidNumber: 11002
+    gidNumber: 5002
+    userPassword: charliesheen-secret
+    gecos: charliesheen
+    loginShell: /bin/bash
+    homeDirectory: /home/charliesheen
+  777_donnatroy.ldif: |-
+    dn: cn=donna troy,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: donnatroy
+    sn: troy
+    givenName: donna
+    cn: donnatroy
+    displayName: donna troy
+    uidNumber: 11003
+    gidNumber: 5002
+    userPassword: donnatroy-secret
+    gecos: donnatroy
+    loginShell: /bin/bash
+    homeDirectory: /home/donnatroy
+  777_ororomunroe.ldif: |-
+    dn: cn=ororo munroe,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: ororomunroe
+    sn: munroe
+    givenName: ororo
+    cn: ororomunroe
+    displayName: ororo munroe
+    uidNumber: 11004
+    gidNumber: 5002
+    userPassword: ororomunroe-secret
+    gecos: ororomunroe
+    loginShell: /bin/bash
+    homeDirectory: /home/ororomunroe
+  777_sambridges.ldif: |-
+    dn: cn=sam bridges,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: sambridges
+    sn: bridges
+    givenName: sam
+    cn: sambridges
+    displayName: sam bridges
+    uidNumber: 11005
+    gidNumber: 5002
+    userPassword: sambridges-secret
+    gecos: sambridges
+    loginShell: /bin/bash
+    homeDirectory: /home/sambridges
+  777_alicelookingglass.ldif: |-
+    dn: cn=alice lookingglass,ou=users,{{ .Values.openldap.base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: alicelookingglass
+    sn: lookingglass
+    givenName: alice
+    cn: alicelookingglass
+    displayName: alicelookingglass
+    uidNumber: 11006
+    gidNumber: 5002
+    userPassword: alicelookingglass-secret
+    gecos: alicelookingglass
+    loginShell: /bin/bash
+    homeDirectory: /home/alicelookingglass
+
+  999_addgroup.ldif: |-
+    dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=zookeeper,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkacontroller,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkabroker,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=metricsreporter,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=auditlogger,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkarestclass,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkacli,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkarestproxy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpdeveloper,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connect,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=replicator,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=schemaregistry,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sradmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srexporter,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldb,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqladmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldeveloper,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=controlcenter,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=cpc,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=cmf,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flink,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkadmin,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=developers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=kafkacli,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpdeveloper,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqladmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldeveloper,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=c3users,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=barnie rubble,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=charlie sheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=donna troy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ororo munroe,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sam bridges,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=alice lookingglass,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=devuser,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=krpusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=kafkarestproxy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpdeveloper,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=connectusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=connect,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=replicator,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=srusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=schemaregistry,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sradmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srexporter,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=ksqlusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=ksqldb,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqladmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldeveloper,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=readonlyusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=barnie rubble,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=charlie sheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=devuser,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=adminusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=flinkusers,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=flink,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkadmin,ou=users,{{ .Values.openldap.base_dn }}

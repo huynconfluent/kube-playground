@@ -1,0 +1,72 @@
+# openldap
+
+OpenLDAP deployment, pre-populated with the following accounts for testing
+
+## Service Accounts Credentials
+
+| username        | password               |
+| --------------- | ---------------------- |
+| zookeeper       | zookeeper-secret       |
+| kafkacontroller | kafkacontroller-secret |
+| kafkabroker     | kafkabroker-secret     |
+| mds             | mds-secret             |
+| metricsreporter | metricsreporter-secret |
+| auditlogger     | auditlogger-secret     |
+| kafkarestclass  | kafkarestclass-secret  |
+| kafkacli        | kafkacli-secret        |
+| kafkarestproxy  | kafkarestproxy-secret  |
+| krpconsumer     | krpconsumer-secret     |
+| krpproducer     | krpproducer-secret     |
+| krpadmin        | krpadmin-secret        |
+| krpdeveloper    | krpdeveloper-secret    |
+| connect         | connect-secret         |
+| connectconsumer | connectconsumer-secret |
+| connectproducer | connectproducer-secret |
+| connectadmin    | connectadmin-secret    |
+| replicator      | replicator-secret      |
+| schemaregistry  | schemaregistry-secret  |
+| srconsumer      | srconsumer-secret      |
+| srproducer      | srproducer-secret      |
+| sradmin         | sradmin-secret         |
+| srexporter      | srexporter-secret      |
+| ksqldb          | ksqldb-secret          |
+| ksqlcli         | ksqlcli-secret         |
+| ksqlconsumer    | ksqlconsumer-secret    |
+| ksqlproducer    | ksqlproducer-secret    |
+| ksqladmin       | ksqladmin-secret       |
+| ksqldeveloper   | ksqldeveloper-secret   |
+| controlcenter   | controlcenter-secret   |
+| flink           | flink-secret           |
+| flinkconsumer   | flinkconsumer-secret   |
+| flinkproducer   | flinkproducer-secret   |
+| flinkadmin      | flinkadmin-secret      |
+| cmf             | cmf-secret             |
+| cpc             | cpc-secret             |
+
+## User Account Credentials
+
+| username          | password                 |
+| ----------------- | ------------------------ |
+| superuser         | superuser-secret         |
+| baduser           | baduser-secret           |
+| barnierubble      | barnierubble-secret      |
+| charliesheen      | charliesheen-secret      |
+| donnatroy         | donnatroy-secret         |
+| ororomunroe       | ororomunroe-secret       |
+| sambridges        | sambridges-secret        |
+| alicelookingglass | alicelookingglass-secret |
+
+## Ldap Groups
+
+| groups        |
+| ------------- |
+| service       |
+| developers    |
+| c3users       |
+| readonlyusers |
+| krpusers      |
+| connectusers  |
+| srusers       |
+| ksqlusers     |
+| adminusers    |
+| flinkusers    |

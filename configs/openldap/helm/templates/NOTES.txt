@@ -1,0 +1,40 @@
+OpenLdap Helm charts based on the osixia/openldap
+
+{{- if .Values.tls.enabled }}
+TLS Address: ldaps://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:636
+{{- end }}
+Address: ldap://{{ .Values.name}}.{{ .Release.Namespace }}.svc.cluster.local:389
+
+For configuration reference see https://docs.confluent.io/platform/current/security/authorization/ldap/ldap-config-ref.html
+# CFK 3.0+
+spec:
+  .....
+  services:
+    mds:
+      provider:
+        type: ldap
+        ldap:
+          address: {{- if .Values.tls.enabled }}ldaps://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:636{{- else }}ldap://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:389{{- end }}
+          authentication:
+            type: simple
+            simple:
+              secretRef: ldap-bind-creds
+          {{- if .Values.tls.enabled }}
+          tls:
+            enabled: true
+          {{- end }}
+          configuration:
+            groupMemberAttribute: memberuid
+            groupMemberAttributePattern: CN=(.*),.*
+            groupNameAttribute: cn
+            groupObjectClass: posixGroup
+            groupSearchBase: ou=groups,{{ .Values.openldap.base_dn }}
+            groupSearchScope: 2
+            userNameAttribute: cn
+            userObjectClass: posixAccount
+            userSearchBase: ou=users,{{ .Values.openldap.base_dn }}
+            userSearchScope: 2
+
+Bind user
+User: cn=admin,{{ .Values.openldap.base_dn }}
+Password: {{ .Values.env.LDAP_ADMIN_PASSWORD }}
