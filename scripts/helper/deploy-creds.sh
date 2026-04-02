@@ -41,7 +41,7 @@ source $BASE_DIR/scripts/system/header.sh -t "Auto Generate Credential Secrets"
 
 # do the actual stuff
 # call SASL/OAUTHBEARER
-eval $BASE_DIR/scripts/creds/create-sasl-oauth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-oauth-users.json" -m "/mnt/sslcerts/keypair/mds-keypair-public.pem" -t "/mnt/sslcerts/SECRET_NAME/truststore.p12" -p "topsecret" -c
+eval $BASE_DIR/scripts/creds/create-sasl-oauth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-oauth-users.json" -m "/mnt/sslcerts/keypair/mds-keypair-public.pem" -t "/mnt/sslcerts/truststore.p12" -p "mystorepassword" -c
 # call SASL/PLAIN
 eval $BASE_DIR/scripts/creds/create-sasl-plain-auth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-plain-users.json" -i "kafkabroker:kafkabroker-secret" -c
 # call basic auth
