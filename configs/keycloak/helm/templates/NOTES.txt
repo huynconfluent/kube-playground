@@ -1,0 +1,55 @@
+Keycloak Helm Charts based on keycloak's container image
+
+http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{- if .Values.tls.enabled }}{{ .Values.ports.https }}{{- else }}{{ .Values.ports.http }}{{- end }}
+
+# Realm information can be obtained at
+http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{- if .Values.tls.enabled }}{{ .Values.ports.https }}{{- else }}{{ .Values.ports.http }}{{- end }}/realms/confluentdemo/.well-known/openid-configuration
+
+Test Account Login: https://keycloak.confluentdemo.io/realms/confluentdemo/account/#
+JWKS Endpoint: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{- if .Values.tls.enabled }}{{ .Values.ports.https }}{{- else }}{{ .Values.ports.http }}{{- end }}/realms/confluentdemo/protocol/openid-connect/certs
+Token Endpoint: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{- if .Values.tls.enabled }}{{ .Values.ports.https }}{{- else }}{{ .Values.ports.http }}{{- end }}/realms/confluentdemo/protocol/openid-connect/token
+Audience: "account"
+Sub Claim Name: "azp"
+
+## Admin Account
+username: {{ .Values.admin.username }}
+password: {{ .Values.admin.password }}
+
+# For Servers
+Remember to add the following jvm option in AK 4.0+/CP 8.0+
+-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{- if .Values.tls.enabled }}{{ .Values.ports.https }}{{- else }}{{ .Values.ports.http }}{{- end }}/realms/confluentdemo/protocol/openid-connect/certs
+
+
+# Kafka CR
+services:
+  provider:
+    oauth:
+      configurations:
+        expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
+        jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+        tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
+        # this will allow for names such as kafkabroker vs 613d9e03-04f6-4fcc-ae2a-94a887632872
+        subClaimName: "azp"
+    sso:
+      enabled: true
+      clientCredentials:
+        secretRef: oidc-controlcenter
+      configurations:
+        issuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
+        jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+        authorizeBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/auth
+        tokenBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
+        subClaimName: "azp"
+        # set to disable refresh token interval based on IDP and base it on MDS instead
+        refreshToken: false
+dependencies:
+  kafkaRest:
+    authentication:
+      type: oauth
+      ...
+      oauthSettings:
+        tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
+        expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
+        jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+        subClaimName: "azp"
+

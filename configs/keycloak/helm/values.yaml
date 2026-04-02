@@ -1,0 +1,27 @@
+name: keycloak
+keycloak:
+  image: quay.io/keycloak/keycloak:26.2.4
+
+ports:
+  http: 8080
+  https: 8443
+  healthcheck: 9000
+
+http:
+  enabled: true
+
+tls:
+  enabled: true
+  protocols: "TLSv1.3,TLSv1.2"
+  fullchain: |-
+  privkey: |-
+  cacerts: |-
+
+healthcheck:
+  enabled: true
+
+loglevel: "INFO"
+
+admin:
+  username: admin
+  password: "admin-secret"

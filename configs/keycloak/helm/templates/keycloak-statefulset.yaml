@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: keycloak
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: keycloak
+  serviceName: "keycloak"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        args:
+        - "start-dev"
+        - --features=token-exchange
+        - --import-realm
+        - --http-enabled={{ .Values.http.enabled }}
+        - --http-port={{ .Values.ports.http }}
+        - --https-port={{ .Values.ports.https }}
+        - --hostname-strict=false
+        - --cache=ispn
+        - --cache-stack=kubernetes
+        - --proxy-headers=xforwarded
+        {{- if .Values.healthcheck.enabled }}
+        - --health-enabled={{ .Values.healthcheck.enabled }}
+        {{- end }}
+        {{- if .Values.tls.enabled }}
+        - --https-port={{ .Values.ports.https }}
+        - --https-certificate-file=/mnt/ssl/fullchain.pem
+        - --https-certificate-key-file=/mnt/ssl/privkey.pem
+        - --truststore-paths=/mnt/ssl/cacerts.pem
+        - --https-protocols={{ .Values.tls.protocols }}
+        {{- end }}
+        {{- if .Values.loglevel }}
+        - --log-level={{ .Values.loglevel }}
+        {{- end }}
+        imagePullPolicy: IfNotPresent
+        image: {{ .Values.keycloak.image }}
+        ports:
+        - containerPort: {{ .Values.ports.http }}
+          name: http
+        - containerPort: {{ .Values.ports.https }}
+          name: https
+        {{- if .Values.healthcheck.enabled }}
+        - containerPort: {{ .Values.ports.healthcheck }}
+          name: healthcheck
+        {{- end }}
+        env:
+        - name: KC_BOOTSTRAP_ADMIN_USERNAME
+          value: {{ .Values.admin.username }}
+        - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+          value: {{ .Values.admin.password }}
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: JAVA_OPTS_APPEND
+          value: '-Djgroups.dns.query="keycloak-discovery" -Djgroups.bind.address=$(POD_IP)'
+        startupProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            scheme: HTTPS
+            path: /health/started
+            port: {{ .Values.ports.healthcheck }}
+        readinessProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            scheme: HTTPS
+            path: /health/ready
+            port: {{ .Values.ports.healthcheck }}
+        livenessProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            scheme: HTTPS
+            path: /health/live
+            port: {{ .Values.ports.healthcheck }}
+        volumeMounts:
+        {{- if .Values.tls.enabled }}
+        - mountPath: /mnt/ssl
+          name: ssl
+        {{- end }}
+        - mountPath: /opt/keycloak/data/import
+          name: confluentdemo-realm
+      volumes:
+      {{- if .Values.tls.enabled }}
+      - name: ssl
+        secret:
+          defaultMode: 420
+          secretName: {{ .Values.name }}-sslcerts
+      {{- end }}
+      - name: confluentdemo-realm
+        configMap:
+          defaultMode: 420
+          name: confluentdemo-realm
+      - name: keycloak-data
