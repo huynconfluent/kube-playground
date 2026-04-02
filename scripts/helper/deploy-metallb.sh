@@ -4,8 +4,9 @@
 #   ./deploy-metallb.sh
 
 BASE_DIR=$(pwd)
-REQUIRED_PKG="kubectl"
+REQUIRED_PKG="kubectl curl"
 METALLB_MANIFEST="https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml"
+GEN_DIR="$BASE_DIR/generated/metallb"
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -22,7 +23,19 @@ done
 #printf "\n\n=======Installing MetalLB========\n"
 source $BASE_DIR/scripts/system/header.sh -t "Installing MetalLB"
 
-kubectl apply -f "${METALLB_MANIFEST}"
+# Check for local asset before pulling
+if [ ! -f "$GEN_DIR/metallb-native.yaml" ]; then
+    mkdir -p $GEN_DIR
+    curl --retry 3 --retry-delay 5 -o $GEN_DIR/metallb-native.yaml -L -O $METALLB_MANIFEST 
+
+    # error handling
+    if [ ! -f "$GEN_DIR/metallb-native.yaml" ]; then
+       printf "Failed to download metallb manifest...\n"
+       exit 1
+    fi
+fi
+
+kubectl apply -f "${GEN_DIR}/metallb-native.yaml"
 
 # wait for metalLB to be ready
 timeout=$OVERALL_TIMEOUT
