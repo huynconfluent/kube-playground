@@ -28,8 +28,6 @@ services:
         expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
         jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
         tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
-        # this will allow for names such as kafkabroker vs 613d9e03-04f6-4fcc-ae2a-94a887632872
-        subClaimName: "azp"
     sso:
       enabled: true
       clientCredentials:
@@ -39,7 +37,6 @@ services:
         jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
         authorizeBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/auth
         tokenBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
-        subClaimName: "azp"
         # set to disable refresh token interval based on IDP and base it on MDS instead
         refreshToken: false
 dependencies:
@@ -51,5 +48,4 @@ dependencies:
         tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
         expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
         jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
-        subClaimName: "azp"
 
