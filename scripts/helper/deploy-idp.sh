@@ -51,7 +51,6 @@ if [ -z "$HELM_VALUES_FILE" ]; then
 fi
 
 source $BASE_DIR/scripts/system/header.sh -t "Deploying IDP (Keycloak)"
-#printf "\n=========Deploying IDP==========="
 
 # check that keycloak namespace hasn't been created yet
 if [ $(kubectl get ns | grep -ic $IDP_NAMESPACE) -eq 0 ]; then
@@ -128,5 +127,3 @@ if [ $(kubectl -n $IDP_NAMESPACE get sts 2>&1 | grep -ic "${KUBE_IDP_HELM_NAME}"
 else
     printf "\n%s is already deployed in %s namespace, skipping deployment....\n" "$KUBE_IDP_HELM_NAME" "$IDP_NAMESPACE"
 fi
-
-# Todo: generate a user creds for cfk
