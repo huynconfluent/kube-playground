@@ -1,0 +1,22 @@
+name: ldap
+image: osixia/openldap:1.5.0
+tls:
+  enabled: true
+  fullchain: |-
+  privkey: |-
+  cacerts: |-
+
+openldap:
+  base_dn: "dc=confluentdemo,dc=io"
+
+env:
+  LDAP_ORGANISATION: "Confluent Demo"
+  LDAP_DOMAIN: "confluentdemo.io"
+  LDAP_ADMIN_PASSWORD: "ldapadmin"
+  LDAP_CONFIG_PASSWORD: "ldapadmin-topsecret!"
+  LDAP_READONLY_USER: "true"
+  LDAP_READONLY_USER_USERNAME: "ldapreadonly"
+  LDAP_READONLY_USER_PASSWORD: "ldapreadonly-topsecret!"
+  LDAP_BASE_DN: "dc=confluentdemo,dc=io"
+
+ldifs: |-
