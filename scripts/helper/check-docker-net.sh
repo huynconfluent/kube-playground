@@ -1,9 +1,11 @@
 #!/bin/sh
 
+BASE_DIR=$(pwd)
 # check for our network in netstat
 checkForRoute="netstat -rnf inet | grep 172.69"
 
-printf "\nChecking for docker-mac-net-connect route...\n"
+source $BASE_DIR/scripts/system/header.sh -t "docker-mac-net-connect checker"
+printf "Checking for docker-mac-net-connect route...\n"
 
 if [ "$(eval $checkForRoute | wc -l)" -ge 1 ]; then
     printf "\nRoute Exists!\n"
