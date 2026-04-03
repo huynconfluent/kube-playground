@@ -2523,8 +2523,24 @@ data:
                             "claim.name": "sub",
                             "jsonType.label": "String"
                         }
-                    },
-                    {
+                    }, {
+                        "id" : "70e33460-117f-443c-ad45-e6eb83b204c2",
+                        "name" : "Override Sub with Client ID",
+                        "protocol" : "openid-connect",
+                        "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                        "consentRequired" : false,
+                        "config" : {
+                          "introspection.token.claim" : "true",
+                          "claim.value" : "controlcenter",
+                          "userinfo.token.claim" : "true",
+                          "id.token.claim" : "true",
+                          "lightweight.claim" : "false",
+                          "access.token.claim" : "true",
+                          "claim.name" : "sub",
+                          "jsonType.label" : "String",
+                          "access.tokenResponse.claim" : "false"
+                        }
+                      }, {
                         "id": "e61ae36e-83ad-474a-9290-8e58f24b94f0",
                         "name": "Client IP Address",
                         "protocol": "openid-connect",
@@ -2769,6 +2785,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "813fe44d-57cb-4c0c-952b-0b8d772b99dd",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "connect",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -2832,6 +2866,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "c480cb0e-1b1f-447b-891f-a12607c5d395",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "connectadmin",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -2895,6 +2947,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "7ff7169a-ea95-4c78-9a91-5e903bf6694b",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "connectconsumer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -2958,6 +3028,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "7ae304c1-8c5d-476b-a84b-4d47638b9111",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "connectproducer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3021,6 +3109,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "2a2646ad-bcad-47a8-aa7c-892a8419df65",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "cpc",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3084,6 +3190,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "e8e0f730-c595-4468-b2d8-4a59e4987fc0",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "flink",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3147,6 +3271,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "1fec072f-0576-4c90-8b9d-01a6c4d4aed7",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "flinkadmin",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3210,6 +3352,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                "id" : "53ef6d5f-9ac8-48cd-ad3b-d944d4f94326",
+                "name" : "Override Sub with Client ID",
+                "protocol" : "openid-connect",
+                "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                "consentRequired" : false,
+                "config" : {
+                  "introspection.token.claim" : "true",
+                  "claim.value" : "flinkconsumer",
+                  "userinfo.token.claim" : "true",
+                  "id.token.claim" : "true",
+                  "lightweight.claim" : "false",
+                  "access.token.claim" : "true",
+                  "claim.name" : "sub",
+                  "jsonType.label" : "String",
+                  "access.tokenResponse.claim" : "false"
+                }
+              } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3273,6 +3433,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "fb16ab89-62e8-414c-8be6-aed242a80d3f",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "flinkproducer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3336,6 +3514,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "53878122-2486-4c9b-acf4-d79b93a71bfe",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "kafkabroker",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3399,6 +3595,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "c05bea5c-24bd-4f5e-8ee7-9ba25077b6df",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "kafkacli",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3464,6 +3678,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "8c857248-2186-48d8-90a4-471532e133a8",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "kafkacontroller",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3544,17 +3776,23 @@ data:
                     "userinfo.token.claim" : "true"
                   }
                   }, {
-                    "id" : "119ca4b2-f4ae-45f0-a8d9-28c333859699",
-                    "name" : "sub",
+                    "id" : "66933367-ecfd-4618-8447-3ba3fd0f153b",
+                    "name" : "Override Sub with Client ID",
                     "protocol" : "openid-connect",
-                    "protocolMapper" : "oidc-sub-mapper",
+                    "protocolMapper" : "oidc-hardcoded-claim-mapper",
                     "consentRequired" : false,
                     "config" : {
-                      "lightweight.claim" : "false",
                       "introspection.token.claim" : "true",
-                      "access.token.claim" : "true"
+                      "claim.value" : "kafkarestclass",
+                      "userinfo.token.claim" : "true",
+                      "id.token.claim" : "true",
+                      "lightweight.claim" : "false",
+                      "access.token.claim" : "true",
+                      "claim.name" : "sub",
+                      "jsonType.label" : "String",
+                      "access.tokenResponse.claim" : "false"
                     }
-                } ],
+                  } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3688,6 +3926,23 @@ data:
                             "access.token.claim": "true",
                             "claim.name": "groups"
                         }
+                    }, {
+                      "id" : "1d78a408-8b62-49f3-a457-6806267260c5",
+                      "name" : "Override Sub with Client ID",
+                      "protocol" : "openid-connect",
+                      "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                      "consentRequired" : false,
+                      "config" : {
+                        "introspection.token.claim" : "true",
+                        "claim.value" : "kafkarestproxy",
+                        "userinfo.token.claim" : "true",
+                        "id.token.claim" : "true",
+                        "lightweight.claim" : "false",
+                        "access.token.claim" : "true",
+                        "claim.name" : "sub",
+                        "jsonType.label" : "String",
+                        "access.tokenResponse.claim" : "false"
+                      }
                     }
                 ],
                 "defaultClientScopes":
@@ -3752,6 +4007,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "8f29b71b-1410-4d4b-aaa1-60d0a77f0d4a",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "krpadmin",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3815,6 +4088,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "41b38a71-1b92-4338-9c6b-ea0c82a9d2e9",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "krpconsumer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3878,6 +4169,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "63d7e201-5e89-4616-9d99-d542a2ae3722",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "krpdeveloper",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -3941,6 +4250,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "06857002-30f7-4bc7-a156-18768d095618",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "krpproducer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4004,6 +4331,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                "id" : "f9aff07d-fc72-4ebf-b5d2-50deac69ae42",
+                "name" : "Override Sub with Client ID",
+                "protocol" : "openid-connect",
+                "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                "consentRequired" : false,
+                "config" : {
+                  "introspection.token.claim" : "true",
+                  "claim.value" : "ksqladmin",
+                  "userinfo.token.claim" : "true",
+                  "id.token.claim" : "true",
+                  "lightweight.claim" : "false",
+                  "access.token.claim" : "true",
+                  "claim.name" : "sub",
+                  "jsonType.label" : "String",
+                  "access.tokenResponse.claim" : "false"
+                }
+              } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4067,6 +4412,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "57671205-b7d6-4939-b100-dac1e548a3be",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "ksqlcli",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4130,6 +4493,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "f1e1bbc4-95e5-4e9b-a25a-6514b7ca6f6f",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "ksqlconsumer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4193,6 +4574,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "5680aba2-e130-4aa9-8c1c-c02a438893c1",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "ksqldb",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4256,6 +4655,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "2bfb55ae-1389-4170-8424-bd3ed8e99ea0",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "ksqldeveloper",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4319,6 +4736,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "27713667-a2b9-45f2-99fe-9eaadce0c875",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "ksqlproducer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4384,6 +4819,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "e2f5a933-1c48-4d54-8eb0-f848af018236",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "mds",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4447,6 +4900,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "b427ed35-2bc4-45fa-a388-3b8ae28fa168",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "metricsreporter",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4557,6 +5028,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "6a07d13a-bbdf-430f-ba8e-540ac5c4f33c",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "replicator",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4620,6 +5109,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "dbe1df57-064f-4eb1-b2a2-a03fe2e535ca",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "schemaregistry",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4683,6 +5190,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "1ae54788-e60d-42b7-ac69-4cdd947844be",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "sradmin",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4746,6 +5271,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "3ba2948d-2b2e-40d0-bdb3-06e7b0c1b050",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "srconsumer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4809,6 +5352,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "ce329ae4-5e08-4831-ac2b-eb0876e1ac7a",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "srexporter",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4872,6 +5433,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "3771218f-75a6-48de-975d-450449317de9",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "srproducer",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
@@ -4935,6 +5514,24 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "c937036b-ac37-4b73-9e4b-a37d83ab70cd",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "zookeeper",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
