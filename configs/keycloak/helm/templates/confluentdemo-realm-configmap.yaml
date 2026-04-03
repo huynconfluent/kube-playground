@@ -2371,7 +2371,9 @@ data:
                 "alwaysDisplayInConsole": false,
                 "clientAuthenticatorType": "client-secret",
                 "redirectUris":
-                [],
+                [
+                  "*"
+                ],
                 "webOrigins":
                 [],
                 "notBefore": 0,
@@ -2471,20 +2473,7 @@ data:
                 "secret": "controlcenter-secret",
                 "redirectUris":
                 [
-                    "https://controlcenter.confluentdemo.io/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://controlcenter/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://controlcenter.confluent.svc.cluster.local:9021/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://controlcenter.confluent.svc.cluster.local/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "https://controlcenter/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://controlcenter.confluentdemo.io/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://localhost:9021/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "https://controlcenter.confluent.svc.cluster.local/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "https://controlcenter.confluent.svc.cluster.local:9021/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "https://controlcenter:9021/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "https://localhost:9022/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "https://controlcenter.confluentdemo.io:9021/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://controlcenter:9021/api/metadata/security/1.0/oidc/authorization-code/callback",
-                    "http://controlcenter.confluentdemo.io:9021/api/metadata/security/1.0/oidc/authorization-code/callback"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -2620,7 +2609,7 @@ data:
                 "secret": "auditlogger-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -2685,7 +2674,7 @@ data:
                 "secret": "cmf-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -2750,7 +2739,7 @@ data:
                 "secret": "connect-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -2813,7 +2802,7 @@ data:
                 "secret": "connectadmin-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -2876,7 +2865,7 @@ data:
                 "secret": "connectconsumer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -2939,7 +2928,7 @@ data:
                 "secret": "connectproducer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3002,7 +2991,7 @@ data:
                 "secret": "cpc-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3065,7 +3054,7 @@ data:
                 "secret": "flink-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3128,7 +3117,7 @@ data:
                 "secret": "flinkadmin-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3191,7 +3180,7 @@ data:
                 "secret": "flinkconsumer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3254,7 +3243,7 @@ data:
                 "secret": "flinkproducer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3317,7 +3306,7 @@ data:
                 "secret": "kafkabroker-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3380,7 +3369,7 @@ data:
                 "secret": "kafkacli-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3443,7 +3432,7 @@ data:
                 "secret": "kafkacontroller-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3508,7 +3497,7 @@ data:
                 "secret": "kafkarestclass-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3599,7 +3588,7 @@ data:
                 "secret": "kafkarestproxy-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3733,7 +3722,7 @@ data:
                 "secret": "krpadmin-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3796,7 +3785,7 @@ data:
                 "secret": "krpconsumer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3859,7 +3848,7 @@ data:
                 "secret": "krpdeveloper-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3922,7 +3911,7 @@ data:
                 "secret": "krpproducer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -3985,7 +3974,7 @@ data:
                 "secret": "ksqladmin-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4048,7 +4037,7 @@ data:
                 "secret": "ksqlcli-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4111,7 +4100,7 @@ data:
                 "secret": "ksqlconsumer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4174,7 +4163,7 @@ data:
                 "secret": "ksqldb-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4237,7 +4226,7 @@ data:
                 "secret": "ksqldeveloper-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4300,7 +4289,7 @@ data:
                 "secret": "ksqlproducer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4363,7 +4352,7 @@ data:
                 "secret": "mds-secret",
                 "redirectUris":
                 [
-                    "https://controlcenter.confluentdemo.io/api/metadata/security/1.0/oidc/authorization-code/callback"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4428,7 +4417,7 @@ data:
                 "secret": "64TrLwKq0XKXQkooSf05piNB8fCzgq8j",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4538,7 +4527,7 @@ data:
                 "secret": "replicator-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4601,7 +4590,7 @@ data:
                 "secret": "schemaregistry-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4664,7 +4653,7 @@ data:
                 "secret": "sradmin-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4727,7 +4716,7 @@ data:
                 "secret": "srconsumer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4790,7 +4779,7 @@ data:
                 "secret": "srexporter-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4853,7 +4842,7 @@ data:
                 "secret": "srproducer-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
@@ -4916,7 +4905,7 @@ data:
                 "secret": "zookeeper-secret",
                 "redirectUris":
                 [
-                    "/*"
+                    "*"
                 ],
                 "webOrigins":
                 [
