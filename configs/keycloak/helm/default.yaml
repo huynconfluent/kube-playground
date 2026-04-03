@@ -1,0 +1,6 @@
+ports:
+  http: 80
+  https: 443
+
+tls:
+  enabled: false
