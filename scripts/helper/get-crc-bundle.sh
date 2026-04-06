@@ -77,6 +77,7 @@ if [ ! -f "$CRC_BUNDLE_PATH/$FILENAME" ]; then
     fi
 
     # download via curl
+    printf "Attempting to download CRC Bundle from %s\n\n" "$CRC_BASE_URL/$PRESET/$VERSION/$FILENAME"
     curl --retry 3 --retry-delay 5 -o $CRC_BUNDLE_PATH/$FILENAME -L -O $CRC_BASE_URL/$PRESET/$VERSION/$FILENAME
 else
     printf "CRC Bundle already exist, skipping...\n"
