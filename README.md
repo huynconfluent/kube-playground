@@ -16,6 +16,7 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 - jq
 - cfssl
 - [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) \*For MacOS based deployments
+- crc (for Openshift Local) (optional if there's no need to deploy to Openshift Local)
 
 ## TODO
 
@@ -47,7 +48,7 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 The default behavior is to spin up a Kubernetes cluster using k3d, this must be installed ahead of time.
 Alternatie approach is to use multipass and spin up k3d within the multipass VM.
 
-## Option 1: Install k3d
+### Option 1: Install k3d
 
 This assumes you already have k3d installed.
 Follow the installation instruction on [k3d.io](https://k3d.io)
@@ -58,12 +59,30 @@ For Mac (Using Homebrew)
 brew install k3d
 ```
 
-## Option 2: Using Multipass VM
+### Option 2: Using Multipass VM
 
 Start with passing `multipass` argument
 
 ```
-CFK_HELM_VERSION=2.11.0 ./start.sh multipass
+CFK_HELM_VERSION=2.11.0 ./start.sh -m multipass
+```
+
+### Option 3: Openshift Local
+
+Deploy to Openshift Local, this requires CRC installed ahead of time. Follow instructions from [RedHat](https://console.redhat.com/openshift/create/local)
+
+```
+CRC_PULL_SECRET=/Users/<username>/.crc/pull-secret.txt CFK_HELM_VERSION=2.11.0 ./start.sh -m openshift
+# if omitted, it will try to check $HOME/.crc/pull-secret.txt
+CFK_HELM_VERSION=2.11.0 ./start.sh -m openshift
+```
+
+### Option 4: No Infrastructure
+
+Don't deploy any infrastructure, this can be useful if you have an external Kubernetes Cluster
+
+```
+CFK_HELM_VERSION=2.11.0 ./start.sh -s
 ```
 
 ## Install the docker-mac-net-connect
@@ -220,7 +239,7 @@ cp .env.example .env
 
 ## Usage
 
-You can deploy base k3s environment using the following command
+You can deploy base k3d environment using the following command
 
 ```
 export BASE_DIR=$(pwd)
