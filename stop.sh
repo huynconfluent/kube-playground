@@ -37,7 +37,7 @@ fi
 # check if CRC is running
 if [ ! -z "$(which crc)" ]; then
     if [ "$(crc status 2>&1 | grep -ic 'crc setup')" -ne 1 ]; then
-        if [ "$(crc status 2>&1 | grep -ic 'crc start')" -eq 1 ]; then
+        if [ "$(crc status 2>&1 | grep -i 'crc vm:' | grep -ic 'running')" -eq 1 ]; then
             printf "CRC found, stopping.....\n"
             crc stop
             printf "CRC has stopped, you can restart it with \n\tcrc start\n"
