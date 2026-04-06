@@ -7,10 +7,11 @@
 #
 #   CFK_HELM_VERSION=2.11.1 ./start.sh
 #   CFK_IMAGE_VERSION=0.1193.34 ./start.sh
-#   CFK_HELM_VERSION=2.11.1 ./start.sh -m
+#   CFK_HELM_VERSION=2.11.1 ./start.sh -m multipass|openshift
+#   CRC_OPENSHIFT_VERSION=4.18.2 CFK_HELM_VERSION=2.11.1 ./start.sh -m openshift
 
 BASE_DIR=$(pwd)
-REQUIRED_PKG="docker k3d kubectl helm yq jq"
+REQUIRED_PKG="docker k3d kubectl helm jq keytool"
 # defaults
 CLUSTER_TYPE="k3d"
 DEPLOY_CFK=true
@@ -22,7 +23,6 @@ DEPLOY_CMF=false
 NO_INFRA=false
 AUTOGEN_ASSETS=false
 FIPS_ENABLED=false
-#
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -49,8 +49,8 @@ fi
 
 # flags
 usage () {
-    printf "Usage: $0 [-m] [-e] [comma separated array] [-f] [-s] [-z] [-i] [-a]\n"
-    printf "\t-m                                    (optional) deploy k3d on multipass vm instead of local k3d\n"
+    printf "Usage: $0 [-m] [string] [-e] [comma separated array] [-f] [-s] [-z] [-i] [-a]\n"
+    printf "\t-m [multipass|openshift]              (optional) deploy with multipass or Openshift local instead of local k3d\n"
     printf "\t-e [ldap,idp,vault,flink]             (optional) deploy extras, comma seperated string array\n"
     printf "\t-f                                    (optional) deploys CFK in FIPS mode\n"
     printf "\t-s                                    (optional) skip infrastructre deployment (no k3d, multipass, metallb, etc)\n"
@@ -61,10 +61,15 @@ usage () {
     exit 1
 }
 
-while getopts "me:siazf" opt; do
+while getopts "m:e:siazf" opt; do
     case $opt in
         m)
-            CLUSTER_TYPE="multipass"
+            CLUSTER_TYPE=$OPTARG
+            if [ "$CLUSTER_TYPE" != "multipass" ] && [ "$CLUSTER_TYPE" != "openshift" ]; then
+                printf "Cluster Type not recognized: %s\n" "$CLUSTER_TYPE"
+                usage
+            fi
+
             ;;
         e)
             # external authstore
@@ -98,6 +103,7 @@ while getopts "me:siazf" opt; do
         s)
             # No Infrastructure deployment
             NO_INFRA=true 
+            CLUSTER_TYPE="none"
             ;;
         a)
             AUTOGEN_ASSETS=true
@@ -120,7 +126,6 @@ done
 shift $((OPTIND -1))
 
 # starting kube playground
-#printf "\n======== Kube Playground =========\n\n"
 source $BASE_DIR/scripts/system/header.sh -t "Kube Playground"
 
 create_multipass_cluster () {
@@ -134,8 +139,7 @@ create_kube_cluster () {
 
     k3d_config="$BASE_DIR/configs/k3d/default.yaml"
 
-    printf "\n"
-    printf "Checking for k3d version...\n"
+    printf "\nChecking for k3d version...\n"
     k3d version || exit 1
     printf "\n"
 
@@ -172,6 +176,35 @@ create_kube_cluster () {
     printf "\n"
 }
 
+create_openshift_cluster () {
+    
+    # confirm that CRC exists
+    if [ ! -z "$(which crc)" ]; then
+        printf "\n"
+        if [ ! -f "$CRC_PULL_SECRET_FILE" ]; then
+            printf "CRC Pull secret is missing at %s\n" "$CRC_PULL_SECRET_FILE"
+            printf "Make sure to set this ENV CRC_PULL_SECRET_FILE\n"
+            printf "Or make sure tp put the secret at that location\n"
+            exit 1
+        fi
+
+        # Skip version if not set
+        if [ -z "$CRC_OPENSHIFT_VERSION" ]; then
+            source "$BASE_DIR/scripts/helper/deploy-openshift-local.sh" -p "$CRC_PULL_SECRET_FILE"
+        else
+            source "$BASE_DIR/scripts/helper/deploy-openshift-local.sh" -v "$CRC_OPENSHIFT_VERSION" -p "$CRC_PULL_SECRET_FILE"
+        fi
+
+        # TODO: do extra stuff
+    else
+        printf "CRC is not installed, cannot proceed with this cluster deployment type.\n"
+        printf "Please see the README.md for further instructions if necessary.\n"
+
+        exit 1
+    fi
+
+}
+
 deploy_metallb () {
 
     source $BASE_DIR/scripts/helper/deploy-metallb.sh
@@ -205,7 +238,7 @@ check_cfk_version () {
 
 #######################DEPLOY INFRASTRUCTURE###################################
 # decide the type of kubernetes cluster to create
-# TODO: add options for terraform and openshift
+# TODO: add options for terraform
 
 printf "\nCluster Infrastructure Type: %s\n\n" "$CLUSTER_TYPE"
 
@@ -217,14 +250,21 @@ if [ "$NO_INFRA" == "false" ]; then
         "k3d")
             create_kube_cluster
             ;;
+        "openshift")
+            create_openshift_cluster
+            ;;
         *)
             printf "Cluster Type not recognized: %s\n" "$CLUSTER_TYPE"
             exit 1
         ;;
     esac
 
-    # Deploy MetalLB
-    deploy_metallb
+    # Deploy MetalLB if not Openshift
+    if [ "$CLUSTER_TYPE" != "openshift" ]; then
+        deploy_metallb
+    fi
+else
+    printf "Skipping Infrastructure deployment...\n"
 fi
 
 ############################DEPLOY ASSETS######################################
@@ -298,5 +338,4 @@ fi
 
 # DONE!
 source $BASE_DIR/scripts/system/header.sh -t "Kube Playground is now ready!"
-#printf "\n\nKube Playground is now ready!\n"
 # TODO: display a helper info?
