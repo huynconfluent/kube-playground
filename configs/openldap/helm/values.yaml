@@ -20,3 +20,5 @@ env:
   LDAP_BASE_DN: "dc=confluentdemo,dc=io"
 
 ldifs: |-
+
+openshift: false
