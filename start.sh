@@ -23,6 +23,8 @@ DEPLOY_CMF=false
 NO_INFRA=false
 AUTOGEN_ASSETS=false
 FIPS_ENABLED=false
+IDP_EXTRA_ARGS=""
+LDAP_EXTRA_ARGS=""
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -251,6 +253,8 @@ if [ "$NO_INFRA" == "false" ]; then
             create_kube_cluster
             ;;
         "openshift")
+            IDP_EXTRA_ARGS+="-o"
+            LDAP_EXTRA_ARGS+="-o"
             create_openshift_cluster
             ;;
         *)
@@ -264,7 +268,7 @@ if [ "$NO_INFRA" == "false" ]; then
         deploy_metallb
     fi
 else
-    printf "Skipping Infrastructure deployment...\n"
+    printf "Skipping Kubernetes Infrastructure deployment...\n"
 fi
 
 ############################DEPLOY ASSETS######################################
@@ -280,17 +284,17 @@ else
 fi
 
 #######################DEPLOY CLUSTERS/APPS####################################
-source $BASE_DIR/scripts/system/header.sh -t "Deploy Infrastructure"
+source $BASE_DIR/scripts/system/header.sh -t "Deploy Applications"
 # Call deploy-ldap
 if [ "$DEPLOY_LDAP" == "true" ]; then
-    source $BASE_DIR/scripts/helper/deploy-ldap.sh
+    source $BASE_DIR/scripts/helper/deploy-ldap.sh "$LDAP_EXTRA_ARGS"
 else
     printf "Skipping LDAP Deployment....\n"
 fi
 
 # Call deploy-idp
 if [ "$DEPLOY_IDP" == "true" ]; then
-    source $BASE_DIR/scripts/helper/deploy-idp.sh
+    source $BASE_DIR/scripts/helper/deploy-idp.sh "$IDP_EXTRA_ARGS"
 else
     printf "Skipping Keycloak Deployment....\n"
 fi
@@ -302,9 +306,9 @@ else
     printf "Skipping Hashicorp Vault Deployment...\n"
 fi
 
-# check if we are setting a CFK Helm Version or Image Version
+############################DEPLOY CFK#########################################
 source $BASE_DIR/scripts/system/header.sh -t "Deploy Confluent for Kubernetes"
-#printf "\n=Determine CFK Version to Deploy=\n"
+# check if we are setting a CFK Helm Version or Image Version
 check_cfk_version
 
 # Call deploy_cfk
@@ -325,7 +329,7 @@ else
     printf "\nCFK not needed, Skipping CFK Deployment....\n"
 fi
 
-# deploy flink
+###########################DEPLOY FLINK########################################
 if [ "$DEPLOY_FLINK" == "true" ]; then
     source $BASE_DIR/scripts/system/header.sh -t "Deploy Flink"
     # Call deploy cert-manager
