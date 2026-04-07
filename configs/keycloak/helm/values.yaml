@@ -25,3 +25,5 @@ loglevel: "INFO"
 admin:
   username: admin
   password: "admin-secret"
+
+openshift: false

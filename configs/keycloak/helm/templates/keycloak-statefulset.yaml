@@ -14,6 +14,7 @@ spec:
       labels:
         app: keycloak
     spec:
+      serviceAccountName: {{ .Values.name }}-sa
       containers:
       - name: keycloak
         args:
@@ -62,6 +63,18 @@ spec:
               fieldPath: status.podIP
         - name: JAVA_OPTS_APPEND
           value: '-Djgroups.dns.query="keycloak-discovery" -Djgroups.bind.address=$(POD_IP)'
+        # required for Openshift to run as root user to bind on lower ports
+        # maybe add a conditional if port alues are lower end?
+        {{- if .Values.openshift }}
+        securityContext:
+          {{- if or (lt (int .Values.ports.http) 1024) (lt (int .Values.ports.https) 1024) }}
+          runAsUser: 0
+          privileged: false
+          {{- end }}
+          capabilities:
+            add:
+            - NET_BIND_SERVICE
+        {{- end }}
         startupProbe:
           initialDelaySeconds: 60
           httpGet:
