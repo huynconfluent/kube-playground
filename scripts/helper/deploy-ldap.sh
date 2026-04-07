@@ -11,6 +11,8 @@ OPENLDAP_FULLCHAIN_FILE="$BASE_DIR/generated/ssl/components/openldap-fullchain.p
 OPENLDAP_PRIVKEY_FILE="$BASE_DIR/generated/ssl/components/openldap-key.pem"
 OPENLDAP_CA_FILE="$BASE_DIR/generated/ssl/files/cacerts.pem"
 CUSTOM_VALUES=false
+OPENSHIFT=false
+OPTIND=1
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -26,17 +28,21 @@ done
 
 # flags
 usage () {
-    printf "Usage: $0 [-v] [values.yaml]\n"
-    printf "\t-v custom_values.yaml                (optional) values yaml\n"
+    printf "Usage: $0 [-v] [values.yaml] [-o]\n"
+    printf "\t-v custom_values.yaml                 (optional) values yaml\n"
+    printf "\t-o                                    (optional) openshift deployment\n"
     exit 1
 }
 
-while getopts "v:" opt; do
+while getopts "v:o" opt; do
     case $opt in
         v)
             HELM_VALUES_FILE=$OPTARG
             CUSTOM_VALUES=true
             printf "Deploying with provided yaml file...\n"
+            ;;
+        o)
+            OPENSHIFT=true
             ;;
         *)
             usage
@@ -95,6 +101,11 @@ if [ $(kubectl -n $LDAP_NAMESPACE get sts 2>&1 | grep -ic "${KUBE_OPENLDAP_HELM_
             printf "    %s\n" "$line" >> $HELM_VALUES_FILE
         done < "$OPENLDAP_CA_FILE"
         
+        # openshift
+        if [ "$OPENSHIFT" == "true" ]; then
+            printf "openshift: true\n" >> $HELM_VALUES_FILE
+        fi
+ 
         # uncomment to debug
         #cat $HELM_VALUES_FILE
         printf "\n"
@@ -122,8 +133,7 @@ if [ $(kubectl -n $LDAP_NAMESPACE get sts 2>&1 | grep -ic "${KUBE_OPENLDAP_HELM_
         timeout=$((timeout-sleep_in_seconds))
     done
 
-    printf "\n"
-
+    printf "%s is now ready!\n\n" "$KUBE_OPENLDAP_HELM_NAME"
 else
     printf "\n%s is already deployed in %s namespace, skipping deployment....\n" "$KUBE_OPENLDAP_HELM_NAME" "$LDAP_NAMESPACE"
 fi
