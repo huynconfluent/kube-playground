@@ -114,6 +114,12 @@ crc_cleanup () {
     fi
 }
 
+get_login_cmd () {
+
+    cmd=$(crc console --credentials | grep 'admin' | sed -E "s/.*'(.*)'/\1/")
+    eval $cmd
+}
+
 source $BASE_DIR/scripts/system/header.sh -t "Deploying Openshift Local"
 
 # ensure a pull secret is provided
@@ -182,7 +188,7 @@ else
     # is VM running or stopped
     if [ "$(crc status 2>&1 | grep -i 'crc vm:' | grep -ic 'stopped')" -eq 1 ]; then
         printf "CRC VM is stopped.....\nStarting CRC VM.....\n"
-        #crc start -p "$PULL_SECRET_PATH" "$CRC_EXTRA_ARGS"
+        crc start -p "$PULL_SECRET_PATH"
     else
         printf "CRC VM is already running!\n"
     fi
@@ -196,3 +202,11 @@ else
     printf "ERROR, CRC VM status unknown, exiting...\n"
     exit 1
 fi
+
+# Login as admin
+get_login_cmd
+
+# verify oc cluster
+printf "Testing oc command after login....\n"
+oc get nodes
+printf "\n\n"
