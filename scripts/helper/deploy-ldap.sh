@@ -52,7 +52,7 @@ fi
 source $BASE_DIR/scripts/system/header.sh -t "Deploying OpenLDAP"
 
 # check that openldap namespace hasn't been created yet
-if [ $(kubectl get ns | grep -ic $LDAP_NAMESPACE) -eq 0 ]; then
+if [ $(kubectl get ns | grep -icE ^$LDAP_NAMESPACE) -eq 0 ]; then
     printf "\nCreating Namespace %s for OpenLDAP Deployment.......\n" "${LDAP_NAMESPACE}"
     
     kubectl create namespace $LDAP_NAMESPACE

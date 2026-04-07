@@ -53,7 +53,7 @@ fi
 source $BASE_DIR/scripts/system/header.sh -t "Deploying IDP (Keycloak)"
 
 # check that keycloak namespace hasn't been created yet
-if [ $(kubectl get ns | grep -ic $IDP_NAMESPACE) -eq 0 ]; then
+if [ $(kubectl get ns | grep -icE ^$IDP_NAMESPACE) -eq 0 ]; then
     printf "\nCreating Namespace %s for Keycloak Deployment......\n" "${IDP_NAMESPACE}"
 
     kubectl create namespace $IDP_NAMESPACE
