@@ -25,6 +25,7 @@ AUTOGEN_ASSETS=false
 FIPS_ENABLED=false
 IDP_EXTRA_ARGS=""
 LDAP_EXTRA_ARGS=""
+VAULT_EXTRA_ARGS=""
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -255,6 +256,7 @@ if [ "$NO_INFRA" == "false" ]; then
         "openshift")
             IDP_EXTRA_ARGS+="-o"
             LDAP_EXTRA_ARGS+="-o"
+            VAULT_EXTRA_ARGS+="-o"
             create_openshift_cluster
             ;;
         *)
@@ -301,7 +303,7 @@ fi
 
 # Call deploy-hashicorp-vault
 if [ "$DEPLOY_HASHICORPVAULT" == "true" ]; then
-    source $BASE_DIR/scripts/helper/deploy-hashicorp-vault.sh
+    source $BASE_DIR/scripts/helper/deploy-hashicorp-vault.sh "$VAULT_EXTRA_ARGS"
 else
     printf "Skipping Hashicorp Vault Deployment...\n"
 fi
