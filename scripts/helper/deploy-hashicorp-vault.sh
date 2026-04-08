@@ -1,12 +1,18 @@
 #!/bin/sh
 
-# ./deploy-hashicorp-vault.sh
+# ./deploy-hashicorp-vault.sh -o
+
+# TODO: Add a workflow for a custom values file
 
 BASE_DIR=$(pwd)
 REQUIRED_PKG="kubectl helm"
 HASHICORP_VAULT_REPO_NAME="hashicorp"
 HASHICORP_VAULT_HELM_NAME="vault"
 HASHICORP_VAULT_HELM_REPO="https://helm.releases.hashicorp.com"
+OPENSHIFT=false
+CUSTOM_VALUES=false
+HELM_VALUES_FILE="$BASE_DIR/configs/hashicorp/openshift.yaml"
+OPTIND=1
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -18,6 +24,30 @@ for PKG in $REQUIRED_PKG; do
         printf "\n\tbrew install %s" "${PKG}"
         exit 1
     fi
+done
+
+# flags
+usage () {
+    printf "Usage: $0 [-v] [values.yaml] [-o]\n"
+    printf "\t-v custom_values.yaml                 (optional) values yaml\n"
+    printf "\t-o                                    (optional) openshift deployment\n"
+    exit 1
+}
+
+while getopts "v:o" opt; do
+    case $opt in
+        v)
+            HELM_VALUES_FILE=$OPTARG
+            CUSTOM_VALUES=true
+            printf "Deploying with provided yaml file...\n"
+            ;;
+        o)
+            OPENSHIFT=true
+            ;;
+        *)
+            usage
+            ;;
+    esac
 done
 
 #printf "\n====Deploying Hashicorp Vault====\n"
@@ -38,7 +68,12 @@ if [ $(kubectl -n $HASHICORP_VAULT_NAMESPACE get sts 2>&1 | grep -ic "${HASHICOR
    
     printf "\nDeploying %s in %s Namespace.......\n" "$HASHICROP_VAULT_HELM_NAME" "$HASHICORP_VAULT_NAMESPACE"
 
-    helm upgrade --install $HASHICORP_VAULT_HELM_NAME --set='server.dev.enabled=true' $HASHICORP_VAULT_REPO_NAME/vault -n $HASHICORP_VAULT_NAMESPACE
+    # Specifying a custom file for openshift
+    if [ "$OPENSHIFT" == "true" ]; then
+        helm upgrade --install $HASHICORP_VAULT_HELM_NAME -f $HELM_VALUES_FILE $HASHICORP_VAULT_REPO_NAME/vault -n $HASHICORP_VAULT_NAMESPACE
+    else
+        helm upgrade --install $HASHICORP_VAULT_HELM_NAME --set='server.dev.enabled=true' $HASHICORP_VAULT_REPO_NAME/vault -n $HASHICORP_VAULT_NAMESPACE
+    fi
 
     if [ $(echo $?) -ne 0 ]; then
         printf "\nEncountered an error, exiting....\n"
