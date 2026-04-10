@@ -71,7 +71,7 @@ while getopts "o:c:m:t:f:g:b:" opt; do
             ;;
         m)
             CONTROL_CENTER_NEXT_GEN_VERSION=$OPTARG
-            if [ "$(echo $CONTROL_CENTER_NEXT_GEN_VERSION | grep -ce '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
+            if [ "$(echo $CONTROL_CENTER_NEXT_GEN_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
                 printf "Control Center Next Gen Version not recognized\n"
                 usage
             fi
@@ -84,14 +84,14 @@ while getopts "o:c:m:t:f:g:b:" opt; do
             ;;
         g)
             CPC_VERSION="$OPTARG"
-            if [ "$(echo $CPC_VERSION | grep -ce '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
+            if [ "$(echo $CPC_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
                 printf "CPC Gateway Version not recognized\n"
                 usage
             fi
             ;;
         b)
             CMF_VERSION="$OPTARG"
-            if [ "$(echo $CMF_VERSION | grep -ce '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
+            if [ "$(echo $CMF_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
                 printf "CMF Version not recognized\n"
                 usage
             fi
