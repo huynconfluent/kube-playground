@@ -2,6 +2,8 @@
 
 # ./push-to-crc-registry.sh -o CFK_VERSION -c CP_VERSION -m CONTROL_CENTER_NEXT_GEN_VERSION -t IMAGE_TYPE
 
+# TODO: Add a check to not push if it already exists
+
 BASE_DIR=$(pwd)
 REQUIRED_PKG="docker skopeo crc oc"
 OPERATOR_VERSION=""
@@ -178,7 +180,7 @@ fi
 
 # add in cp images
 LOCAL_CP_IMAGES=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc' | grep -E "${CP_VERSION}${TAG_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
-COMBINED_IMAGES=("${LOCAL_CONTROLCENTER_IMAGES[@]}" "${LOCAL_CP_IMAGES[@]}")
+COMBINED_IMAGES+=("${LOCAL_CONTROLCENTER_IMAGES[@]}" "${LOCAL_CP_IMAGES[@]}")
 
 for img in "${COMBINED_IMAGES[@]}"; do
     printf "Image: %s\n" "$img"
@@ -187,11 +189,11 @@ for img in "${COMBINED_IMAGES[@]}"; do
     eval $cmd
     #printf "TAG: %s\n" "$cmd"
     # push image
-    cmd="skopeo copy --dest-tls-verify=false docker-daemon:$OC_REGISTRY/confluentinc/$img docker://$OC_REGISTRY/$OC_PROJECT_NAME/$img --dest-creds $OC_USER:$OC_PASSWORD"
+    cmd="skopeo copy --dest-tls-verify=false docker-daemon:$OC_REGISTRY/$OC_PROJECT_NAME/$img docker://$OC_REGISTRY/$OC_PROJECT_NAME/$img --dest-creds $OC_USER:$OC_PASSWORD"
     eval $cmd
     #printf "PUSH: %s\n" "$cmd"
 done
 
 printf "Images pushed to CRC Registry!!!\n\n"
 # list images
-oc get is
+oc -n $OC_PROJECT_NAME get is
