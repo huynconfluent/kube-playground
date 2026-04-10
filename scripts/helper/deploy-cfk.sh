@@ -8,6 +8,7 @@ REQUIRED_PKG="kubectl helm jq"
 CFK_IMAGE_VERSION=$1
 CFK_HELM_REPO="confluentinc/confluent-for-kubernetes"
 CFK_HELM_INSTALL_OPTS="--set namespaced=false"
+OPENSHIFT=false
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -22,19 +23,23 @@ for PKG in $REQUIRED_PKG; do
 done
 
 usage() {
-    printf "Usage: $0 [-v] [CFK_VERSION] [-f]\n"
+    printf "Usage: $0 [-v] [CFK_VERSION] [-f] [-o]\n"
     printf "\t-v 0.1263.8|3.0.0      (optonal) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
+    printf "\t-o                     (optional) Deploy in Openshift\n"
     printf "\t-f                     (optional) Deploy in FIPS mode\n"
     exit 1
 }
 
-while getopts "v:f" opt; do
+while getopts "v:fo" opt; do
     case $opt in
         v)
             CFK_IMAGE_VERSION=$OPTARG
             ;;
         f)
             CFK_HELM_INSTALL_OPTS+=" --set fipsmode=true"
+            ;;
+        o)
+            OPENSHIFT=true
             ;;
         *)
             usage
@@ -117,13 +122,18 @@ deploy_cfk () {
             operator_cmd="$operator_cmd --version=$CFK_IMAGE_VERSION"
         fi
 
+        # openshift
+        if [ "$OPENSHIFT" == "true" ]; then
+            operator_cmd="$operator_cmd --set podSecurity.enabled=false"
+        fi
+
         # finalizing helm install command
         operator_cmd="$operator_cmd $CFK_HELM_REPO"
         
         # execute installing Confluent Operator
         printf "Deploying CFK....\n"
         # uncomment for debugging
-        #printf "\n\nHelm Install Command: %s\n" "${operator_cmd}"
+        printf "\n\nHelm Install Command: %s\n" "${operator_cmd}"
         # Execute helm install
         eval "$operator_cmd"
         
