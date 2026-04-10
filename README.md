@@ -17,6 +17,7 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 - cfssl
 - [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) \*For MacOS based deployments
 - crc (for Openshift Local) (optional if there's no need to deploy to Openshift Local)
+- sokpeo (optional) only needed to copy docker images to openshift local
 
 ## TODO
 
@@ -42,6 +43,7 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 - [x] Added File Based Userstore creation
 - [x] Add oidcClientSecret.txt deployment
 - [x] Add helper script for externalAccess
+- [ ] Add helper script for preseeding images
 
 ## Default Kubernetes Cluster
 
