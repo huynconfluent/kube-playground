@@ -326,6 +326,10 @@ if [ "$DEPLOY_CFK" == "true" ]; then
         deploy_cfk_cmd+=" -f"
     fi
 
+    if [ "$CLUSTER_TYPE" == "openshift" ]; then
+        deploy_cfk_cmd+=" -o"
+    fi
+
     source $deploy_cfk_cmd
 else
     printf "\nCFK not needed, Skipping CFK Deployment....\n"
