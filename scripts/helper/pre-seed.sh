@@ -121,8 +121,13 @@ image_pull () {
     l_image="$1"
     l_tag="$2"
 
-    printf "Pulling %s:%s....\n" "$l_image" "$l_tag"
-    docker pull $l_image:$l_tag
+    # check if image exists before trying to pull
+    if [ "$(docker images --format "{{.Repository}}:{{.Tag}} | grep -cE '^$l_image:$l_tag$')" -ge 1 ]; then
+        printf "Image already exists, skipping!\n"
+    else
+        printf "Pulling %s:%s....\n" "$l_image" "$l_tag"
+        docker pull $l_image:$l_tag
+    fi
 }
 
 check_pull_limit () {
