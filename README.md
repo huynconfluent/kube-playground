@@ -18,6 +18,7 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 - [docker-mac-net-connect](https://github.com/chipmk/docker-mac-net-connect) \*For MacOS based deployments
 - crc (for Openshift Local) (optional if there's no need to deploy to Openshift Local)
 - sokpeo (optional) only needed to copy docker images to openshift local
+- gum (optional) only used in the `pre-seed.sh` script
 
 ## TODO
 
