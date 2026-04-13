@@ -25,6 +25,7 @@ CMF_IMAGES=("cp-cmf")
 CPC_IMAGES=("cpc-gateway")
 PULL_LIMIT_THRESHOLD="20"
 IMG_TYPE=("default" "arm64" "ubi8" "ubi9" "ubi8.arm64" "ubi9.arm64")
+DRY_RUN="false"
 OPTIND=1
 set -o allexport; source .env; set +o allexport
 
@@ -41,19 +42,20 @@ done
 
 # flags
 usage () {
-    printf "Usage: $0 [-o] [string] [-c] [string] [-m] [string] [-t] [string] [-f] [string] [-g] [string] [-b] [string]\n"
-    printf "\t-o                                    (required) cfk version, e.g. 3.2.0\n"
-    printf "\t-c                                    (required) cp version, e.g. 8.0.0\n"
+    printf "Usage: $0 [-o] [string] [-c] [string] [-m] [string] [-t] [string] [-f] [string] [-g] [string] [-b] [string] [-d]\n"
+    printf "\t-o                                    (optional) cfk version, e.g. 3.2.0\n"
+    printf "\t-c                                    (optional) cp version, e.g. 8.0.0\n"
     printf "\t-t                                    (optional) tag version type, e.g. ubi8, ubi9, arm64, ubi8.arm64, etc\n"
     printf "\t-m                                    (optional) control center next gen tag version, e.g. 2.0.0\n"
     printf "\t-f                                    (optional) flink version, e.g. 2.0.1-cp1\n"
     printf "\t-g                                    (optional) cpc gateway version, e.g. 1.2.0\n"
     printf "\t-b                                    (optional) cmf version, e.g. 2.0.0\n"
+    printf "\t-d                                    (optional) dry run flag, don't download anything\n"
     printf "\t-h                                    help menu\n"
     exit 1
 }
 
-while getopts "o:c:m:t:f:g:b:" opt; do
+while getopts "o:c:m:t:f:g:b:d" opt; do
     case $opt in
         o)
             CFK_VERSION=$OPTARG
@@ -96,6 +98,9 @@ while getopts "o:c:m:t:f:g:b:" opt; do
                 usage
             fi
             ;;
+        d)
+            DRY_RUN="true"
+            ;;
         *)
             usage
             ;;
@@ -122,11 +127,16 @@ image_pull () {
     l_tag="$2"
 
     # check if image exists before trying to pull
-    if [ "$(docker images --format "{{.Repository}}:{{.Tag}} | grep -cE '^$l_image:$l_tag$')" -ge 1 ]; then
+    if [ "$(docker images --format '{{.Repository}}:{{.Tag}}' | grep -cE '^$l_image:$l_tag$')" -ge 1 ]; then
         printf "Image already exists, skipping!\n"
     else
         printf "Pulling %s:%s....\n" "$l_image" "$l_tag"
-        docker pull $l_image:$l_tag
+        if [ "$DRY_RUN" == "false" ]; then
+            docker pull $l_image:$l_tag
+        else
+            printf "Dry Run, not pulling images...\n"
+        fi
+        printf "\n"
     fi
 }
 
@@ -235,6 +245,12 @@ menu () {
         else
             TAG_VERSION=".$TAG_VERSION"
         fi
+
+        # If tag is ubi based
+        if [ "$(echo $TAG_VERSION | grep -cE '^.ubi[89]')" -eq 1 ]; then
+            # the formatting seems to be 8.2.0-1-ubi9.arm64
+            TAG_VERSION=$(echo $TAG_VERSION | sed -E "s/^\.ubi([89].*)$/-1-ubi\1/") 
+        fi
     fi
     
     # Multi Select Containers to download
@@ -306,28 +322,36 @@ menu () {
     done
 
     # push to Openshift?
-    gum confirm "Push to CRC Openshift?" && push="true" || push="false"
-    if [ "$push" == "true" ]; then
-        printf "Building args\n"
-        l_args="-o $CFK_VERSION -c $CP_VERSION"
-        # build argument
-        if [ "$skip_next_gen" == "false" ]; then
-            l_args+=" -m $CONTROL_CENTER_NEXT_GEN_VERSION"
-        fi
-        if [ "$skip_flink" == "false" ]; then
-            l_args+=" -f $FLINK_VERSION"
-        fi
-        if [ "$skip_cmf" == "false" ]; then
-            l_args+=" -b $CMF_VERSION"
-        fi
-        if [ "$skip_cpc" == "false" ]; then
-            l_args+=" -g $CPC_VERSION"
+    if [ "$DRY_RUN" == "false" ]; then
+        gum confirm "Push to CRC Openshift?" && push="true" || push="false"
+        if [ "$push" == "true" ]; then
+            printf "Building args\n"
+            l_args="-o $CFK_VERSION -c $CP_VERSION"
+            # build argument
+            if [ "$TAG_VERSION" != "default" ]; then
+                l_args+=" -t $TAG_VERSION"
+            fi
+            if [ "$skip_next_gen" == "false" ]; then
+                l_args+=" -m $CONTROL_CENTER_NEXT_GEN_VERSION"
+            fi
+            if [ "$skip_flink" == "false" ]; then
+                l_args+=" -f $FLINK_VERSION"
+            fi
+            if [ "$skip_cmf" == "false" ]; then
+                l_args+=" -b $CMF_VERSION"
+            fi
+            if [ "$skip_cpc" == "false" ]; then
+                l_args+=" -g $CPC_VERSION"
+            fi
+
+            cmd="$BASE_DIR/scripts/helper/push-to-crc-registry.sh $l_args"
+            # call push
+            #printf "CMD: %s\n" "$cmd"
+            eval "$cmd"
         fi
 
-        cmd="$BASE_DIR/scripts/helper/push-to-crc-registry.sh $l_args"
-        # call push
-        #printf "CMD: %s\n" "$cmd"
-        eval $cmd 
+    else
+        printf "This is a dry run, don't push to CRC\n"
     fi
 
     printf "Done!!\n"
