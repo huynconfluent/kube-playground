@@ -5,10 +5,10 @@
 #
 # or
 #
-#   CFK_HELM_VERSION=2.11.1 ./start.sh
-#   CFK_IMAGE_VERSION=0.1193.34 ./start.sh
-#   CFK_HELM_VERSION=2.11.1 ./start.sh -m multipass|openshift
-#   CRC_OPENSHIFT_VERSION=4.18.2 CFK_HELM_VERSION=2.11.1 ./start.sh -m openshift
+#   ./start.sh -v 2.11.1
+#   ./start.sh -v 0.1193.34
+#   ./start.sh -m multipass|openshift -v 2.11.1
+#   CRC_OPENSHIFT_VERSION=4.18.2 ./start.sh -m openshift -v 2.11.1
 
 BASE_DIR=$(pwd)
 REQUIRED_PKG="docker k3d kubectl helm jq keytool"
@@ -70,7 +70,7 @@ while getopts "m:e:siazfv:" opt; do
     case $opt in
         v)
             CFK_VERSION=$OPTARG
-            if [ "$(echo $CFK_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]$')" -ne 1 ]; then
+            if [ "$(echo $CFK_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
                 printf "CFK Version not in valid format...\n"
                 usage
             fi
