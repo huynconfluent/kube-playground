@@ -10,11 +10,12 @@ OPERATOR_VERSION=""
 CP_VERSION=""
 CONTROL_CENTER_NEXT_GEN_VERSION=""
 FLINK_VERSION=""
-CMF_VERSION=""
+CMF_IMAGE_VERSION=""
 CPC_VERSION=""
 TAG_VERSION=""
 OC_PROJECT_NAME="confluent"
 OC_REGISTRY="default-route-openshift-image-registry.apps-crc.testing"
+DRY_RUN="false"
 OPTIND=1
 set -o allexport; source .env; set +o allexport
 
@@ -39,11 +40,12 @@ usage () {
     printf "\t-f                                    (optional) flink version, e.g. 2.0.1-cp1\n"
     printf "\t-g                                    (optional) cpc gateway version, e.g. 1.2.0\n"
     printf "\t-b                                    (optional) cmf version, e.g. 2.0.0\n"
+    printf "\t-d                                    (optional) dry run flag, doesn't actually push anything\n"
     printf "\t-h                                    help menu\n"
     exit 1
 }
 
-while getopts "o:c:m:t:f:g:b:" opt; do
+while getopts "o:c:m:t:f:g:b:d" opt; do
     case $opt in
         o)
             CFK_VERSION=$OPTARG
@@ -67,7 +69,11 @@ while getopts "o:c:m:t:f:g:b:" opt; do
             fi
             ;;
         t)
-            TAG_VERSION=".$OPTARG"
+            TAG_VERSION="$OPTARG"
+            if [ "$TAG_VERSION" != ".arm64" ] && [ "$TAG_VERSION" != "-1-ubi8" ] && [ "$TAG_VERSION" != "-1-ubi9" ] && [ "$TAG_VERSION" != "-1-ubi8.arm64" ] && [ "$TAG_VERSION" != "-1-ubi9.arm64" ]; then
+                printf "Unknown tag version: %s, exiting...\n" "$TAG_VERSION"
+                usage
+            fi
             ;;
         f)
             FLINK_VERSION="$OPTARG"
@@ -80,11 +86,14 @@ while getopts "o:c:m:t:f:g:b:" opt; do
             fi
             ;;
         b)
-            CMF_VERSION="$OPTARG"
-            if [ "$(echo $CMF_VERSION | grep -ce '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
+            CMF_IMAGE_VERSION="$OPTARG"
+            if [ "$(echo $CMF_IMAGE_VERSION | grep -ce '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
                 printf "CMF Version not recognized\n"
                 usage
             fi
+            ;;
+        d)
+            DRY_RUN="true"
             ;;
         *)
             usage
@@ -149,7 +158,13 @@ OC_REGISTRY=$(oc get route default-route -n openshift-image-registry --template=
 OC_USER="kubeadmin"
 OC_PASSWORD=$(oc whoami -t)
 
-LOCAL_INIT_IMAGE=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc/confluent-init-container' | grep -E "${CFK_VERSION}${TAG_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
+# init containers are either 3.1.1 or 3.1.1.arm64 nothing for ubi8/ubi9
+if [ "$(echo $TAG_VERSION | grep -ic 'arm64')" -ge 1 ]; then
+    INIT_TAG_VERSION=".arm64"
+else
+    INIT_TAG_VERSION=""
+fi
+LOCAL_INIT_IMAGE=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc/confluent-init-container' | grep -E "${CFK_VERSION}${INIT_TAG_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
 COMBINED_IMAGES=("${LOCAL_INIT_IMAGE[@]}")
 if [ -z "$CONTROL_CENTER_NEXT_GEN_VERSION" ]; then
     # Ignore images if not targetting next gen
@@ -171,8 +186,8 @@ if [ ! -z "$CPC_VERSION" ]; then
 fi
 
 # add in cmf images
-if [ ! -z "CMF_VERSION" ]; then
-    LOCAL_CMF_IMAGES=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc' | grep -E "${CMF_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
+if [ ! -z "$CMF_IMAGE_VERSION" ]; then
+    LOCAL_CMF_IMAGES=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc' | grep -E "${CMF_IMAGE_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
     COMBINED_IMAGES+=("${LOCAL_CMF_IMAGES[@]}")
 
 fi
@@ -182,17 +197,26 @@ LOCAL_CP_IMAGES=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '
 COMBINED_IMAGES+=("${LOCAL_CONTROLCENTER_IMAGES[@]}" "${LOCAL_CP_IMAGES[@]}")
 
 for img in "${COMBINED_IMAGES[@]}"; do
-    printf "Image: %s\n" "$img"
+    printf "Processing Image: %s\n" "$img"
     # tag image first
     cmd="docker tag confluentinc/$img $OC_REGISTRY/$OC_PROJECT_NAME/$img"
-    eval $cmd
-    #printf "TAG: %s\n" "$cmd"
+    if [ "$DRY_RUN" == "true" ]; then
+        printf "TAG: %s\n" "$cmd"
+    else
+        eval $cmd
+    fi
     # push image
     cmd="skopeo copy --dest-tls-verify=false docker-daemon:$OC_REGISTRY/$OC_PROJECT_NAME/$img docker://$OC_REGISTRY/$OC_PROJECT_NAME/$img --dest-creds $OC_USER:$OC_PASSWORD"
-    eval $cmd
-    #printf "PUSH: %s\n" "$cmd"
+    if [ "$DRY_RUN" == "true" ]; then
+        printf "PUSH: %s\n\n" "$cmd"
+    else
+        eval $cmd
+        printf "\n"
+    fi
 done
 
-printf "Images pushed to CRC Registry!!!\n\n"
-# list images
-oc -n $OC_PROJECT_NAME get is
+if [ "$DRY_RUN" == "false" ]; then
+    printf "Images pushed to CRC Registry!!!\n\n"
+    # list images
+    oc -n $OC_PROJECT_NAME get is
+fi
