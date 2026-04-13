@@ -150,8 +150,7 @@ OC_USER="kubeadmin"
 OC_PASSWORD=$(oc whoami -t)
 
 LOCAL_INIT_IMAGE=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc/confluent-init-container' | grep -E "${CFK_VERSION}${TAG_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
-LOCAL_OPERATOR_IMAGE=($(docker images --format "{{.Repository}} {{.Tag}}" | grep -E '^confluentinc/confluent-operator' | grep -E "${OPERATOR_VERSION}${TAG_VERSION}$"  | awk -F'[/ ]' '{print $(NF-1) ":" $NF}' | grep -v "<none>"))
-COMBINED_IMAGES=("${LOCAL_INIT_IMAGE[@]}" "${LOCAL_OPERATOR_IMAGE[@]}")
+COMBINED_IMAGES=("${LOCAL_INIT_IMAGE[@]}")
 if [ -z "$CONTROL_CENTER_NEXT_GEN_VERSION" ]; then
     # Ignore images if not targetting next gen
     LOCAL_CONTROLCENTER_IMAGES=()
