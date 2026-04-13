@@ -91,7 +91,7 @@ deploy_cfk () {
         
         # add version
         #if [ ! -z "$CFK_IMAGE_VERSION" ]; then
-        if [ "$CFK_IMAGE_VERSION" != "latest" ]; then
+        if [ "$CFK_VERSION" != "latest" ]; then
             operator_cmd="$operator_cmd --version=$CFK_IMAGE_VERSION"
         fi
 
