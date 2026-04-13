@@ -219,7 +219,13 @@ create_openshift_cluster () {
 
 deploy_metallb () {
 
-    source $BASE_DIR/scripts/helper/deploy-metallb.sh
+    l_args=""
+    
+    if [ "$CLUSTER_TYPE" == "openshift" ]; then
+        l_args+=" -o"
+    fi
+
+    source "$BASE_DIR/scripts/helper/deploy-metallb.sh $l_args"
 
     # Call docker-mac-net-connect checker
     if [ "$CLUSTER_TYPE" == "k3d" ] && [ "$(uname)" == "Darwin" ]; then
@@ -238,6 +244,23 @@ check_cfk_version () {
     fi
 }
 
+display_deployment () {
+    printf "\nCluster Infrastructure Type: %s\n" "$CLUSTER_TYPE"
+    if [ "$DEPLOY_CFK" == "true" ]; then
+        printf "Confluent for Kubernetes version: %s\n" "$CFK_VERSION"
+    fi
+    if [ "$DEPLOY_HASHICORPVAULT" == "true" ]; then
+        printf "Deploy Hashicorp Vault: true\n"
+    fi
+    if [ "$DEPLOY_IDP" == "true" ]; then
+        printf "Deploy Keycloak: true\n"
+    fi
+    if [ "$DEPLOY_LDAP" == "true" ]; then
+        printf "Deploy OpenLDAP: true\n"
+    fi
+    printf "\n"
+}
+
 # Check CFK version before we do anything
 if [ ! -n "$CFK_VERSION" ]; then
     check_cfk_version
@@ -247,7 +270,7 @@ fi
 # decide the type of kubernetes cluster to create
 # TODO: add options for terraform
 
-printf "\nCluster Infrastructure Type: %s\n\n" "$CLUSTER_TYPE"
+display_deployment
 
 if [ "$NO_INFRA" == "false" ]; then
     case "$CLUSTER_TYPE" in
