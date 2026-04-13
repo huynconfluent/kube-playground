@@ -225,7 +225,7 @@ deploy_metallb () {
         l_args+=" -o"
     fi
 
-    source "$BASE_DIR/scripts/helper/deploy-metallb.sh $l_args"
+    source $BASE_DIR/scripts/helper/deploy-metallb.sh $l_args
 
     # Call docker-mac-net-connect checker
     if [ "$CLUSTER_TYPE" == "k3d" ] && [ "$(uname)" == "Darwin" ]; then
@@ -247,7 +247,11 @@ check_cfk_version () {
 display_deployment () {
     printf "\nCluster Infrastructure Type: %s\n" "$CLUSTER_TYPE"
     if [ "$DEPLOY_CFK" == "true" ]; then
-        printf "Confluent for Kubernetes version: %s\n" "$CFK_VERSION"
+        if [ -z "$CFK_VERSION" ]; then
+            printf "Confluent for Kubernetes Version: latest\n"
+        else
+            printf "Confluent for Kubernetes Version: %s\n" "$CFK_VERSION"
+        fi
     fi
     if [ "$DEPLOY_HASHICORPVAULT" == "true" ]; then
         printf "Deploy Hashicorp Vault: true\n"
@@ -262,7 +266,7 @@ display_deployment () {
 }
 
 # Check CFK version before we do anything
-if [ ! -n "$CFK_VERSION" ]; then
+if [ ! -z "$CFK_VERSION" ]; then
     check_cfk_version
 fi
 
