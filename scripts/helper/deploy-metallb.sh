@@ -7,6 +7,8 @@ BASE_DIR=$(pwd)
 REQUIRED_PKG="kubectl curl"
 METALLB_MANIFEST="https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml"
 GEN_DIR="$BASE_DIR/generated/metallb"
+OPENSHIFT="false"
+OPTIND=1
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -20,6 +22,25 @@ for PKG in $REQUIRED_PKG; do
     fi
 done
 
+# flags
+usage () {
+    printf "Usage: $0 [-o]\n"
+    printf "\t-o                                    (optional) deploy in openshift\n"
+    printf "\t-h                                    help menu\n"
+    exit 1
+}
+ 
+while getopts "o" opt; do
+    case $opt in
+        o)
+            OPENSHIFT="true"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+ 
 #printf "\n\n=======Installing MetalLB========\n"
 source $BASE_DIR/scripts/system/header.sh -t "Installing MetalLB"
 
@@ -36,6 +57,14 @@ if [ ! -f "$GEN_DIR/metallb-native.yaml" ]; then
 fi
 
 kubectl apply -f "${GEN_DIR}/metallb-native.yaml"
+
+# For Openshift deployment
+if [ "$OPENSHIFT" == "true" ] && [ "$(which oc)" ]; then
+
+    oc adm policy add-scc-to-user anyuid -z controller -n metallb-system
+
+    oc adm policy add-scc-to-user privileged -z speaker -n metallb-system
+fi
 
 # wait for metalLB to be ready
 timeout=$OVERALL_TIMEOUT
