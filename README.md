@@ -44,7 +44,7 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 - [x] Added File Based Userstore creation
 - [x] Add oidcClientSecret.txt deployment
 - [x] Add helper script for externalAccess
-- [ ] Add helper script for preseeding images
+- [x] Add helper script for preseeding images
 
 ## Default Kubernetes Cluster
 
