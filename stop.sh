@@ -71,7 +71,7 @@ if [ ! -z "$(which crc)" ]; then
             else
                 printf "CRC found, stopping and destroying the CRC VM.....\n"
                 crc stop
-                crc delete
+                crc delete --force
                 crc cleanup
                 printf "CRC VM Deleted!\n"
             fi
