@@ -67,7 +67,7 @@ brew install k3d
 Start with passing `multipass` argument
 
 ```
-CFK_HELM_VERSION=2.11.0 ./start.sh -m multipass
+./start.sh -m multipass -v 2.11.0
 ```
 
 ### Option 3: Openshift Local
@@ -75,9 +75,9 @@ CFK_HELM_VERSION=2.11.0 ./start.sh -m multipass
 Deploy to Openshift Local, this requires CRC installed ahead of time. Follow instructions from [RedHat](https://console.redhat.com/openshift/create/local)
 
 ```
-CRC_PULL_SECRET=/Users/<username>/.crc/pull-secret.txt CFK_HELM_VERSION=2.11.0 ./start.sh -m openshift
+CRC_PULL_SECRET=/Users/<username>/.crc/pull-secret.txt ./start.sh -m openshift -v 2.11.0
 # if omitted, it will try to check $HOME/.crc/pull-secret.txt
-CFK_HELM_VERSION=2.11.0 ./start.sh -m openshift
+./start.sh -m openshift -v 2.11.0
 ```
 
 ### Option 4: No Infrastructure
@@ -85,7 +85,7 @@ CFK_HELM_VERSION=2.11.0 ./start.sh -m openshift
 Don't deploy any infrastructure, this can be useful if you have an external Kubernetes Cluster
 
 ```
-CFK_HELM_VERSION=2.11.0 ./start.sh -s
+./start.sh -s -v 2.11.0
 ```
 
 ## Install the docker-mac-net-connect
@@ -211,7 +211,7 @@ Adding record for kafkabroker-2.confluentdemo.io
 Adding record for kafkabroker.confluentdemo.io
 ```
 
-and our `/etc/hosts will have the following entries appended at the bottom.
+and our `/etc/hosts` will have the following entries appended at the bottom.
 
 ```
 # keycloak.confluentdemo.io Added by kube-playground
@@ -251,18 +251,19 @@ export BASE_DIR=$(pwd)
 
 You can automate deployment of LDAP or IDP
 
-You can also automate CFK deployment by providing either the CFK Helm version or CFK Operator Image Version
+You can also automate CFK deployment by providing either the CFK Helm version or CFK Operator Image Version.
+NOTE\* These versions are checked against a local mapping that's in `./configs/cfk/version_mapping.json` which is periodically updated.
 
 ```
 export BASE_DIR=$(pwd)
-CFK_HELM_VERSION=2.11.1 ./start.sh
+./start.sh -v 2.11.1
 ```
 
 or
 
 ```
 export BASE_DIR=$(pwd)
-CFK_IMAGE_VERSION=0.1193.34 ./start.sh
+./start.sh -v 0.1193.34
 ```
 
 ### Generate SSL files and scripts

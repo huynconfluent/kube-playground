@@ -14,6 +14,7 @@ BASE_DIR=$(pwd)
 REQUIRED_PKG="docker k3d kubectl helm jq keytool"
 # defaults
 CLUSTER_TYPE="k3d"
+CFK_VERSION=""
 DEPLOY_CFK=true
 DEPLOY_LDAP=false
 DEPLOY_IDP=false
@@ -52,7 +53,8 @@ fi
 
 # flags
 usage () {
-    printf "Usage: $0 [-m] [string] [-e] [comma separated array] [-f] [-s] [-z] [-i] [-a]\n"
+    printf "Usage: $0 [-v] [CFK_VERSION] [-m] [string] [-e] [comma separated array] [-f] [-s] [-z] [-i] [-a]\n"
+    printf "\t-v 0.1263.8|3.0.0                     (optional) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
     printf "\t-m [multipass|openshift]              (optional) deploy with multipass or Openshift local instead of local k3d\n"
     printf "\t-e [ldap,idp,vault,flink]             (optional) deploy extras, comma seperated string array\n"
     printf "\t-f                                    (optional) deploys CFK in FIPS mode\n"
@@ -64,8 +66,15 @@ usage () {
     exit 1
 }
 
-while getopts "m:e:siazf" opt; do
+while getopts "m:e:siazfv:" opt; do
     case $opt in
+        v)
+            CFK_VERSION=$OPTARG
+            if [ "$(echo $CFK_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]$')" -ne 1 ]; then
+                printf "CFK Version not in valid format...\n"
+                usage
+            fi
+            ;;
         m)
             CLUSTER_TYPE=$OPTARG
             if [ "$CLUSTER_TYPE" != "multipass" ] && [ "$CLUSTER_TYPE" != "openshift" ]; then
@@ -222,22 +231,17 @@ deploy_metallb () {
 check_cfk_version () {
 
     cfk_version_mapping="$BASE_DIR/configs/cfk/version_mapping.json"
-    
-    if [ ! -z "$CFK_HELM_VERSION" ]; then
-        CFK_IMAGE_VERSION=$(jq -r 'to_entries[] | select(.key == '\"$CFK_HELM_VERSION\"') | .value' $cfk_version_mapping)
-        if [ -z "$CFK_IMAGE_VERSION" ]; then
-            printf "\nCFK_HELM_VERSION=%s is not valid version, exiting....\n" "$CFK_HELM_VERSION"
-            exit 1
-        fi
-    fi
-
-    if [ ! -z "$CFK_IMAGE_VERSION" ]; then
-        CFK_HELM_VERSION=$(jq -r 'to_entries[] | select(.value == '\"$CFK_IMAGE_VERSION\"') | .key' $cfk_version_mapping)
-        if [ -z "$CFK_HELM_VERSION" ]; then
-            printf "\nCFK_IMAGE_VERSION=%s is not a valid version, exiting....\n" "$CFK_IMAGE_VERSION"
-        fi
+   
+    # check that CFK_VERSION is a valid Helm or Operator Version
+    if [ -z "$(jq -r 'to_entries[] | select(.key == '\"$CFK_VERSION\"') | .value' $cfk_version_mapping)" ] || [ -z "$(jq -r 'to_entries[] | select(.value == '\"$CFK_VERSION\"') | .key' $cfk_version_mapping)" ]; then
+        printf "CFK Version not recognized: %s, exiting...\n" "$CFK_VERSION"
     fi
 }
+
+# Check CFK version before we do anything
+if [ ! -n "$CFK_VERSION" ]; then
+    check_cfk_version
+fi
 
 #######################DEPLOY INFRASTRUCTURE###################################
 # decide the type of kubernetes cluster to create
@@ -310,16 +314,13 @@ fi
 
 ############################DEPLOY CFK#########################################
 source $BASE_DIR/scripts/system/header.sh -t "Deploy Confluent for Kubernetes"
-# check if we are setting a CFK Helm Version or Image Version
-check_cfk_version
 
 # Call deploy_cfk
 if [ "$DEPLOY_CFK" == "true" ]; then
     deploy_cfk_cmd="$BASE_DIR/scripts/helper/deploy-cfk.sh"
 
-    if [ ! -z "$CFK_IMAGE_VERSION" ]; then
-        #source $BASE_DIR/scripts/helper/deploy-cfk.sh -v "$CFK_IMAGE_VERSION"
-        deploy_cfk_cmd+=" -v $CFK_IMAGE_VERSION"
+    if [ ! -z "$CFK_VERSION" ]; then
+        deploy_cfk_cmd+=" -v $CFK_VERSION"
     fi
 
     if [ "$FIPS_ENABLED" == true ]; then
@@ -330,6 +331,8 @@ if [ "$DEPLOY_CFK" == "true" ]; then
         deploy_cfk_cmd+=" -o"
     fi
 
+    # uncomment to debug
+    #printf "CMD: %s\n" "$deploy_cfk_cmd"
     source $deploy_cfk_cmd
 else
     printf "\nCFK not needed, Skipping CFK Deployment....\n"

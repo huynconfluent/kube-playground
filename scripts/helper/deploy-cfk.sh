@@ -5,9 +5,10 @@
 OPTIND=1
 BASE_DIR=$(pwd)
 REQUIRED_PKG="kubectl helm jq"
-CFK_IMAGE_VERSION=$1
+CFK_VERSION="latest"
 CFK_HELM_REPO="confluentinc/confluent-for-kubernetes"
 CFK_HELM_INSTALL_OPTS="--set namespaced=false"
+CFK_VERSION_MAPPING="$BASE_DIR/configs/cfk/version_mapping.json"
 OPENSHIFT=false
 set -o allexport; source .env; set +o allexport
 
@@ -24,7 +25,7 @@ done
 
 usage() {
     printf "Usage: $0 [-v] [CFK_VERSION] [-f] [-o]\n"
-    printf "\t-v 0.1263.8|3.0.0      (optonal) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
+    printf "\t-v 0.1263.8|3.0.0      (optional) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
     printf "\t-o                     (optional) Deploy in Openshift\n"
     printf "\t-f                     (optional) Deploy in FIPS mode\n"
     exit 1
@@ -33,7 +34,11 @@ usage() {
 while getopts "v:fo" opt; do
     case $opt in
         v)
-            CFK_IMAGE_VERSION=$OPTARG
+            CFK_VERSION=$OPTARG
+            if [ "$(echo $CFK_VERSION | grep -cE '^[0-9]+\.[0-9]+\.[0-9]+$')" -ne 1 ]; then
+                printf "CFK Version not in valid format...\n"
+                usage
+            fi
             ;;
         f)
             CFK_HELM_INSTALL_OPTS+=" --set fipsmode=true"
@@ -46,38 +51,6 @@ while getopts "v:fo" opt; do
             ;;
     esac
 done
-
-# Required Flag usage
-if [ -z "$1" ]; then
-    # if nothing given, install latest available
-    CFK_IMAGE_VERSION="latest"
-    #usage
-    #exit 1
-fi
-
-# Determine CFK Helm Version
-if [ "$CFK_IMAGE_VERSION" == "latest" ]; then
-    printf "\nNo Version provided, will attempt to deploy latest CFK\n"
-else
-    if [ "$(grep -c $CFK_IMAGE_VERSION $BASE_DIR/configs/cfk/version_mapping.json)" -ge 1 ]; then
-        CFK_HELM_VERSION=$(jq -r 'to_entries[] | select(.value == '\"$CFK_IMAGE_VERSION\"') | .key' $BASE_DIR/configs/cfk/version_mapping.json)
-        # if results is empty, it means that provided input is not an image tag version, e.g. 3.0.0, so let's do a different check
-        if [ -z "$CFK_HELM_VERSION" ]; then
-            CFK_HELM_VERSION=$CFK_IMAGE_VERSION
-            CFK_IMAGE_VERSION=$(jq -r 'to_entries[] | select(.key == '\"$CFK_HELM_VERSION\"') | .value' $BASE_DIR/configs/cfk/version_mapping.json)
-        fi
-
-        # Conditional checking in case both are the same values
-        if [ "$CFK_HELM_VERSION" == "$CFK_IMAGE_VERSION" ]; then
-            printf "\nCFK Version could not be determined correctly...\n"
-            printf "IMAGE VERSION %s\nHELM VERSION %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION"
-            exit 1
-        fi
-    else
-        printf "\nCFK Version could not be determined, exiting....\n"
-        exit 1
-    fi
-fi
 
 update_helm_repo () {
     # helm update
@@ -157,9 +130,33 @@ deploy_cfk () {
     
 }
 
+# Determine CFK Helm Version
+if [ "$CFK_VERSION" == "latest" ]; then
+    printf "\nNo Version provided, will attempt to deploy latest CFK\n"
+else
+    if [ "$(grep -c $CFK_VERSION $CFK_VERSION_MAPPING)" -ge 1 ]; then
+        CFK_HELM_VERSION=$(jq -r 'to_entries[] | select(.value == '\"$CFK_VERSION\"') | .key' $CFK_VERSION_MAPPING)
+        # if results is empty, it means that provided input is not an image tag version, e.g. 3.0.0, so let's do a different check
+        if [ -z "$CFK_HELM_VERSION" ]; then
+            CFK_HELM_VERSION=$CFK_VERSION
+            CFK_IMAGE_VERSION=$(jq -r 'to_entries[] | select(.key == '\"$CFK_VERSION\"') | .value' $CFK_VERSION_MAPPING)
+        fi
+
+        # Conditional checking in case both are the same values
+        if [ "$CFK_HELM_VERSION" == "$CFK_IMAGE_VERSION" ]; then
+            printf "\nCFK Version could not be determined correctly...\n"
+            printf "IMAGE VERSION %s\nHELM VERSION %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION"
+            exit 1
+        fi
+    else
+        printf "\nCFK Version could not be determined, exiting....\n"
+        exit 1
+    fi
+fi
+
 printf "\nAttempting to install CFK....\n"
-if [ "$CFK_IMAGE_VERSION" == "latest" ]; then
-    printf "\n\tImage Version: %s\n\tHelm Version: %s\n\tNamespace: %s\n" "$CFK_IMAGE_VERSION" "$CFK_NAMESPACE"
+if [ "$CFK_VERSION" == "latest" ]; then
+    printf "\n\tImage Version: %s\n\tHelm Version: %s\n\tNamespace: %s\n" "$CFK_VERSION" "$CFK_VERSION" "$CFK_NAMESPACE"
 else
     printf "\n\tImage Version: %s\n\tHelm Version: %s\n\tNamespace: %s\n" "$CFK_IMAGE_VERSION" "$CFK_HELM_VERSION" "$CFK_NAMESPACE"
 fi
