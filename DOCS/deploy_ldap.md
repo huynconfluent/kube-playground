@@ -9,7 +9,7 @@ This can be done during the initial deployment or with an accessible kubernetes 
 ## Namespace
 
 By default OpenLDAP will be deployed to the `identity` namespace. You can modify this via the `.env` file. The reasoning of this is to keep things tiddy and not
-overwhelm the `confleunt` or `default` namespaces.
+overwhelm the `confluent` or `default` namespaces.
 
 ## Deploy on Start
 
@@ -30,7 +30,7 @@ The `-e` flag here allows us to auto deploy "external" applications such as LDAP
 ## Deploy in a Running Kubernetes
 
 You can deploy to a running kubernetes cluster. For example. Let's say you deploy `k3d` and you've deployed CFK Operator, but then you realize
-you want to may wan to test MDS with a backing LDAP Userstore. You can easily do this via the following helper script which is normally called by the `start.sh`
+you may want to test MDS with a backing LDAP Userstore. You can easily do this via the following helper script which is normally called by the `start.sh`
 
 ```
 cd kube-playground
@@ -53,7 +53,7 @@ export BASE_DIR=$(pwd)
 
 ### Deploy with customer Helm Values file
 
-Since OpenLDAP is deploy using Helm Charts, you can provide a custom `values.yaml` file to provide your own unique configuration for OpenLDAP.
+Since OpenLDAP is deployed using Helm Charts, you can provide a custom `values.yaml` file to provide your own unique configuration for OpenLDAP.
 
 This is configurable via the `-v [path]` option flag.
 
