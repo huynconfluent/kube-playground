@@ -2,7 +2,9 @@
 
 Quickly and easily create local kubernetes resources and external assets to aid in the deployment and testing of CFK.
 
-The goal here is to be able to develop/test your own CRs local with pre-built opinionated assets that can offer seamless re-deployment to new clusters.
+The goal here is to be able to develop/test your own CRs locally with pre-built opinionated assets that can offer seamless re-deployment to new clusters.
+
+This relies heavily on other tooling to make it all work together.
 
 > [!NOTE]
 > This has only been tested on MacOS. So your mileage may vary.
@@ -20,80 +22,43 @@ The goal here is to be able to develop/test your own CRs local with pre-built op
 - sokpeo (optional) only needed to copy docker images to openshift local
 - gum (optional) only used in the `pre-seed.sh` script
 
-## TODO
+## Getting Started
 
-- [x] Create initial k3d deployment helper
-- [x] Create automated openldap deployment
-- [x] Create automated keycloak deployment
-- [x] Create automated CFK deployment
-- [x] Add auto generated ssl helper scripts
-- [x] Add auto generated credential helper scripts
-- [x] Add workflow for using multipass vm for k3d instead of local k3d deployment
-- [ ] Add workflow for Openshift connection
-- [ ] ~~Create CR Generator~~
-- [ ] Add Terraform workflow
-  - [ ] AWS (EKS)
-  - [ ] ~~AWS (ROSA) needs subscription~~
-  - [ ] Azure (AKS)
-  - [ ] Azure (Openshift)
-- [ ] Add REST helper scripts (get Bearer Token)
-- [x] Add Flink Deployment
-- [ ] ~~Add USM deployment~~
-- [ ] Add setup for Confluent Private Cloud Gateway
-- [x] Add FIPs asset generation
-- [x] Added File Based Userstore creation
-- [x] Add oidcClientSecret.txt deployment
-- [x] Add helper script for externalAccess
-- [x] Add helper script for preseeding images
+> [!NOTE]
+> You'll want to ensure you have all the mentioned prerequisites installed ahead of time.
+> This guide will assume you've installed it using your preferred method such as `brew`
 
-## Default Kubernetes Cluster
-
-The default behavior is to spin up a Kubernetes cluster using k3d, this must be installed ahead of time.
-Alternatie approach is to use multipass and spin up k3d within the multipass VM.
-
-### Option 1: Install k3d
-
-This assumes you already have k3d installed.
-Follow the installation instruction on [k3d.io](https://k3d.io)
-
-For Mac (Using Homebrew)
+### Installing prerequisites
 
 ```
-brew install k3d
+brew install --cask docker-desktop
+brew install k3d kubernetes-cli helm jq cfssl chipmk/tap/docker-mac-net-connect
+# if you're interested in deploying openshift, suggested additional installs
+brew install sokpeo gum
+# CRC must be installed via pkg
 ```
 
-### Option 2: Using Multipass VM
+## Running kube-playground
 
-Start with passing `multipass` argument
-
-```
-./start.sh -m multipass -v 2.11.0
-```
-
-### Option 3: Openshift Local
-
-Deploy to Openshift Local, this requires CRC installed ahead of time. Follow instructions from [RedHat](https://console.redhat.com/openshift/create/local)
+The default behavior for kube-playground is to spin up a Kubernetes cluster using k3d.
 
 ```
-CRC_PULL_SECRET=/Users/<username>/.crc/pull-secret.txt ./start.sh -m openshift -v 2.11.0
-# if omitted, it will try to check $HOME/.crc/pull-secret.txt
-./start.sh -m openshift -v 2.11.0
+cd kube-playground
+export BASE_DIR=$(pwd)
+./start.sh
 ```
 
-### Option 4: No Infrastructure
-
-Don't deploy any infrastructure, this can be useful if you have an external Kubernetes Cluster
-
-```
-./start.sh -s -v 2.11.0
-```
+To see how to run kube-playground with `multipass` or `openshift local` see additional instructions in [DOCS](/docs)
 
 ## Install the docker-mac-net-connect
+
+> [!INFO] Not applicable to Openshift Local
+> This is not used when working with Openshift Local
 
 This is used to provide a networking path to docker containers in MacOS by creating a `utun` network interface and then adds a route automatically.
 
 ```
-sudo brew install chipmk/tap/docker-mac-net-connect
+brew install chipmk/tap/docker-mac-net-connect
 ```
 
 Start|Stop|Restart
@@ -102,9 +67,9 @@ Start|Stop|Restart
 sudo brew services start|stop|restart chipmk/tap/docker-mac-net-connect
 ```
 
-### Issue with newer Docker Desktop Versions
-
-There's an issue I encountered with newer versions of Docker Desktop as noted in this [Github Issue](https://github.com/chipmk/docker-mac-net-connect/issues/62) so it'd be best to start docker-mac-net-connect with
+> [!ATTENTION] Issue with newer Docker Desktop Versions
+> There's an issue I encountered with newer versions of Docker Desktop as noted in this [Github Issue](https://github.com/chipmk/docker-mac-net-connect/issues/62)
+> so it'd be best to start docker-mac-net-connect with using the environment variable `DOCKER_API_VERSION=1.44`
 
 ```
 sudo env DOCKER_API_VERSION=1.44 docker-mac-net-connect
@@ -112,7 +77,7 @@ sudo env DOCKER_API_VERSION=1.44 docker-mac-net-connect
 
 ## Adding records to /etc/hosts for externalAccess
 
-We can deploy CRs with `externalAccess` configuration and be able to access them from your host machine by mapping a hostname to the IPs assigned by MetalLB.
+We can deploy CRs with `externalAccess` of type `LoadBalancer` configuration and be able to access them from the host machine by mapping a hostname to the IPs assigned by MetalLB.
 For example when you deploy ldap/keycloak, it will deploy with an external IP, which you can map to a hostname for access from your local machine.
 
 ```
