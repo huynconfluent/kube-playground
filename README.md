@@ -60,7 +60,7 @@ To see how to run kube-playground with `multipass` or `openshift local` see addi
 
 ## Install the docker-mac-net-connect
 
-> [!INFO] Not applicable to Openshift Local
+> [!NOTE] Not applicable to Openshift Local
 > This is not used when working with Openshift Local
 
 This is used to provide a networking path to docker containers in MacOS by creating a `utun` network interface and then adds a route automatically.
@@ -75,7 +75,7 @@ Start|Stop|Restart
 sudo brew services start|stop|restart chipmk/tap/docker-mac-net-connect
 ```
 
-> [!ATTENTION] Issue with newer Docker Desktop Versions
+> [!IMPORTANT] Issue with newer Docker Desktop Versions
 > There's an issue I encountered with newer versions of Docker Desktop as noted in this [Github Issue](https://github.com/chipmk/docker-mac-net-connect/issues/62)
 > so it'd be best to start docker-mac-net-connect with using the environment variable `DOCKER_API_VERSION=1.44`
 
