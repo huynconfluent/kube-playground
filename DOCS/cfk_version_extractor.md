@@ -1,10 +1,15 @@
-# Run CFK Version Extractor
+# CFK Version Extractor
 
-While kube-playground stores a manual copy of CFK Version to Image Tag mapping, it may not always be up to date. You can use the following script to manually generate a new mapping combining default mapping with what we pull from [Confluent Documentation](https://docs.confluent.io/operator/current/co-plan.html#co-long-image-tags) thus creating a brand new mapping.
+This is a helper script to generate a JSON file mapping the CFK Helm version -> Operator Image versions and combining it with the local `$BASE_DIR/configs/cfk/version_mapping.json` contents.
+This script requires internet access in order to pull this public information from [Confluent Documentation](https://docs.confluent.io/operator/current/co-plan.html#co-long-image-tags).
+This can be useful when you are passing in Operator versions for CFK deployment on start. Otherwise this JSON file will be updated periodically.
+
+## Run cfk-version-extractor.sh
 
 ```
+cd kube-playground
 export BASE_DIR=$(pwd)
 ./scripts/helper/cfk-version-extractor.sh
 ```
 
-If the version differs, it would be advised to replace the old mapping at `$BASE_DIR/configs/cfk/version_mapping.json` with the new file from `$BASE_DIR/generated/cfk/version_mapping.json` until kube-playground is updated with this new copy.
+This will generate the `version_mapping.json` file in the `$BASE_DIR/generated/cfk` directory. The script will also try and advise if the local version needs to be replaced.
