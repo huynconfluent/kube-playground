@@ -103,7 +103,8 @@ generate_server_files() {
 
     # create plain-jaas.conf
     printf "sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \\" > "$SERVER_GEN_DIR/plain-jaas.conf"
-    printf "\n\tusername=\"%s\" \\\tpassword=\"%s\" \\" "$INTER_USER" "$INTER_PASSWORD" >> "$SERVER_GEN_DIR/plain-jaas.conf"
+    printf "\n\tusername=\"%s\" \\" "$INTER_USER" >> "$SERVER_GEN_DIR/plain-jaas.conf"
+    printf "\n\tpassword=\"%s\" \\" "$INTER_PASSWORD" >> "$SERVER_GEN_DIR/plain-jaas.conf"
 
     # if we have additional users, loop through and add them
     if [[ "${#user_list[@]}" -gt 1 ]]; then
@@ -111,7 +112,7 @@ generate_server_files() {
         for user in "${user_list[@]}"; do
             user_password=$(cat $SERVER_GEN_DIR/plain-users.json | jq -r .[\"${user}\"])
             printf " \\n\tuser_%s=\"%s\"" "$user" "$user_password" >> $SERVER_GEN_DIR/plain-jaas.conf
-            if [[ "$index" -lt "${#user_list[@]}" ]]; then
+            if [[ "$index" -lt "${#user_list[@]} -1" ]]; then
                 printf " \\" >> "$SERVER_GEN_DIR/plain-jaas.conf"  
             fi
             ((index++))
