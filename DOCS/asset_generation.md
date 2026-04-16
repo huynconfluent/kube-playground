@@ -177,6 +177,121 @@ The creation helper script takes in a JSON file that consist of username+passwor
 
 ## Generate SASL/PLAIN Assets
 
+You can manually generate SASL/PLAIN assets by providing a json file of credentials and a namespace where we will create assets in.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-sasl-plain-auth.sh -n <namespace> -u <user_json_file> -i <interbroker_username>:<interbroker_user_password>
+```
+
+This will generate the following directories and files in `$BASE_DIR/sasl-plain`
+
+```
+cmd/
+cmd/create-client-sasl-plain-jaas-<username>-secret.sh
+cmd/create-client-sasl-plain-txt-<username>-secret.sh
+cmd/create-server-sasl-plain-creds-secret.sh
+cmd/create-server-sasl-plain-jaas-secret.sh
+client-side/
+client-side/<username>-plain-jaas.conf
+client-side/<username>-plain.txt
+server-side/
+server-side/plain-interbroker.txt
+server-side/plain-jaas.conf
+server-side/plain-users.json
+```
+
+### Example of client side jaas file
+
+The client side `plain-jaas.conf` contains just the username and password.
+
+```
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafkabroker" \
+        password="kafkabroker-secret";
+```
+
+### Example of client side txt file
+
+The client side `plain.txt` contains just the username and password.
+
+```
+username=kafkabroker
+password=kafkabroker-secret
+```
+
+### Example of server side txt file
+
+This is the `plain-interbroker.txt` credential that's used to authenticate to another broker's inter broker listener using SASL/PLAIN authentication. This is just username and password.
+
+```
+username=kafkabroker
+password=kafkabroker-secret
+```
+
+### Example of server side jaas file
+
+The is the `plain-jaas.conf` that's used with a SASL/PLAIN Kafka Listener, it contains both the client's authentication AND the database of credentials that would be check should a client authenticate against it.
+
+```
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafkabroker" \
+        password="kafkabroker-secret" \
+        user_zookeeper="zookeeper-secret" \
+        user_kafkabroker="kafkabroker-secret" \
+        .......;
+```
+
+### Example of server side json file
+
+This is the `plain-users.json` file that CFK can use to define a SASL/PLAIN Kafka Listener. This is already pre-generated, we just copy it from `$BASE_DIR/configs/creds/default-plain-users.json` into the generated directory.
+
+```
+{
+    "<username>": "<username>-secret",
+    .........
+}
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating client side SASL/PLAIN plain-jaas.conf Secret
+
+```
+./create-client-sasl-plain-jaas-kafkabroker-secret.sh
+secret/pjaas-kafkabroker created
+```
+
+#### Creating client side SASL/PLAIN plain.txt Secret
+
+```
+./create-client-sasl-plain-txt-kafkabroker-secret.sh
+secret/ptxt-kafkabroker created
+```
+
+#### Create server side SASL/PLAIN plain-users.json Secret
+
+This is used with `jaasConfig`
+
+```
+./create-server-sasl-plain-json-secret.sh
+secret/server-sasl-plain-json
+```
+
+#### Create server side SASL/PLAIN plain-jaas.conf Secret
+
+This is used with `jaasConfigPassthrough`
+
+```
+./create-server-sasl-plain-jaas-secret.sh
+secret/server-sasl-plain-jaas
+```
+
 ## Generate SASL/DIGEST Assets
 
 ## Generate BASIC Auth Assets
