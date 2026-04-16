@@ -126,8 +126,8 @@ generate_server_files() {
 
 
     # create plain-users.json+plain-interbroker.txt
-    cmd="-n \$NAMESPACE create secret generic server-sasl-plain-creds --from-file=plain-users.json=$SERVER_GEN_DIR/plain-users.json --from-file=plain-interbroker.txt=$SERVER_GEN_DIR/plain-interbroker.txt"
-    file_name="create-server-sasl-plain-creds-secret.sh"
+    cmd="-n \$NAMESPACE create secret generic server-sasl-plain-json --from-file=plain-users.json=$SERVER_GEN_DIR/plain-users.json --from-file=plain-interbroker.txt=$SERVER_GEN_DIR/plain-interbroker.txt"
+    file_name="create-server-sasl-plain-json-secret.sh"
     gen_path="$CMD_GEN_DIR/$file_name"
 
     # uncomment to debug
@@ -140,10 +140,10 @@ generate_server_files() {
     printf "eval \"\$KCMD %s\"\n" "$cmd" >> $gen_path
     chmod +x "$gen_path"
 
-    printf "Created bash script for server-sasl-plain-creds at %s\n" "$gen_path"
+    printf "Created bash script for server-sasl-plain-json at %s\n" "$gen_path"
 
     # create plain-jaas.conf
-    cmd="-n \$NAMESPACE create secret generic server-sasl-plain-jaas --from-file=plain-users.json=$SERVER_GEN_DIR/plain-users.json --from-file=plain-interbroker.txt=$SERVER_GEN_DIR/plain-interbroker.txt"
+    cmd="-n \$NAMESPACE create secret generic server-sasl-plain-jaas --from-file=plain-jaas.conf=$SERVER_GEN_DIR/plain-jaas.conf"
     file_name="create-server-sasl-plain-jaas-secret.sh"
     gen_path="$CMD_GEN_DIR/$file_name"
 
