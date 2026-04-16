@@ -90,7 +90,7 @@ generate_cred_file () {
 }
 
 
-source $BASE_DIR/scripts/system/header.sh -t "Auto Generating OIDC Clietn Secret Assets"
+source $BASE_DIR/scripts/system/header.sh -t "Auto Generating OIDC Client Secret Assets"
 
 # remove generated files?
 if [[ "$DEPLOY_CLEAN" == "true" ]]; then
