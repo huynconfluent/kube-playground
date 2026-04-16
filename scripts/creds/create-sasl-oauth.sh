@@ -44,7 +44,7 @@ while getopts "u:n:cm:t:p:s:" opt; do
         u)
             USER_JSON=$OPTARG
             # validation checking
-            if [ "$(jq -e . $USER_JSON >/dev/null 2>&1)" -ne 0 ]; then
+            if ! jq -e . $USER_JSON > /dev/null 2>&1; then
                printf "JSON file is invalid, exiting...\n"
                exit 1
             fi
