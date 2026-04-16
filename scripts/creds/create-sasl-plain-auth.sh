@@ -67,15 +67,17 @@ fi
 
 generate_client_bash_script () {
 
-    secret_name="plain-$1"
+    username=$1
     file_key=$2
     file_path=$3
-    cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$file_key=$file_path"
     if [ "$file_key" == "plain.txt" ]; then
-        file_name="create-client-sasl-plain-txt-$secret_name-secret.sh"
+        secret_name="ptxt-$1"
+        file_name="create-client-sasl-plain-txt-$username-secret.sh"
     else
-        file_name="create-client-sasl-plain-jaas-$secret_name-secret.sh"
+        secret_name="pjaas-$1"
+        file_name="create-client-sasl-plain-jaas-$username-secret.sh"
     fi
+    cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$file_key=$file_path"
     gen_path="$CMD_GEN_DIR/$file_name"
 
     # uncomment to debug
