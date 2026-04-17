@@ -177,7 +177,7 @@ The creation helper script takes in a JSON file that consist of username+passwor
 
 ## Generate SASL/PLAIN Assets
 
-You can manually generate SASL/PLAIN assets by providing a json file of credentials and a namespace where we will create assets in.
+You can manually generate SASL/PLAIN assets by providing a json file of credentials, interbroker credentials and a namespace where we will create assets in.
 
 ```
 cd kube-playground
@@ -191,7 +191,7 @@ This will generate the following directories and files in `$BASE_DIR/sasl-plain`
 cmd/
 cmd/create-client-sasl-plain-jaas-<username>-secret.sh
 cmd/create-client-sasl-plain-txt-<username>-secret.sh
-cmd/create-server-sasl-plain-creds-secret.sh
+cmd/create-server-sasl-plain-json-secret.sh
 cmd/create-server-sasl-plain-jaas-secret.sh
 client-side/
 client-side/<username>-plain-jaas.conf
@@ -293,6 +293,119 @@ secret/server-sasl-plain-jaas
 ```
 
 ## Generate SASL/DIGEST Assets
+
+You can manually generate SASL/DIGEST assets by providing a json file of credentials and a namespace where we will create assets in.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-sasl-digest-auth.sh -n <namespace> -u <user_json_file>
+```
+
+This will generate the following directories and files in `$BASE_DIR/sasl-digest`
+
+```
+cmd/
+cmd/create-client-digest-jaas-kafkabroker-secret.sh
+cmd/create-client-digest-jaas-zookeeper-secret.sh
+cmd/create-client-digest-txt-kafkabroker-secret.sh
+cmd/create-client-digest-txt-zookeeper-secret.sh
+cmd/create-server-digest-json-zookeeper-secret.sh
+cmd/create-server-digest-jaas-zookeeper-secret.sh
+client-side/
+client-side/kafkabroker-digest.txt
+client-side/kafkabroker-jaas.conf
+client-side/zookeeper-digest.txt
+client-side/zookeeper-jaas.conf
+server-side/
+server-side/digest-jaas.conf
+server-side/digest-users.json
+```
+
+### Example of client side jaas file
+
+The client side `digest-jaas.conf` contains just the username and password.
+
+```
+Client {
+        org.apache.zookeeper.server.auth.DigestLoginModule required
+        username="kafkabroker"
+        password="kafkabroker-secret";
+};
+```
+
+### Example of client side txt file
+
+```
+username=kafkabroker
+password=kafkabroker-secret
+```
+
+### Example of server side jaas file
+
+```
+Server {
+        org.apache.zookeeper.server.auth.DigestLoginModule required
+        user_zookeeper="zookeeper-secret"
+        user_kafkabroker="kafkabroker-secret";
+};
+
+QuorumServer {
+        org.apache.zookeeper.server.auth.DigestLoginModule required
+        user_zookeeper="zookeeper-secret";
+};
+
+QuorumLearner {
+        org.apache.zookeeper.server.auth.DigestLoginModule required
+        user="zookeeper"
+        password="zookeeper-secret";
+};
+```
+
+### Example of server side json file
+
+By default kube-playground copies a predefine json file from `$BASE_DIR/configs/creds/default-digest-users.json` into the generated directory.
+
+```
+{
+  "zookeeper": "zookeeper-secret",
+  "kafkabroker": "kafkabroker-secret"
+}
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating client side SASL/DIGEST digest-jaas.conf Secret
+
+```
+./create-client-digest-jaas-kafkabroker-secret.sh
+secret/djaas-kafkabroker created
+```
+
+#### Creating client side SASL/DIGEST digest.txt Secret
+
+```
+./create-client-digest-txt-kafkabroker-secret.sh
+secret/dtxt-kafkabroker created
+```
+
+#### Create server side SASL/DIGEST digest-jaas.conf Secret
+
+```
+./create-server-digest-jaas-zookeeper-secret.sh
+secret/digest-zookeeper-server-jaas
+```
+
+#### Create server side SASL/DIGEST digest-users.json Secret
+
+```
+./create-server-digest-json-zookeeper-secret.sh
+secret/digest-zookeeper-server-json
+```
 
 ## Generate BASIC Auth Assets
 
