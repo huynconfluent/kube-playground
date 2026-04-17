@@ -409,10 +409,169 @@ secret/digest-zookeeper-server-json
 
 ## Generate BASIC Auth Assets
 
+You can manually generate Basic Auth assets by providing the component, an array of credentials and a namespace.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-basic-auth.sh -n <namespace> -p <restproxy|ksqldb|schemaregistry|connect|controlcenter|prometheus> -u "username1:password:role,username2:password:role"
+```
+
+This will generate the following directories and files in `$BASE_DIR/sasl-digest`
+
+```
+cmd/
+cmd/create-basic-client-<component>-secret.sh
+cmd/create-basic-server-<component>-secret.sh
+client-side/
+client-side/<component>/
+client-side/<component>/<username>-basic.txt
+server-side/
+server-side/<component>/
+server-side/<component>/basic.txt
+```
+
+### Example of client side baisc.txt file
+
+```
+username=<username>
+password=<username>-secret
+```
+
+### Example of server side basic.txt file
+
+For components without roles
+
+```
+<username>:<username>-secret
+```
+
+For components with roles
+
+```
+<username1>: <username1>secret,<role>
+<username2>: <username2>secret,<role>
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating client side basic auth Secret
+
+```
+./create-client-basic-<username>-secret.sh
+secret/cbasic-<username>
+```
+
+#### Creating server side basic auth Secret
+
+```
+./create-server-basic-<username>-secret.sh
+secret/sbasic-<username>
+```
+
 ## Generate File Based User Store Assets
+
+You can manually generate a File Based userstore.txt providing a namespace, encryption type and credential file
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-file-userstore.sh -n <namespace> -e none -u /path/to/userstore.txt
+```
+
+```
+cmd/
+cmd/create-cleartext-userstore-secret.sh
+files/
+files/cleartext-userstore.txt
+```
+
+### Creating a credential file
+
+The creation helper script takes in a credentials file containing username:passwords. The auto generated asset uses a predefined userstore from `$BASE_DIR/configs/creds/default-userstore.txt`
+
+```
+username1:username1-secret
+username2:username2-secret
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating userstore Secret
+
+```
+./create-cleartext-userstore-secret.sh
+secret/cleartext-userstore
+```
 
 ## Generate MDS LDAP Bind User Asset
 
+You can manually generate MDS LDAP bind user asset by providing a namespace, bind user credentials.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-mds-binduser.sh -n <namespace> -u "cn=admin,dc=confluentdemo,dc=io" -p "ldapadmin-topsecret\!"
+```
+
+```
+cmd/
+cmd/create-mds-binduser-secret.sh
+files/
+files/ldap.txt
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating MDS ldap.txt Secret
+
+```
+./create-mds-binduser-secret.sh
+secret/mds-binduser
+```
+
 ## Generate Bearer Auth Assets
 
+You can manually generate a File Based userstore.txt providing a namespace, encryption type and credential file
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-file-userstore.sh -n <namespace> -e none -u /path/to/userstore.txt
+```
+
+```
+cmd/
+cmd/create-cleartext-userstore-secret.sh
+files/
+files/cleartext-userstore.txt
+```
+
 ## Generate OIDC Credential Secret
+
+You can manually generate a File Based userstore.txt providing a namespace, encryption type and credential file
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/creds/create-file-userstore.sh -n <namespace> -e none -u /path/to/userstore.txt
+```
+
+```
+cmd/
+cmd/create-cleartext-userstore-secret.sh
+files/
+files/cleartext-userstore.txt
+```
