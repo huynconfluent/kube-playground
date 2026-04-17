@@ -66,10 +66,19 @@ fi
 
 generate_bash_script () {
 
-    secret_name=$1
-    file_path=$2
+    side=$1 
+    username=$2
+    if [ "$side" == "client" ]; then
+        secret_name="cbasic-$username"
+    elif [ "$side" == "server" ]; then
+        secret_name="sbasic-$username"
+    else
+        printf "Side not recognized, exiting...\n"
+        exit 1
+    fi
+    file_path=$3
     cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=basic.txt=$file_path"
-    file_name="create-$secret_name-secret.sh"
+    file_name="create-$side-basic-$username-secret.sh"
     gen_path="$CMD_GEN_DIR/$file_name"
 
     # uncomment to debug
@@ -82,7 +91,7 @@ generate_bash_script () {
     printf "eval \"\$KCMD %s\"\n" "$cmd" >> $gen_path
     chmod +x "$gen_path"
 
-    printf "Created bash script at %s\n" "$gen_path"
+    printf "\nCreated %s-side bash script at %s\n" "$side" "$gen_path"
 
 }
 
@@ -131,13 +140,12 @@ for user in "${USERS[@]}"; do
     password=$(echo ${user} | awk -F ':' '{ print $2 }')
 
     # client side
-    printf "Creating client side %s basic.txt\n" "$component"
     printf "\nAdding %s server-side record in %s...." "$username" "$SERVER_BASIC_AUTH_FILE"
     printf "username=%s\npassword=%s\n" "$username" "$password" > "$CLIENT_GEN_DIR/$COMPONENT/$username-basic.txt"
     printf "\nAdding %s client-side record to %s..." "$username" "$CLIENT_GEN_DIR/$COMPONENT/$username-basic.txt"
 
-    generate_bash_script "basic-client-$username" "$CLIENT_GEN_DIR/$COMPONENT/$username-basic.txt"
+    generate_bash_script "client" "$username" "$CLIENT_GEN_DIR/$COMPONENT/$username-basic.txt"
 done
 
 # create server side cmd
-generate_bash_script "basic-server-$COMPONENT" "$SERVER_BASIC_AUTH_FILE"
+generate_bash_script "server" "$COMPONENT" "$SERVER_BASIC_AUTH_FILE"
