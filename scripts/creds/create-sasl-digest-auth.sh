@@ -62,11 +62,11 @@ generate_server_bash_script () {
     if [ "$1" == "json" ]; then
         file_key="digest-users.json"
         secret_name="digest-zookeeper-server-json"
-        file_name="create-digest-server-zookeeper-json-secret.sh"
+        file_name="create-server-digest-json-zookeeper-secret.sh"
     else
         file_key="digest-jaas.conf"
         secret_name="digest-zookeeper-server-jaas"
-        file_name="create-digest-server-zookeeper-jaas-secret.sh"
+        file_name="create-server-digest-jaas-zookeeper-secret.sh"
     fi
     cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$file_key=$file_path"
     gen_path="$CMD_GEN_DIR/$file_name"
@@ -91,8 +91,8 @@ generate_client_bash_script () {
     jaas_file_path="$3"
 
     # create txt secret
-    cmd="-n \$NAMESPACE create secret generic digest-$username-txt --from-file=digest.txt=$txt_file_path"
-    file_name="create-digest-client-$username-txt-secret.sh"
+    cmd="-n \$NAMESPACE create secret generic dtxt-$username --from-file=digest.txt=$txt_file_path"
+    file_name="create-client-digest-txt-$username-secret.sh"
     gen_path="$CMD_GEN_DIR/$file_name"
     
     # uncomment to debug
@@ -108,8 +108,8 @@ generate_client_bash_script () {
     printf "Created bash script at %s\n" "$gen_path"
 
     # create jaas secret
-    cmd="-n \$NAMESPACE create secret generic digest-$username-jaas --from-file=digest-jaas.conf=$jaas_file_path"
-    file_name="create-digest-client-$username-jaas-secret.sh"
+    cmd="-n \$NAMESPACE create secret generic djaas-$username --from-file=digest-jaas.conf=$jaas_file_path"
+    file_name="create-client-digest-jaas-$username-secret.sh"
     gen_path="$CMD_GEN_DIR/$file_name"
     
     # uncomment to debug
