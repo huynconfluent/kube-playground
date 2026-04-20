@@ -10,6 +10,7 @@ CMF_HELM_NAME="cmf"
 CMF_HELM_REPO="confluentinc/confluent-manager-for-apache-flink"
 # default to no options
 CMF_HELM_INSTALL_OPTS=""
+OPENSHIFT=false
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -24,19 +25,23 @@ for PKG in $REQUIRED_PKG; do
 done
 
 usage() {
-    printf "Usage: $0 [-v] [CMF_VERSION] [-n] [CMF_NAMESPACE]\n"
-    printf "\t-v 2.2.0          (required) Specifies CMF Version to deploy\n"
-    printf "\t-v namespace      (required) Specifies namespace to deploy in\n"
+    printf "Usage: $0 [-v] [CMF_VERSION] [-n] [CMF_NAMESPACE] [-o]\n"
+    printf "\t-v [string]           (required) Specifies CMF Version to deploy\n"
+    printf "\t-o                    (optional) Deploy in Openshift\n"
+    printf "\t-v namespace          (required) Specifies namespace to deploy in\n"
     exit 1
 }
 
-while getopts "v:n:" opt; do
+while getopts "v:n:o" opt; do
     case $opt in
         v)
             CMF_IMAGE_VERSION=$OPTARG
             ;;
         n)
             CMF_NAMESPACE=$OPTARG
+            ;;
+        o)
+            OPENSHIFT=true
             ;;
         *)
             usage
@@ -112,7 +117,9 @@ deploy_cmf () {
         fi
 
         # for opneshift
-        #CMF_HELM_INSTALL_OPTS=" --set podSecurity.securityContext.fsGroup=null  --set podSecurity.securityContext.runAsUser=null"
+        if [ "$OPENSHIFT" == "true" ]; then
+            CMF_HELM_INSTALL_OPTS=" --set podSecurity.securityContext.fsGroup=null --set podSecurity.securityContext.runAsUser=null"
+        fi
 
         # creating helm install command
         # TODO: pass in a values.yaml file to configure kafka connection
