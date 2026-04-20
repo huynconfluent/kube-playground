@@ -49,18 +49,13 @@ while getopts "v:n:o" opt; do
     esac
 done
 
+
 if [ -z "$CMF_IMAGE_VERSION" ] || [ -z "$CMF_NAMESPACE" ]; then
     printf "\nMust provide arguments with command!"
     usage
 fi
 
-# Determine CFK Helm Version
-if [ "$(grep -c $CFK_IMAGE_VERSION $BASE_DIR/configs/cfk/version_mapping.json)" -ge 1 ]; then
-    CFK_HELM_VERSION=$(jq -r 'to_entries[] | select(.value == '\"$CFK_IMAGE_VERSION\"') | .key' $BASE_DIR/configs/cfk/version_mapping.json)
-else
-    printf "\nCFK Version could not be determined, exiting....\n"
-    exit 1
-fi
+printf "CMF VERSION: %s\n" "$CMF_IMAGE_VERSION"
 
 update_helm_repo () {
     # helm update
@@ -139,9 +134,11 @@ deploy_cmf () {
         eval "$install_cmd"
        
         # wait for CMF Operator to be ready
-        timeout=60
+        timeout=120
         sleep_in_seconds=5
-        while [ "$(kubectl -n ${CMF_NAMESPACE} get deployment --ignore-not-found=true $l_deployment_name | grep -c '1/1')" -lt 1 ]; do
+
+        printf "Command: %s %s\n" "$CMF_NAMESPACE" "$l_deployment_name"
+        while [ "$(kubectl -n $CMF_NAMESPACE get pod | grep $l_deployment_name |  grep -c '1/1')" -lt 1 ]; do
             if [ $timeout -le 0 ]; then
                 printf "\nTimed out waiting on CMF deployment, %s seconds\n" "$timeout"
                 exit 1
