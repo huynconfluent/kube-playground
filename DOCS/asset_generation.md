@@ -544,34 +544,71 @@ secret/mds-binduser
 
 ## Generate Bearer Auth Assets
 
-You can manually generate a File Based userstore.txt providing a namespace, encryption type and credential file
+You can manually generate bearer credentials by providing a namespace and a credential json file.
 
 ```
 cd kube-playground
 export BASE_DIR=$(pwd)
-./scripts/creds/create-file-userstore.sh -n <namespace> -e none -u /path/to/userstore.txt
+./scripts/creds/create-bearer-auth.sh -n <namespace> -u /path/to/user.json
 ```
 
 ```
 cmd/
-cmd/create-cleartext-userstore-secret.sh
+cmd/create-bearer-<username>-secret.sh
 files/
-files/cleartext-userstore.txt
+files/<username>-bearer.txt
+```
+
+### Creating a JSON file
+
+The creation helper script takes in a JSON file that consist of username+password key pairs.
+
+```
+{
+    "username1": "password",
+    "username2": "password"
+}
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating bearer.txt Secret
+
+```
+./create-bearer-<username>-secret.sh
+secret/bearer-<username>
 ```
 
 ## Generate OIDC Credential Secret
 
-You can manually generate a File Based userstore.txt providing a namespace, encryption type and credential file
+You can manually generate a OIDC Credential Secret used for SSO configuration by providing a namespace and credentials.
 
 ```
 cd kube-playground
 export BASE_DIR=$(pwd)
-./scripts/creds/create-file-userstore.sh -n <namespace> -e none -u /path/to/userstore.txt
+./scripts/creds/create-oidc-client-auth.sh -n <namespace> -u <clientId> -p <clientSecret>
 ```
 
 ```
 cmd/
-cmd/create-cleartext-userstore-secret.sh
+cmd/create-oidc-<clientId>-secret.sh
 files/
-files/cleartext-userstore.txt
+files/<clientId>-oidcClientSecret.txt
+```
+
+### Executing the shell script
+
+With assets, this will also autogenerate a shell script to quickly create the asset in kubernetes.
+
+This means that you can execute the following shell scripts and it will create a kubernetes secret in the pre-defined namespace when you created the asset the following shell script and it will create a kubernetes secret in the pre-defined namespace when you created the asset.
+
+#### Creating oidcClientSecret.txt Secret
+
+```
+./create-oidc-<clientId>-secret.sh
+secret/oidc-<clientId>
 ```
