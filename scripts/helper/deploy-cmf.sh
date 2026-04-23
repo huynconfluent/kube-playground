@@ -28,7 +28,7 @@ usage() {
     printf "Usage: $0 [-v] [CMF_VERSION] [-n] [CMF_NAMESPACE] [-o]\n"
     printf "\t-v [string]           (required) Specifies CMF Version to deploy\n"
     printf "\t-o                    (optional) Deploy in Openshift\n"
-    printf "\t-v namespace          (required) Specifies namespace to deploy in\n"
+    printf "\t-n namespace          (required) Specifies namespace to deploy in\n"
     exit 1
 }
 
