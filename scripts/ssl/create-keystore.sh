@@ -194,4 +194,4 @@ fi
 
 # generate jksPassword.txt
 printf "Creating jksPassword.txt for %s...\n" "$COMPONENT_NAME"
-printf "jksPassword=%s\n" "$KEYSTORE_PASSWORD" > "$PASSWORD_FILE"
+printf "jksPassword=%s" "$KEYSTORE_PASSWORD" > "$PASSWORD_FILE"

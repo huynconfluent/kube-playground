@@ -183,4 +183,4 @@ create_truststore
 
 # generate jksPassword.txt
 printf "Creating jksPassword.txt for %s...\n" "$COMPONENT_NAME"
-printf "jksPassword=%s\n" "$TRUSTSTORE_PASSWORD" > "$PASSWORD_FILE"
+printf "jksPassword=%s" "$TRUSTSTORE_PASSWORD" > "$PASSWORD_FILE"
