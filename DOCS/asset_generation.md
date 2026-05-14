@@ -13,7 +13,7 @@ So the benefit of this is that you have physical assets that you can use in any 
 Kube-playground will generate the following assets
 
 - PEM files (Self Signed CA, Intermediate CA, and Server/Client Certificates)
-- P12, JKS, and BCFKS Keystores/Truststores
+- P12, JKS, and BCFKS Keystores/Truststores (only when FIPS enabled)
 - MDS Keypair files (Public and Private Keys)
 - LDAP MDS Bind User Credential
 - Basic Auth Credentials
@@ -61,20 +61,25 @@ export BASE_DIR=$(pwd)
 ./scripts/helper/deploy-creds.sh
 ```
 
-What's great about this is that these scripts can take an optional flag for a clean deployment (e.g. delete and re-create)
+What's great about this is that these scripts can take an optional flag for a clean deployment (e.g. delete and re-create) as well as a flag for FIPS asset generation too!
 
 ### Delete and Re-create Assets
 
 ```
 cd kube-playground
 export BASE_DIR=$(pwd)
-./scripts/helper/deploy-ssl.sh -c
+./scripts/helper/deploy-ssl.sh -c -f
 ./scripts/helper/deploy-creds.sh -c
 ```
 
 > [!CAUTION]
 > This will delete the contents of `$BASE_DIR/generated/ssl` and `$BASE_DIR/generated/creds`
 > So be careful when using this optional flag.
+
+> [!TIP]
+> The `deploy-ssl.sh` script can take the `-f` optional flag for generating FIPS related
+> assets such as `.bcfks` keystore and truststores along with the typical bash script
+> to create the kubernetes secrets.
 
 ## Generate SASL/OAUTH Assets
 
