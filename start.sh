@@ -239,7 +239,7 @@ check_cfk_version () {
     cfk_version_mapping="$BASE_DIR/configs/cfk/version_mapping.json"
    
     # check that CFK_VERSION is a valid Helm or Operator Version
-    if [ -z "$(jq -r 'to_entries[] | select(.key == '\"$CFK_VERSION\"') | .value' $cfk_version_mapping)" ] || [ -z "$(jq -r 'to_entries[] | select(.value == '\"$CFK_VERSION\"') | .key' $cfk_version_mapping)" ]; then
+    if [ -z "$(jq -r 'to_entries[] | select(.key == '\"$CFK_VERSION\"') | .value' $cfk_version_mapping)" ] && [ -z "$(jq -r 'to_entries[] | select(.value == '\"$CFK_VERSION\"') | .key' $cfk_version_mapping)" ]; then
         printf "CFK Version not recognized: %s, exiting...\n" "$CFK_VERSION"
     fi
 }
