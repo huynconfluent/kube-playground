@@ -32,7 +32,7 @@ fi
 # A bunch of defaults
 OPTIND=1
 DEPLOY_CLEAN=false
-FIPS_ENABLED=false
+FIPS_SETTING=false
 CERT_CHAIN=1
 CA_ROOT_NAME="GTS Root X"
 CA_ROOT_BASE='{"C": "US","O": "Confluent Demo"}'
@@ -73,7 +73,7 @@ while getopts "cf" opt; do
             DEPLOY_CLEAN=true
             ;;
         f)
-            FIPS_ENABLED=true
+            FIPS_SETTING=true
             ;;
         *)
             usage
@@ -180,20 +180,17 @@ else
     fi
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates"
-    #printf "\n====Creating SSL Certificates====\n"
+
     # Generating Root CA
-    #export WORK_DIR=$GENERATED_DIR/root_ca
     source $SCRIPT_DIR/create-ca.sh "$CA_ROOT_NAME" "$CA_ROOT_BASE" "$CA_EXPIRY" "$CA_KEY_ALGO" "$CA_KEY_SIZE"
     
     # Generating Intermediate CA
-    #export WORK_DIR=$GENERATED_DIR/intermediate_ca
     source $SCRIPT_DIR/create-intermediate-ca.sh "$CERT_CHAIN" "$CA_INTERMEDIATE_NAME" "$CA_INTERMEDIATE_BASE" "$CA_INTERMEDIATE_EXPIRY" "$CA_INTERMEDIATE_KEY_ALGO" "$CA_INTERMEDIATE_KEY_SIZE" "$GENERATED_DIR/root_ca/ca.pem" "$GENERATED_DIR/root_ca/ca-key.pem"
     
     l_ca_cert="$GENERATED_DIR/intermediate_ca/intermediate_$CERT_CHAIN.pem"
     l_ca_key="$GENERATED_DIR/intermediate_ca/intermediate_$CERT_CHAIN-key.pem" 
 
     # Generating Component Certs
-    #export WORK_DIR=$GENERATED_DIR/component GEN_DIR=$GENERATED_DIR/files
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for keycloak"
     combined_san=$(echo "[\"keycloak\",\"keycloak.$KUBE_BASEDOMAIN\",\"keycloak.svc.cluster.local\"] $KUBE_IDENTITY_SAN_BASE $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "keycloak" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -209,7 +206,7 @@ else
     # this will include both kafkacontroller and kraftcontroller
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kraftcontroller"
     combined_san=$(echo "[\"kraftcontroller\",\"kraftcontroller.$KUBE_BASEDOMAIN\",\"*.kraftcontroller.$KUBE_BASEDOMAIN\",\"kraftcontroller.svc.cluster.local\",\"kafkacontroller\",\"kafkacontroller.$KUBE_BASEDOMAIN\",\"*.kafkacontroller.$KUBE_BASEDOMAIN\",\"kafkacontroller.svc.cluster.local\",\"kafkacontroller.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkacontroller.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "kafkacontroller" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "kafkacontroller" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -218,7 +215,7 @@ else
     # should include both kafka and kafkabroker
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkabroker"
     combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluter.local\",\"kafkabroker\",\"kafkabroker.$KUBE_BASEDOMAIN\",\"*.kafkabroker.$KUBE_BASEDOMAIN\",\"kafkabroker.svc.cluster.local\",\"*.kafkabroker.svc.cluster.local\",\"kafkabroker.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkabroker.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "kafkabroker" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "kafkabroker" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -226,7 +223,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for schemaregistry"
     combined_san=$(echo "[\"schemaregistry\",\"schemaregistry.$KUBE_BASEDOMAIN\",\"*.schemaregistry.$KUBE_BASEDOMAIN\",\"schemaregistry.svc.cluster.local\",\"schemaregistry.$CFK_NAMESPACE.svc.cluster.local\",\"*.schemaregistry.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "schemaregistry" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "schemaregistry" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -234,7 +231,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for connect"
     combined_san=$(echo "[\"connect\",\"connect.$KUBE_BASEDOMAIN\",\"*.connect.$KUBE_BASEDOMAIN\",\"connect.svc.cluster.local\",\"connect.$CFK_NAMESPACE.svc.cluster.local\",\"*.connect.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "connect" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "connect" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -242,7 +239,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkarestproxy"
     combined_san=$(echo "[\"kafkarestproxy\",\"kafkarestproxy.$KUBE_BASEDOMAIN\",\"*.kafkarestproxy.$KUBE_BASEDOMAIN\",\"kafkarestproxy.svc.cluster.local\",\"kafkarestproxy.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkarestproxy.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "kafkarestproxy" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "kafkarestproxy" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -250,7 +247,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for replicator"
     combined_san=$(echo "[\"replicator\",\"replicator.$KUBE_BASEDOMAIN\",\"*.replicator.$KUBE_BASEDOMAIN\",\"replicator.svc.cluster.local\",\"replicator.$CFK_NAMESPACE.svc.cluster.local\",\"*.replicator.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "replicator" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "replicator" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -258,7 +255,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for ksqldb"
     combined_san=$(echo "[\"ksqldb\",\"ksqldb.$KUBE_BASEDOMAIN\",\"*.ksqldb.$KUBE_BASEDOMAIN\",\"ksqldb.svc.cluster.local\",\"ksqldb.$CFK_NAMESPACE.svc.cluster.local\",\"*.ksqldb.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "ksqldb" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "ksqldb" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -266,7 +263,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for controlcenter"
     combined_san=$(echo "[\"controlcenter\",\"controlcenter.$KUBE_BASEDOMAIN\",\"*.controlcenter.$KUBE_BASEDOMAIN\",\"controlcenter.svc.cluster.local\",\"controlcenter.$CFK_NAMESPACE.svc.cluster.local\",\"*.controlcenter.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "controlcenter" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "controlcenter" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -274,7 +271,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for flink"
     combined_san=$(echo "[\"flink\",\"flink.$KUBE_BASEDOMAIN\",\"*.flink.$KUBE_BASEDOMAIN\",\"flink.$FLINK_NAMESPACE.svc.cluster.local\",\"*.flink.$FLINK_NAMESPACE.svc.cluster.local\",\"flink.svc.cluster.local\",\"flink.$CFK_NAMESPACE.svc.cluster.local\",\"*.flink.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
-    if [ "$FIPS_ENABLED" == "true" ]; then
+    if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "flink" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
         generate_key_and_trust "flink" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
@@ -457,7 +454,6 @@ else
     printf "\nSSL Certificate Generation complete!\n"
     
     source $BASE_DIR/scripts/system/header.sh -t "Generating MDS Keypair"
-    #printf "\n=====Generating MDS Keypair======\n"
     
     export GEN_DIR=$BASE_DIR/generated/ssl
     source $BASE_DIR/scripts/ssl/create-mds-keypair.sh
@@ -465,7 +461,6 @@ else
     generate_mds_bash_script
     
     source $BASE_DIR/scripts/system/header.sh -t "Generating Bash Scripts"
-    #printf "\n\n====Generating Bash Scripts======\n"
     
     COMP="zookeeper kafkacontroller kafkabroker schemaregistry connect kafkarestproxy replicator ksqldb controlcenter flink"
     
@@ -479,7 +474,7 @@ else
         generate_tls_bash_script "$component" "$fullchain_path" "$cacerts_path" "$privkey_path"
 
         # generate scripts for adding jks secrets, default to using keystore's jksPassword.txt since it "should" be the same as the truststore one too
-        if [ "$FIPS_ENABLED" == "true" ] && [ "$component" != "zookeeper" ]; then
+        if [ "$FIPS_SETTING" == "true" ] && [ "$component" != "zookeeper" ]; then
             keystore_path="$GENERATED_DIR/files/$component.keystore.p12"
             truststore_path="$GENERATED_DIR/files/$component.truststore.p12"
         else
@@ -523,9 +518,6 @@ else
 
     done
 
-
-    
-    #printf "\n\n====Completed SSL Generation=====\n"
     printf "\nSSL Files and bash scripts for kubernetes secret creation have been generated....\n\n"
     source $BASE_DIR/scripts/system/header.sh -t "Completed SSL Asset Generation"
 fi
