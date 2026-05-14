@@ -12,8 +12,8 @@ openldap:
 env:
   LDAP_ORGANISATION: "Confluent Demo"
   LDAP_DOMAIN: "confluentdemo.io"
-  LDAP_ADMIN_PASSWORD: "ldapadmin"
-  LDAP_CONFIG_PASSWORD: "ldapadmin-topsecret!"
+  LDAP_ADMIN_PASSWORD: "ldapadmin-topsecret!"
+  LDAP_CONFIG_PASSWORD: "ldapconfig-topsecret!"
   LDAP_READONLY_USER: "true"
   LDAP_READONLY_USER_USERNAME: "ldapreadonly"
   LDAP_READONLY_USER_PASSWORD: "ldapreadonly-topsecret!"
