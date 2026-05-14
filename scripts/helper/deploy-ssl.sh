@@ -100,7 +100,6 @@ generate_key_and_trust () {
     source $SCRIPT_DIR/create-user-cert.sh "$l_name" "$l_base" "$l_san" "$l_expiry" "$l_key_algo" "$l_key_size" "$l_ca_cert" "$l_ca_key" "$l_cacerts" "$l_profile"
     # Call keystore creation
     if [ "$l_fips" == "fips" ]; then
-        printf "creating fips\n"
         source $SCRIPT_DIR/create-keystore.sh -c "$l_name" -k "$GENERATED_DIR/components/$l_name-key.pem" -a "$GENERATED_DIR/components/$l_name-fullchain.pem" -p "$KEYSTORE_PASSWORD" -f
     else
         source $SCRIPT_DIR/create-keystore.sh -c "$l_name" -k "$GENERATED_DIR/components/$l_name-key.pem" -a "$GENERATED_DIR/components/$l_name-fullchain.pem" -p "$KEYSTORE_PASSWORD"
