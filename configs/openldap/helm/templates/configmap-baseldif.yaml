@@ -832,12 +832,12 @@ data:
     dn: cn=c3users,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
-    memberuid: cn=barnie rubble,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=charlie sheen,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=donna troy,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=ororo munroe,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=sam bridges,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=alice lookingglass,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=alicelookingglass,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=devuser,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
 
@@ -881,8 +881,8 @@ data:
     dn: cn=readonlyusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
-    memberuid: cn=barnie rubble,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=charlie sheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=devuser,ou=users,{{ .Values.openldap.base_dn }}
 
     dn: cn=adminusers,ou=groups,{{ .Values.openldap.base_dn }}
