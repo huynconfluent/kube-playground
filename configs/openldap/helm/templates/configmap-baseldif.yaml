@@ -589,68 +589,7 @@ data:
     loginShell: /bin/bash
     homeDirectory: /home/flinkadmin
 
-  10_servicegroup.ldif: |-
-    dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: service
-    gidNumber: 5000
-  10_developergroup.ldif: |-
-    dn: cn=developers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: developers
-    gidNumber: 5001
-  10_c3group.ldif: |-
-    dn: cn=c3users,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: c3users
-    gidNumber: 5002
-  10_krpusers.ldif: |-
-    dn: cn=krpusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: krpusers
-    gidNumber: 5002
-  10_connectusers.ldif: |-
-    dn: cn=connectusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: connectusers
-    gidNumber: 5003
-  10_srusers.ldif: |-
-    dn: cn=srusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: srusers
-    gidNumber: 5004
-  10_ksqlusers.ldif: |-
-    dn: cn=ksqlusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: ksqlusers
-    gidNumber: 5005
-  10_readonlyusers.ldif: |-
-    dn: cn=readonlyusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: readonlyusers
-    gidNumber: 5006
-  10_adminusers.ldif: |-
-    dn: cn=adminusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: adminusers
-    gidNumber: 5007
-  10_flinkusers.ldif: |-
-    dn: cn=flinkusers,ou=groups,{{ .Values.openldap.base_dn }}
-    objectClass: top
-    objectClass: posixGroup
-    cn: flinkusers
-    gidNumber: 5008
-
-  777_superuser.ldif: |-
+  10_superuser.ldif: |-
     dn: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
@@ -660,13 +599,13 @@ data:
     givenName: superuser
     cn: superuser
     displayName: super user
-    uidNumber: 1000
+    uidNumber: 10000
     gidNumber: 5002
     userPassword: superuser-secret
     gecos: superuser
     loginShell: /bin/bash
     homeDirectory: /home/superuser
-  777_baduser.ldif: |-
+  10_baduser.ldif: |-
     dn: cn=baduser,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
@@ -682,8 +621,8 @@ data:
     gecos: baduser
     loginShell: /bin/bash
     homeDirectory: /home/baduser
-  777_barnierubble.ldif: |-
-    dn: cn=barnie rubble,ou=users,{{ .Values.openldap.base_dn }}
+  10_barnierubble.ldif: |-
+    dn: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
     objectClass: shadowAccount
@@ -698,8 +637,8 @@ data:
     gecos: barnierubble
     loginShell: /bin/bash
     homeDirectory: /home/barnierubble
-  777_charliesheen.ldif: |-
-    dn: cn=charlie sheen,ou=users,{{ .Values.openldap.base_dn }}
+  10_charliesheen.ldif: |-
+    dn: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
     objectClass: shadowAccount
@@ -714,8 +653,8 @@ data:
     gecos: charliesheen
     loginShell: /bin/bash
     homeDirectory: /home/charliesheen
-  777_donnatroy.ldif: |-
-    dn: cn=donna troy,ou=users,{{ .Values.openldap.base_dn }}
+  10_donnatroy.ldif: |-
+    dn: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
     objectClass: shadowAccount
@@ -730,8 +669,8 @@ data:
     gecos: donnatroy
     loginShell: /bin/bash
     homeDirectory: /home/donnatroy
-  777_ororomunroe.ldif: |-
-    dn: cn=ororo munroe,ou=users,{{ .Values.openldap.base_dn }}
+  10_ororomunroe.ldif: |-
+    dn: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
     objectClass: shadowAccount
@@ -746,8 +685,8 @@ data:
     gecos: ororomunroe
     loginShell: /bin/bash
     homeDirectory: /home/ororomunroe
-  777_sambridges.ldif: |-
-    dn: cn=sam bridges,ou=users,{{ .Values.openldap.base_dn }}
+  10_sambridges.ldif: |-
+    dn: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
     objectClass: shadowAccount
@@ -762,8 +701,8 @@ data:
     gecos: sambridges
     loginShell: /bin/bash
     homeDirectory: /home/sambridges
-  777_alicelookingglass.ldif: |-
-    dn: cn=alice lookingglass,ou=users,{{ .Values.openldap.base_dn }}
+  10_alicelookingglass.ldif: |-
+    dn: cn=alicelookingglass,ou=users,{{ .Values.openldap.base_dn }}
     objectClass: inetOrgPerson
     objectClass: posixAccount
     objectClass: shadowAccount
@@ -779,7 +718,68 @@ data:
     loginShell: /bin/bash
     homeDirectory: /home/alicelookingglass
 
-  999_addgroup.ldif: |-
+  11_servicegroup.ldif: |-
+    dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: service
+    gidNumber: 5000
+  11_developergroup.ldif: |-
+    dn: cn=developers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: developers
+    gidNumber: 5001
+  11_c3group.ldif: |-
+    dn: cn=c3users,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: c3users
+    gidNumber: 5002
+  11_krpusers.ldif: |-
+    dn: cn=krpusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: krpusers
+    gidNumber: 5002
+  11_connectusers.ldif: |-
+    dn: cn=connectusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: connectusers
+    gidNumber: 5003
+  11_srusers.ldif: |-
+    dn: cn=srusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: srusers
+    gidNumber: 5004
+  11_ksqlusers.ldif: |-
+    dn: cn=ksqlusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: ksqlusers
+    gidNumber: 5005
+  11_readonlyusers.ldif: |-
+    dn: cn=readonlyusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: readonlyusers
+    gidNumber: 5006
+  11_adminusers.ldif: |-
+    dn: cn=adminusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: adminusers
+    gidNumber: 5007
+  11_flinkusers.ldif: |-
+    dn: cn=flinkusers,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: flinkusers
+    gidNumber: 5008
+
+  20_addgroup.ldif: |-
     dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
