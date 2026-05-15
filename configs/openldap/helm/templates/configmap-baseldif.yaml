@@ -779,7 +779,7 @@ data:
     cn: flinkusers
     gidNumber: 5008
 
-  20_addgroup.ldif: |-
+  12_addgroup.ldif: |-
     dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
