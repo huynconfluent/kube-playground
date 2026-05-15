@@ -18,14 +18,14 @@ spec:
           authentication:
             type: simple
             simple:
-              secretRef: ldap-bind-creds
+              secretRef: mds-binduser
           {{- if .Values.tls.enabled }}
           tls:
             enabled: true
           {{- end }}
           configuration:
-            groupMemberAttribute: memberuid
-            groupMemberAttributePattern: CN=(.*),.*
+            groupMemberAttribute: memberUid
+            groupMemberAttributePattern: cn=(.*),ou=users,{{ .Values.openldap.base_dn }}
             groupNameAttribute: cn
             groupObjectClass: posixGroup
             groupSearchBase: ou=groups,{{ .Values.openldap.base_dn }}
