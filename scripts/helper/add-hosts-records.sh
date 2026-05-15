@@ -2,7 +2,6 @@
 
 # ./add-hosts-records.sh
 
-BASE_DIR=$(pwd)
 REQUIRED_PKG="k3d kubectl jq"
 ETC_HOST="/etc/hosts"
 TMP_ETC_HOST="/etc/hosts.tmp"
