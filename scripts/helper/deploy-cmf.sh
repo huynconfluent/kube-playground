@@ -134,7 +134,7 @@ deploy_cmf () {
         eval "$install_cmd"
        
         # wait for CMF Operator to be ready
-        timeout=120
+        timeout=180
         sleep_in_seconds=5
 
         printf "Command: %s %s\n" "$CMF_NAMESPACE" "$l_deployment_name"
