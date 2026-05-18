@@ -131,7 +131,7 @@ generate_jks_bash_script () {
 }
 
 generate_bcfks_bash_script () {
-    # TODO: swap the jks files for their p12 files instead
+
     component=$1
     jks_keystore=$2
     jks_truststore=$3
@@ -164,6 +164,37 @@ generate_mds_bash_script () {
     chmod +x "$mds_keypair_script"
 
     printf "Created bash script at %s\n" "$mds_keypair_script"
+}
+
+generate_cmf_bash_script () {
+
+    cmf_configmap_keystore_name="cmf-server-keystore"
+    cmf_configmap_truststore_name="cmf-server-truststore"
+    cmf_keystore_file="$GENERATED_DIR/files/cmf.keystore.jks"
+    cmf_truststore_file="$GENERATED_DIR/files/cmf.truststore.jks"
+    cmf_configmap_script="$GENERATED_DIR/cmd/cmf/create-cmf-ssl-configmap.sh"
+    cmd_keystore="-n \$NAMESPACE create configmap $cmf_configmap_keystore_name --from-file $cmf_keystore_file"
+    cmd_truststore="-n \$NAMESPACE create configmap $cmf_configmap_truststore_name --from-file $cmf_truststore_file"
+
+    # uncomment to debug
+    #printf "\nKubectl Command: eval kubectl|oc %s\n" "$cmd_keystore"
+    #printf "\nKubectl Command: eval kubectl|oc %s\n" "$cmd_truststore"
+
+    if [ ! -d "$GENERATED_DIR/cmd/cmf" ]; then
+        printf "\nMaking Command directory in %s\n" "$GENERATED_DIR/cmd/cmf"
+        mkdir -p "$GENERATED_DIR/cmd/cmf"
+    fi
+
+    printf "#!/bin/sh\n\n" > $cmf_configmap_script
+    printf "# ./create-cmf-ssl-configmap.sh [kubectl|oc] [namespace]\n\n" >> $cmf_configmap_script
+    printf "KCMD=\${1:-kubectl}\n" >> $cmf_configmap_script
+    printf "NAMESPACE=\${2:-%s}\n" "$CFK_NAMESPACE" >> $cmf_configmap_script
+    printf "eval \"\$KCMD %s\"\n" "$cmd_keystore" >> $cmf_configmap_script
+    printf "eval \"\$KCMD %s\"\n" "$cmd_truststore" >> $cmf_configmap_script
+
+    chmod +x "$cmf_configmap_script"
+
+    printf "Created bash script at %s\n" "$cmf_configmap_script"
 }
 
 source $BASE_DIR/scripts/system/header.sh -t "Auto Generating SSL Assets"
@@ -516,6 +547,11 @@ else
         generate_jks_bash_script "$component" "$keystore_path" "$truststore_path" "$passwordFile"
 
     done
+
+    # cmf server secret generation
+    source $BASE_DIR/scripts/system/header.sh -t "Create CMF Server Assets"
+    generate_cmf_bash_script
+    source $BASE_DIR/scripts/system/header.sh -t "Completed CMF Server Assets"
 
     printf "\nSSL Files and bash scripts for kubernetes secret creation have been generated....\n\n"
     source $BASE_DIR/scripts/system/header.sh -t "Completed SSL Asset Generation"
