@@ -173,8 +173,8 @@ generate_cmf_bash_script () {
     cmf_keystore_file="$GENERATED_DIR/files/cmf.keystore.jks"
     cmf_truststore_file="$GENERATED_DIR/files/cmf.truststore.jks"
     cmf_configmap_script="$GENERATED_DIR/cmd/cmf/create-cmf-ssl-configmap.sh"
-    cmd_keystore="-n \$NAMESPACE create configmap $cmf_configmap_keystore_name --from-file $cmf_keystore_file"
-    cmd_truststore="-n \$NAMESPACE create configmap $cmf_configmap_truststore_name --from-file $cmf_truststore_file"
+    cmd_keystore="-n \$NAMESPACE create configmap $cmf_configmap_keystore_name --from-file=keystore.jks=$cmf_keystore_file"
+    cmd_truststore="-n \$NAMESPACE create configmap $cmf_configmap_truststore_name --from-file=truststore.jks=$cmf_truststore_file"
 
     # uncomment to debug
     #printf "\nKubectl Command: eval kubectl|oc %s\n" "$cmd_keystore"
