@@ -371,13 +371,7 @@ fi
 
 ###########################DEPLOY FLINK########################################
 if [ "$DEPLOY_FLINK" == "true" ]; then
-    source $BASE_DIR/scripts/system/header.sh -t "Deploy Flink"
-    # Call deploy cert-manager
-    source $BASE_DIR/scripts/helper/deploy-cert-manager.sh -v "$CERT_MANAGER_VERSION"
-    # Call cp-flink
-    source $BASE_DIR/scripts/helper/deploy-flink-operator.sh -v "1.130.2" -w "confluent,flink"
-    # Call deploy-cmf
-    source $BASE_DIR/scripts/helper/deploy-cmf.sh -v "$CMF_VERSION" -n "confluent"
+    source $BASE_DIR/scripts/helper/deploy-flink-setup.sh
 fi
 
 # DONE!
