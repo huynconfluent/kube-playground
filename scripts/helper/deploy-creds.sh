@@ -43,7 +43,9 @@ source $BASE_DIR/scripts/system/header.sh -t "Auto Generate Credential Secrets"
 # call SASL/OAUTHBEARER
 eval $BASE_DIR/scripts/creds/create-sasl-oauth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-oauth-users.json" -m "/mnt/sslcerts/keypair/mds-keypair-public.pem" -t "/mnt/sslcerts/truststore.p12" -p "mystorepassword" -c
 # call SASL/PLAIN
-eval $BASE_DIR/scripts/creds/create-sasl-plain-auth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-plain-users.json" -i "kafkabroker:kafkabroker-secret" -c
+eval $BASE_DIR/scripts/creds/create-sasl-plain-client-auth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-plain-users.json" -c
+eval $BASE_DIR/scripts/creds/create-sasl-plain-server-auth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-plain-users.json" -i "kafkabroker:kafkabroker-secret" -c
+eval $BASE_DIR/scripts/creds/create-sasl-plain-server-auth.sh -n "$NAMESPACE" -u "$BASE_DIR/configs/creds/default-plain-users.json" -i "kafkacontroller:kafkacontroller-secret"
 # call basic auth
 eval $BASE_DIR/scripts/creds/create-basic-auth.sh -p "restproxy" -u "krpconsumer:krpconsumer-secret:user,krpproducer:krpproducer-secret:user,krpadmin:krpadmin-secret:admin,krpdeveloper:krpdeveloper-secret:developer,kafkarestproxy:kafkarestproxy-secret:admin,superuser:superuser-secret:admin" -n "$NAMESPACE" -c
 eval $BASE_DIR/scripts/creds/create-basic-auth.sh -p "ksqldb" -u "ksqldb:ksqldb-secret:admin,ksqlcli:ksqlcli-secret:admin,ksqlconsumer:ksqlconsumer-secret:user,ksqlproducer:ksqlproducer-secret:user,ksqladmin:ksqladmin-secret:admin,ksqldeveloper:ksqldeveloper-secret:developer,superuser:superuser-secret:admin" -n "$NAMESPACE"
