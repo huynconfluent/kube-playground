@@ -84,3 +84,39 @@ NAME                                                  READY   STATUS    RESTARTS
 confluent-manager-for-apache-flink-57689c4d8c-c5cp6   1/1     Running   0          23m
 confluent-operator-5c7b998d49-p72mc                   1/1     Running   0          23m
 ```
+
+#### Deploy CMF with mtls Authentication
+
+By default CMF does not deploy with any Authentication/Encryption requirement for CFK to communicate with. If we are manually deploying CMF, we can pass in the `mtls` authentication flag to automate Day 2 mTLS setup.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/helper/deploy-cmf.sh -v 2.3.1 -n confluent -a mtls
+```
+
+#### Deploy CMF with Custom Values File
+
+You can also provide a custom `values.yaml` file during the CMF deployment. Doing so will ignore the `-a` authentication flag.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./scripts/helper/deploy-cmf.sh -v 2.3.1 -n confluent -f /path/to/values.yaml
+```
+
+## Deploying Flink (Day 2 Setup)
+
+You can also deploy Flink Setup after initial CFK deployment.
+
+```
+cd kube-playground
+export BASE_DIR=$(pwd)
+./script/helper/deploy-flink-setup.sh
+```
+
+You can pass in version parameters otherwise it'll pick this up from the `.env` file.
+
+```
+./script/helper/deploy-flink-setup.sh -c 1.19.2 -f 1.130.2 -m 2.3.1
+```
