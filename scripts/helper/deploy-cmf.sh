@@ -1,13 +1,16 @@
 #!/bin/sh
 
-# ./deploy-cmf.sh -v "CMF_VERSION" -n "CMF_NAMESPACE"
+# ./deploy-cmf.sh -v "CMF_VERSION" -n "CMF_NAMESPACE" -a mtls|oauth -v VALUES.YAML
+# TODO: REST AUTH method currently: mtls. Add additional authentication options e.g. OAUTH
 
 OPTIND=1
-BASE_DIR=$(pwd)
-REQUIRED_PKG="kubectl helm"
+GEN_DIR="$BASE_DIR/generated"
+REQUIRED_PKG="kubectl helm yq"
 ENCRYPTED_DEPLOYMENT="true"
 CMF_HELM_NAME="cmf"
 CMF_HELM_REPO="confluentinc/confluent-manager-for-apache-flink"
+CMF_VALUES_FILE=""
+CMF_REST_AUTH=""
 # default to no options
 CMF_HELM_INSTALL_OPTS=""
 OPENSHIFT=false
@@ -25,17 +28,30 @@ for PKG in $REQUIRED_PKG; do
 done
 
 usage() {
-    printf "Usage: $0 [-v] [CMF_VERSION] [-n] [CMF_NAMESPACE] [-o]\n"
+    printf "Usage: $0 [-v] [CMF_VERSION] [-n] [CMF_NAMESPACE] [-o] [-f] [VALUES_FILE]\n"
     printf "\t-v [string]           (required) Specifies CMF Version to deploy\n"
+    printf "\t-f [string]           (optional) Specifies values.yaml to use for deployment\n"
+    printf "\t-a [string]           (optional) Specifies authentication method basic|bearer|oauth|mtls\n"
     printf "\t-o                    (optional) Deploy in Openshift\n"
     printf "\t-n namespace          (required) Specifies namespace to deploy in\n"
     exit 1
 }
 
-while getopts "v:n:o" opt; do
+while getopts "v:f:a:n:o" opt; do
     case $opt in
         v)
             CMF_IMAGE_VERSION=$OPTARG
+            ;;
+        f)
+            CMF_VALUES_FILE=$OPTARG
+            ;;
+        a)
+            CMF_REST_AUTH=$OPTARG
+            # validate CMF_REST_AUTH
+            if [ "$CMF_REST_AUTH" != "mtls" ] && [ "$CMF_REST_AUTH" != "oauth" ]; then
+                printf "Authentication method not recognized: %s\nMust be of mtls|oauth, exiting...\n"
+                exit 1
+            fi
             ;;
         n)
             CMF_NAMESPACE=$OPTARG
@@ -49,13 +65,15 @@ while getopts "v:n:o" opt; do
     esac
 done
 
-
 if [ -z "$CMF_IMAGE_VERSION" ] || [ -z "$CMF_NAMESPACE" ]; then
     printf "\nMust provide arguments with command!"
     usage
 fi
 
-printf "CMF VERSION: %s\n" "$CMF_IMAGE_VERSION"
+if [ ! -z "$CMF_VALUES_FILE" ]; then
+    # if values file is set, null out
+    CMF_REST_AUTH=""
+fi
 
 update_helm_repo () {
     # helm update
@@ -76,6 +94,64 @@ create_namespace () {
             printf "\nNamespace exists, skipping creation....\n"
         fi
     fi
+}
+
+create_value_file () {
+
+    # create values
+    gen_file="$GEN_DIR/cmf/values.yaml"
+    keystore_password="topsecret"
+    keystore_secret_name="cmf-server-keystore"
+    truststore_secret_name="cmf-server-truststore"
+
+    if [ ! -d "$GEN_DIR/cmf" ]; then
+        mkdir -p "$GEN_DIR/cmf"
+    fi
+
+    # start
+    printf "cmf:\n" > "$gen_file"
+
+    # mtls
+    # we're hardcoding the cmf.keystore/truststore.jks file path here
+    # we cannot apply this until the secret is applied
+    if [ "$CMF_REST_AUTH" == "mtls" ]; then
+
+        yq -i '.cmf.authentication.type = "mtls"' -o yaml "$gen_file"
+
+        yq -i '.cmf.ssl.client-auth = "need"' -o yaml "$gen_file"
+        yq -i '.cmf.ssl.keystore = "/opt/keystore/keystore.jks"' -o yaml "$gen_file"
+        yq -i ".cmf.ssl.keystore-password = \"${keystore_password}\"" -o yaml "$gen_file"
+        yq -i '.cmf.ssl.truststore = "/opt/truststore/truststore.jks"' -o yaml "$gen_file"
+        yq -i ".cmf.ssl.truststore-password = \"${keystore_password}\"" -o yaml "$gen_file"
+
+        # mounted volumes
+        yq -i '.mountedVolumes.' -o yaml "$gen_file"
+        yq -i '.mountedVolumes.volumeMounts[0].name = "truststore"' -o yaml "$gen_file"
+        yq -i '.mountedVolumes.volumeMounts[0].mountPath = "/opt/truststore"' -o yaml "$gen_file"
+
+        yq -i '.mountedVolumes.volumeMounts[1].name = "keystore"' -o yaml "$gen_file"
+        yq -i '.mountedVolumes.volumeMounts[1].mountPath = "/opt/keystore"' -o yaml "$gen_file"
+
+        yq -i '.mountedVolumes.volumes[0].name = "keystore"' -o yaml "$gen_file"
+        yq -i ".mountedVolumes.volumes[0].configMap.name = \"${keystore_secret_name}\"" -o yaml "$gen_file"
+
+        yq -i '.mountedVolumes.volumes[1].name = "truststore"' -o yaml "$gen_file"
+        yq -i ".mountedVolumes.volumes[1].configMap.name = \"${truststore_secret_name}\"" -o yaml "$gen_file"
+
+        # check that configmap exists
+        if [ "$(kubectl -n $NAMESPACE get configmap | grep -c 'cmf-server')" -ge 2 ]; then
+            printf "do nothing\n" 
+        else
+            # deploy kubernetes configmap
+            if [ -f "$GEN_DIR/ssl/cmd/cmf/create-cmf-ssl-configmap.sh" ]; then
+                source "$GEN_DIR/ssl/cmd/cmf/create-cmf-ssl-configmap.sh"
+            else
+                printf "ssl configmap are missing, exiting...\n"
+                exit 1
+            fi
+        fi
+    fi
+
 }
 
 deploy_cmf () {
@@ -117,7 +193,14 @@ deploy_cmf () {
         fi
 
         # creating helm install command
-        # TODO: pass in a values.yaml file to configure kafka connection
+        if [ ! -z "$CMF_VALUES_FILE" ] && [ -f "$CMF_VALUES_FILE" ]; then
+            CMF_HELM_INSTALL_OPTS+=" --values $CMF_VALUES_FILE"
+        elif [ ! -z "$CMF_REST_AUTH" ]; then
+            CMF_HELM_INSTALL_OPTS+=" --values $BASE_DIR/generated/cmf/values.yaml"
+        else
+            printf "No custom values file, skipping....\n"
+        fi
+
         install_cmd="helm upgrade --install $CMF_HELM_NAME -n $CMF_NAMESPACE $CMF_HELM_INSTALL_OPTS"
         
         # add version
@@ -160,12 +243,23 @@ source $BASE_DIR/scripts/system/header.sh -t "Deploying Confluent Manager for Ap
 
 printf "\nAttempting to install CMF\n"
 printf "\n\tHelm Version: %s\n\tNamespace: %s\n" "$CMF_VERSION" "$CMF_NAMESPACE"
+if [ ! -z "$CMF_REST_AUTH" ]; then
+    printf "Authentication Method: %s\n" "$CMF_REST_AUTH"
+fi
+if [ ! -z "$CMF_VALUES_FILE" ]; then
+    printf "Custom Values File: %s\n" "$CMF_VALUES_FILE"
+fi
 
 # call to update helm repo
 update_helm_repo
 
 # create namespace
 create_namespace
+
+# create values file if one is not provided and Authentication is set
+if [ -z "$CMF_VALUES_FILE" ] && [ ! -z "$CMF_REST_AUTH" ]; then
+    create_value_file
+fi
 
 # deploy CFK
 deploy_cmf
