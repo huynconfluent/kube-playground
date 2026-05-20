@@ -23,3 +23,5 @@
 - [x] Add oidcClientSecret.txt deployment
 - [x] Add helper script for externalAccess
 - [x] Add helper script for preseeding images
+- [ ] Add OAuth Client Assertion to Keycloak
+- [x] Add Day2 CMF operations for TLS
