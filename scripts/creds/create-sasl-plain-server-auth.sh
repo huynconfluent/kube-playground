@@ -83,17 +83,18 @@ generate_server_files() {
         index=0
         for user in "${user_list[@]}"; do
             user_password=$(cat $SERVER_GEN_DIR/$INTER_USER-plain-users.json | jq -r .[\"${user}\"])
-            printf " \\n\tuser_%s=\"%s\"" "$user" "$user_password" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"
-            if [[ "$index" -lt "${#user_list[@]} -1" ]]; then
-                printf " \\" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"  
+            if [ $index -eq 0 ]; then
+                printf "\n\tuser_%s=\"%s\"" "$user" "$user_password" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"
+            else
+                printf " \\" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"
+                printf "\n\tuser_%s=\"%s\"" "$user" "$user_password" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"
             fi
             ((index++))
         done
     fi
 
     # let's close the loop
-    printf ";\n" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"
-
+    printf ";" >> "$SERVER_GEN_DIR/$INTER_USER-plain-jaas.conf"
 
     # create plain-users.json+plain-interbroker.txt
     cmd="-n \$NAMESPACE create secret generic ssp-$INTER_USER-json --from-file=plain-users.json=$SERVER_GEN_DIR/$INTER_USER-plain-users.json --from-file=plain-interbroker.txt=$SERVER_GEN_DIR/$INTER_USER-plain-interbroker.txt"
