@@ -79,7 +79,14 @@ while getopts "o:c:m:t:f:g:b:d" opt; do
             fi
             ;;
         t)
-            TAG_VERSION=".$OPTARG"
+            # if value contains ubi
+            if [ "$(echo $OPTARG | grep -cE '^ubi[89]')" -eq 1 ]; then
+                # preappend -1-
+                TAG_VERSION="-1-${OPTARG}"
+            else
+                # else preappend .
+                TAG_VERSION=".$OPTARG"
+            fi
             ;;
         f)
             FLINK_VERSION="$OPTARG"
@@ -284,12 +291,26 @@ menu () {
     for choice in "${choice_array[@]}"; do
         case "$choice" in
             "confluent-operator")
-                #printf "Downloading %s....\n" "$REPO_NAME/$choice:${OPERATOR_VERSION}${TAG_VERSION}"
-                image_pull "$REPO_NAME/$choice" "${OPERATOR_VERSION}${TAG_VERSION}"
+                # no ubi images
+                oper_version=$(echo $TAG_VERSION | sed -E "s/^-1-ubi[89](.*)$/\1/") 
+                if [ -z "$oper_version" ]; then
+                    #printf "Downloading %s....\n" "$REPO_NAME/$choice:${OPERATOR_VERSION}"
+                    image_pull "$REPO_NAME/$choice" "${OPERATOR_VERSION}"
+                else
+                    #printf "Downloading %s....\n" "$REPO_NAME/$choice:${OPERATOR_VERSION}${oper_version}"
+                    image_pull "$REPO_NAME/$choice" "${OPERATOR_VERSION}${oper_version}"
+                fi
                 ;;
             "confluent-init-container")
-                #printf "Downloading %s....\n" "$REPO_NAME/$choice:${CFK_VERSION}${TAG_VERSION}"
-                image_pull "$REPO_NAME/$choice" "${CFK_VERSION}${TAG_VERSION}"
+                # no ubi images
+                oper_version=$(echo $TAG_VERSION | sed -E "s/^-1-ubi[89](.*)$/\1/") 
+                if [ -z "$oper_version" ]; then
+                    #printf "Downloading %s....\n" "$REPO_NAME/$choice:${CFK_VERSION}"
+                    image_pull "$REPO_NAME/$choice" "${CFK_VERSION}"
+                else
+                    #printf "Downloading %s....\n" "$REPO_NAME/$choice:${CFK_VERSION}${oper_version}"
+                    image_pull "$REPO_NAME/$choice" "${CFK_VERSION}${oper_version}"
+                fi
                 ;;
             "cp-enterprise-control-center-next-gen"|"cp-enterprise-alertmanager"|"cp-enterprise-prometheus")
                 #printf "Downloading %s....\n" "$REPO_NAME/$choice:${CONTROL_CENTER_NEXT_GEN_VERSION}${TAG_VERSION}"
