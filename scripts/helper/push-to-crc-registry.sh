@@ -69,10 +69,16 @@ while getopts "o:c:m:t:f:g:b:d" opt; do
             fi
             ;;
         t)
-            TAG_VERSION="$OPTARG"
-            if [ "$TAG_VERSION" != ".arm64" ] && [ "$TAG_VERSION" != "-1-ubi8" ] && [ "$TAG_VERSION" != "-1-ubi9" ] && [ "$TAG_VERSION" != "-1-ubi8.arm64" ] && [ "$TAG_VERSION" != "-1-ubi9.arm64" ]; then
+            if [ "$OPTARG" != "arm64" ] && [ "$OPTARG" != "ubi8" ] && [ "$OPTARG" != "ubi9" ] && [ "$OPTARG" != "ubi8.arm64" ] && [ "$OPTARG" != "ubi9.arm64" ]; then
                 printf "Unknown tag version: %s, exiting...\n" "$TAG_VERSION"
                 usage
+            else
+                # process tag and add missing . or -1-
+                if [ "$(echo $OPTARG | grep -cE '^ubi[89]')" -eq 1 ]; then
+                    TAG_VERSION="-1-${OPTARG}"
+                else
+                    TAG_VERSION=".${OPTARG}"
+                fi
             fi
             ;;
         f)

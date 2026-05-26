@@ -115,13 +115,13 @@ Alternatively you can also just run the `push-to-crc-registry.sh` manually as we
 This helper script, effectively tags your local images and then pushes it to the CRC VM's registry, this assumes that it will be added to the `confluent` namespace/project in Openshift.
 
 ```
-./scripts/helper/push-to-crc-registry.sh -o 3.1.1 -c 8.0.0 -m 2.2.0 -t -1-ubi9.arm64
+./scripts/helper/push-to-crc-registry.sh -o 3.1.1 -c 8.0.0 -m 2.2.0 -t ubi9.arm64
 ```
 
 You can also do a dry run of this as well
 
 ```
-./scripts/helper/push-to-crc-registry.sh -o 3.1.1 -c 8.0.0 -m 2.2.0 -t -1-ubi9.arm64 -d
+./scripts/helper/push-to-crc-registry.sh -o 3.1.1 -c 8.0.0 -m 2.2.0 -t ubi9.arm64 -d
 ```
 
 ## Using local images in Openshift
