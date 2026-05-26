@@ -8,9 +8,11 @@ metadata:
 spec:
   ports:
   - port: {{ .Values.ports.http }}
+    targetPort: 8080
     name: http
   {{- if .Values.tls.enabled }}
   - port: {{ .Values.ports.https }}
+    targetPort: 8443
     name: https
   {{- end }}
   {{- if .Values.healthcheck.enabled }}

@@ -15,7 +15,7 @@ spec:
     weight: 100
     
   port:
-    targetPort: {{ .Values.ports.https }}
+    targetPort: 8443
     
   tls:
     termination: passthrough
