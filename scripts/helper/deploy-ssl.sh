@@ -244,7 +244,7 @@ else
 
     # should include both kafka and kafkabroker
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkabroker"
-    combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluter.local\",\"kafkabroker\",\"kafkabroker.$KUBE_BASEDOMAIN\",\"*.kafkabroker.$KUBE_BASEDOMAIN\",\"kafkabroker.svc.cluster.local\",\"*.kafkabroker.svc.cluster.local\",\"kafkabroker.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkabroker.$CFK_NAMESPACE.svc.cluster.local\"] $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"kafka\",\"kafka.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\",\"kafka.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluter.local\",\"kafkabroker\",\"kafkabroker.$KUBE_BASEDOMAIN\",\"*.kafkabroker.$KUBE_BASEDOMAIN\",\"kafkabroker.svc.cluster.local\",\"*.kafkabroker.svc.cluster.local\",\"kafkabroker.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkabroker.$CFK_NAMESPACE.svc.cluster.local\",\"kafkabroker-mds-bootstrap-lb\",\"kafkabroker-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkabroker-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"kafka-mds-bootstrap-lb\",\"kafka-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"mds.$KUBE_BASEDOMAIN\",\"*.mds.$KUBE_BASEDOMAIN\",\"kafkabroker-mds-bootstrap-lb.$KUBE_BASEDOMAIN\",\"kafka-mds-bootstrap-lb.$KUBE_BASEDOMAIN\"] $KUBE_SAN_BASE" | jq -s 'add')   
     if [ "$FIPS_SETTING" == "true" ]; then
         generate_key_and_trust "kafkabroker" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key" "fips"
     else
@@ -311,7 +311,7 @@ else
     # Generateing service certs
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for mds"
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"CP Component"}'
-    combined_san=$(echo "[\"mds\",\"mds.$KUBE_BASEDOMAIN\",\"mds.svc.cluster.local\",\"*.mds.$CFK_NAMESPACE.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.mds.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\"] $KUBE_SAN_BASE" | jq -s 'add')   
+    combined_san=$(echo "[\"mds\",\"mds.$KUBE_BASEDOMAIN\",\"mds.svc.cluster.local\",\"*.mds.$CFK_NAMESPACE.svc.cluster.local\",\"kafkabroker-mds-bootstrap-lb\",\"kafkabroker-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafkabroker-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"kafka-mds-bootstrap-lb\",\"kafka-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka-mds-bootstrap-lb.$CFK_NAMESPACE.svc.cluster.local\",\"kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.kafka.$CFK_NAMESPACE.svc.cluster.local\",\"*.mds.$KUBE_BASEDOMAIN\",\"*.kafka.$KUBE_BASEDOMAIN\"] $KUBE_SAN_BASE" | jq -s 'add')   
     generate_key_and_trust "mds" "$COMPONENT_BASE" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for metricsreporter"
