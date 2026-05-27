@@ -1,0 +1,36 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: group-c3users-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: c3users
+    type: group
+  role: SystemAdmin
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: group-c3users-connect
+  namespace: confluent
+spec:
+  principal:
+    name: c3users
+    type: group
+  role: SystemAdmin
+  clustersScopeByIds:
+    connectClusterId: confluent.connect
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: group-c3users-schemaregistry
+  namespace: confluent
+spec:
+  principal:
+    name: c3users
+    type: group
+  role: SystemAdmin
+  clustersScopeByIds:
+    schemaRegistryClusterId: id_schemaregistry_confluent
