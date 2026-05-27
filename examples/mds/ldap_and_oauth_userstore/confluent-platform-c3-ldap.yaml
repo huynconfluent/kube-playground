@@ -1,0 +1,83 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ControlCenter
+metadata:
+  name: controlcenter
+  namespace: confluent
+spec:
+  tls:
+    secretRef: tls-controlcenter
+  authorization:
+    type: rbac
+  replicas: 1
+  image:
+    application: confluentinc/cp-enterprise-control-center-next-gen:2.2.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  dataVolumeCapacity: 10Gi
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+  externalAccess:
+    type: loadBalancer
+    loadBalancer:
+      domain: confluentdemo.io
+      port: 443
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9071
+      authentication:
+        type: oauthbearer
+        oauthbearer:
+          secretRef: bearer-controlcenter
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-controlcenter
+      tls:
+        enabled: true
+      tokenKeyPair:
+        secretRef: mds-keypair
+    prometheusClient:
+      url: https://controlcenter.confluent.svc.cluster.local:9090
+      authentication:
+        type: mtls
+      tls:
+        enabled: true
+        secretRef: tls-controlcenter
+    alertManagerClient:
+      url: https://controlcenter.confluent.svc.cluster.local:9093
+      authentication:
+        type: mtls
+      tls:
+        enabled: true
+        secretRef: tls-controlcenter
+    connect:
+      - name: connect
+        url: https://connect.confluent.svc.cluster.local:8083
+        tls:
+          enabled: true
+    schemaRegistry:
+      url: https://schemaregistry.confluent.svc.cluster.local:8081
+      tls:
+        enabled: true
+  services:
+    prometheus:
+      image: confluentinc/cp-enterprise-prometheus:2.2.0.arm64
+      authentication:
+        type: mtls
+      tls:
+        secretRef: tls-controlcenter
+      pvc:
+        dataVolumeCapacity: 10Gi
+    alertmanager:
+      image: confluentinc/cp-enterprise-alertmanager:2.2.0.arm64
+      authentication:
+        type: mtls
+      tls:
+        secretRef: tls-controlcenter

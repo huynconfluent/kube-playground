@@ -1,0 +1,20 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaRestClass
+metadata:
+  name: default
+  namespace: confluent
+spec:
+  kafkaClusterRef:
+    name: kafkabroker
+    namespace: confluent
+  kafkaRest:
+    endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+    authentication:
+      type: oauth
+      oauth:
+        configuration:
+          tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+        secretRef: otxt-kafkarestclass
+    tls:
+      secretRef: tls-kafkarestclass

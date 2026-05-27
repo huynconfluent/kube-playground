@@ -1,0 +1,121 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: confluent
+spec:
+  replicas: 2
+  image:
+    application: confluentinc/cp-server-connect:8.0.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  tls:
+    secretRef: tls-connect
+  authorization:
+    type: rbac
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        type: oauthbearer
+        oauthbearer:
+          secretRef: bearer-connect
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-connect
+      tls:
+        enabled: true
+    schemaRegistry:
+      url: https://schemaregistry.confluent.svc.cluster.local:8081
+      tls:
+        enabled: true
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: SchemaRegistry
+metadata:
+  name: schemaregistry
+  namespace: confluent
+spec:
+  replicas: 2
+  image:
+    application: confluentinc/cp-schema-registry:8.0.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  tls:
+    secretRef: tls-schemaregistry
+  authorization:
+    type: rbac
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        type: oauthbearer
+        oauthbearer:
+          secretRef: bearer-schemaregistry
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-schemaregistry
+      tls:
+        enabled: true
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaRestProxy
+metadata:
+  name: kafkarestproxy
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-kafka-rest:8.0.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  tls:
+    secretRef: tls-kafkarestproxy
+  authorization:
+    type: rbac
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        type: oauthbearer
+        oauthbearer:
+          secretRef: bearer-kafkarestproxy
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-kafkarestproxy
+      tls:
+        enabled: true
