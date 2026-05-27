@@ -1,0 +1,36 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: sambridges-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: sambridges
+    type: user
+  role: SystemAdmin
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: sambridges-connect
+  namespace: confluent
+spec:
+  principal:
+    name: sambridges
+    type: user
+  role: SystemAdmin
+  clustersScopeByIds:
+    connectClusterId: confluent.connect
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: sambridges-schemaregistry
+  namespace: confluent
+spec:
+  principal:
+    name: sambridges
+    type: user
+  role: SystemAdmin
+  clustersScopeByIds:
+    schemaRegistryClusterId: id_schemaregistry_confluent
