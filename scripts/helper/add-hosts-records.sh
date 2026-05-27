@@ -131,7 +131,12 @@ addHostRecord () {
         # check that there's any external IPs to begin with?
         kubectl -n $l_namespace get svc -o json | jq -r '.items[] | select(.status.loadBalancer.ingress != null) | "\(.metadata.name) \(.status.loadBalancer.ingress[0].ip)"' | while read -r name ip; do
         # remove postfix
-        l_name=$(echo "$name" | sed -E "s/^([a-zA-Z]*)([0-9-]*)(-bootstrap-lb|-lb)+$/\1\2.$KUBE_BASEDOMAIN/")
+        if [ "$(echo $name | grep -c mds)" -ge 1 ]; then
+            # handle mds naming convention
+            l_name=$(echo "$name" | sed -E "s/^([a-zA-Z]*-mds)([0-9-]*)(-bootstrap-lb|-lb)+$/mds\2.$KUBE_BASEDOMAIN/")
+        else
+            l_name=$(echo "$name" | sed -E "s/^([a-zA-Z]*)([0-9-]*)(-bootstrap-lb|-lb)+$/\1\2.$KUBE_BASEDOMAIN/")
+        fi
 
         printf "Adding record for %s\n" "$l_name"
         if [ "$DRY_RUN" == "false" ]; then
