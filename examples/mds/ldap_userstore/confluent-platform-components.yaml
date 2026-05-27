@@ -1,0 +1,112 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: confluent
+spec:
+  replicas: 2
+  image:
+    application: confluentinc/cp-server-connect:8.0.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  tls:
+    secretRef: tls-connect
+  authorization:
+    type: rbac
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9071
+      authentication:
+        type: mtls
+        sslClientAuthentication: true
+      tls:
+        enabled: true
+        secretRef: tls-connect
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-connect
+      tls:
+        enabled: true
+    schemaRegistry:
+      url: https://schemaregistry.confluent.svc.cluster.local:8081
+      tls:
+        enabled: true
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: SchemaRegistry
+metadata:
+  name: schemaregistry
+  namespace: confluent
+spec:
+  replicas: 2
+  image:
+    application: confluentinc/cp-schema-registry:8.0.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  tls:
+    secretRef: tls-schemaregistry
+  authorization:
+    type: rbac
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        type: mtls
+        sslClientAuthentication: true
+      tls:
+        enabled: true
+        secretRef: tls-schemaregistry
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-schemaregistry
+      tls:
+        enabled: true
+        secretRef: tls-schemaregistry
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaRestProxy
+metadata:
+  name: kafkarestproxy
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-kafka-rest:8.0.0.arm64
+    init: confluentinc/confluent-init-container:3.0.0.arm64
+  tls:
+    secretRef: tls-kafkarestproxy
+  authorization:
+    type: rbac
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9071
+      authentication:
+        type: mtls
+        sslClientAuthentication: true
+      tls:
+        enabled: true
+        secretRef: tls-kafkarestproxy
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+        bearer:
+          secretRef: bearer-kafkarestproxy
+      tls:
+        enabled: true
+        secretRef: tls-kafkarestproxy
+    schemaRegistry:
+      url: https://schemaregistry.confluent.svc.cluster.local:8081
+      tls:
+        enabled: true
