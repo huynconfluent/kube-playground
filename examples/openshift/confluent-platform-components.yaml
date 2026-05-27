@@ -1,0 +1,171 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: connect
+  namespace: confluent
+spec:
+  podTemplate:
+    # for openshift to use default scc
+    podSecurityContext: {}
+  replicas: 1
+  image:
+    application: default-route-openshift-image-registry.apps-crc.testing/confluent/cp-server-connect:8.0.0-1-ubi9.arm64
+    init: default-route-openshift-image-registry.apps-crc.testing/confluent/confluent-init-container:3.1.1.arm64
+  tls:
+    secretRef: tls-connect
+  authorization:
+    type: rbac
+  authentication:
+    type: oauth
+    oauth:
+      secretRef: otxt-connect
+      configuration:
+        tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+        jwksEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs"
+        expectedIssuer: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo"
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+    server:
+      - "config.storage.replication.factor=1"
+      - "offset.storage.replication.factor=1"
+      - "status.storage.replication.factor=1"
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        jaasConfig:
+          secretRef: otxt-connect
+        type: oauth
+        oauthSettings:
+          tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      ssoProtocol: oidc
+      authentication:
+        type: oauth
+        oauth:
+          secretRef: otxt-connect
+          configuration:
+            tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+      tls:
+        enabled: true
+    schemaRegistry:
+      url: https://schemaregistry.confluent.svc.cluster.local:8081
+      tls:
+        enabled: true
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: SchemaRegistry
+metadata:
+  name: schemaregistry
+  namespace: confluent
+spec:
+  podTemplate:
+    # for openshift to use default scc
+    podSecurityContext: {}
+  replicas: 1
+  image:
+    application: default-route-openshift-image-registry.apps-crc.testing/confluent/cp-schema-registry:8.0.0-1-ubi9.arm64
+    init: default-route-openshift-image-registry.apps-crc.testing/confluent/confluent-init-container:3.1.1.arm64
+  tls:
+    secretRef: tls-schemaregistry
+  authorization:
+    type: rbac
+  authentication:
+    type: oauth
+    oauth:
+      secretRef: otxt-connect
+      configuration:
+        tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+        jwksEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs"
+        expectedIssuer: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo"
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        jaasConfig:
+          secretRef: otxt-schemaregistry
+        type: oauth
+        oauthSettings:
+          tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: oauth
+        oauth:
+          secretRef: otxt-schemaregistry
+          configuration:
+            tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+      tls:
+        enabled: true
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaRestProxy
+metadata:
+  name: kafkarestproxy
+  namespace: confluent
+spec:
+  podTemplate:
+    # for openshift to use default scc
+    podSecurityContext: {}
+  replicas: 1
+  image:
+    application: default-route-openshift-image-registry.apps-crc.testing/confluent/cp-kafka-rest:8.0.0-1-ubi9.arm64
+    init: default-route-openshift-image-registry.apps-crc.testing/confluent/confluent-init-container:3.1.1.arm64
+  tls:
+    secretRef: tls-kafkarestproxy
+  authorization:
+    type: rbac
+  authentication:
+    type: oauth
+    oauth:
+      secretRef: otxt-kafkarestproxy
+      configuration:
+        tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+        jwksEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs"
+        expectedIssuer: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo"
+  configOverrides:
+    jvm:
+      - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+      - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+      - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+  dependencies:
+    kafka:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9073
+      authentication:
+        jaasConfig:
+          secretRef: otxt-kafkarestproxy
+        type: oauth
+        oauthSettings:
+          tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+      tls:
+        enabled: true
+    mds:
+      endpoint: https://kafkabroker.confluent.svc.cluster.local:8090
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: oauth
+        oauth:
+          secretRef: otxt-kafkarestproxy
+          configuration:
+            tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
+      tls:
+        enabled: true
