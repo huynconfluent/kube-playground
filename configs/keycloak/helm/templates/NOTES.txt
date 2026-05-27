@@ -21,31 +21,41 @@ Remember to add the following jvm option in AK 4.0+/CP 8.0+
 
 
 # Kafka CR
-services:
-  provider:
-    oauth:
-      configurations:
-        expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
-        jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
-        tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
-    sso:
-      enabled: true
-      clientCredentials:
-        secretRef: oidc-controlcenter
-      configurations:
-        issuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
-        jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
-        authorizeBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/auth
-        tokenBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
-        # set to disable refresh token interval based on IDP and base it on MDS instead
-        refreshToken: false
-dependencies:
-  kafkaRest:
-    authentication:
-      type: oauth
-      ...
-      oauthSettings:
-        tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
-        expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
-        jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+spec:
+  configOverrides:
+    jvm:
+    - "-Djavax.net.ssl.trustStore=/mnt/sslcerts/truststore.p12"
+    - "-Djavax.net.ssl.trustStorePassword=mystorepassword"
+    - "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=*"
+    server:
+    - "confluent.oidc.idp.device.authorization.endpoint.uri=https://{{ .Values.name }}.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth/device"
+  ................
+  services:
+    provider:
+      oauth:
+        configurations:
+          expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
+          jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+          tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
+      sso:
+        enabled: true
+        clientCredentials:
+          secretRef: oidc-controlcenter
+        configurations:
+          issuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
+          jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+          authorizeBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth
+          tokenBaseEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
+          # set to disable refresh token interval based on IDP and base it on MDS instead
+          refreshToken: false
+  dependencies:
+    kafkaRest:
+      authentication:
+        type: oauth
+        ...
+        oauthSettings:
+          tokenEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token
+          expectedIssuer: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo
+          jwksEndpointUri: http{{- if .Values.tls.enabled }}s{{- end }}://{{ .Values.name }}.{{ .Release.Namespace }}.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs
+
 
