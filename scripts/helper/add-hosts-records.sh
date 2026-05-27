@@ -88,7 +88,7 @@ k3d_check () {
 
 checkHostFile () {
 
-    if [ "$(grep -Ec "^# [a-zA-Z0-9-]+\.${KUBE_BASEDOMAIN} Added by kube-playground$" $ETC_HOST)" -gt 0 ]; then
+    if [ "$(grep -Ec "^# [a-zA-Z0-9-]+\.${KUBE_BASEDOMAIN}.* Added by kube-playground$" $ETC_HOST)" -gt 0 ]; then
         printf "There are custom records found!\n"
         printf "Clearing custom records with based domain: %s...\n" "$KUBE_BASEDOMAIN"
         # create a tmp file with the proposed change
@@ -123,8 +123,9 @@ addHostRecord () {
         # for openshift, just get the hostnames
         fqdn=$(oc -n $l_namespace get routes -o json | jq -r '.items[] | select(.status.ingress != null) | "\(.status.ingress[0].host)"')
         if [ ! -z "${fqdn[@]}" ]; then
-            printf "Adding record for %s in OPENSHIFT_HOSTNAMES\n" "${fqdn[@]}"
-            OPENSHIFT_HOSTNAMES+="${fqdn[@]} "
+            clean_fqdn="${fqdn[@]//$'\n'/ }"
+            printf "Adding record for %s in OPENSHIFT_HOSTNAMES\n" "$clean_fqdn"
+            OPENSHIFT_HOSTNAMES+="$clean_fqdn "
         fi
     else
         # check that there's any external IPs to begin with?
