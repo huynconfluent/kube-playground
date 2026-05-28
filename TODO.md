@@ -7,7 +7,7 @@
 - [x] Add auto generated ssl helper scripts
 - [x] Add auto generated credential helper scripts
 - [x] Add workflow for using multipass vm for k3d instead of local k3d deployment
-- [ ] Add workflow for Openshift connection
+- [x] Add workflow for Openshift connection
 - [ ] ~~Create CR Generator~~
 - [ ] Add Terraform workflow
   - [ ] AWS (EKS)
@@ -25,3 +25,5 @@
 - [x] Add helper script for preseeding images
 - [ ] Add OAuth Client Assertion to Keycloak
 - [x] Add Day2 CMF operations for TLS
+- [ ] Add way for using external DNS inside kubernetes for SSO cli login method
+- [ ] Add client properties file generator
