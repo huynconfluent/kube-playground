@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# ./create-mds-binduser.sh -u "bind user" -p "bind password" -n "namespace"
+# ./create-ldap-binduser.sh -u "bind user" -p "bind password" -n "namespace"
 
 BASE_DIR=$(pwd)
 GEN_DIR="$BASE_DIR/generated/creds/mds"
@@ -56,8 +56,9 @@ generate_cred_file () {
 
 generate_bash_script () {
 
-    cmd="-n \$NAMESPACE create secret generic mds-binduser --from-file=ldap.txt=$GEN_DIR/files/$FILE_NAME"
-    file_name="create-mds-binduser-secret.sh"
+    component=$1
+    cmd="-n \$NAMESPACE create secret generic ${component}-binduser --from-file=ldap.txt=$GEN_DIR/files/$FILE_NAME"
+    file_name="create-${component}-binduser-secret.sh"
     
     # uncomment to debug
     #printf "\nKubectl Command: eval kubectl|oc %s\n" "$cmd"
@@ -86,10 +87,13 @@ if [ ! -d "$GEN_DIR" ]; then
     mkdir -p "$GEN_DIR/files"
 fi
 
-source $BASE_DIR/scripts/system/header.sh -t "Auto Generating MDS Bind User Assets"
+source $BASE_DIR/scripts/system/header.sh -t "Auto Generating LDAP Bind User Assets"
 
 generate_cred_file
 
-generate_bash_script
+# Create ldap bind user credentials for MDS
+generate_bash_script "mds"
+# Create ldap bind user credentials for C3
+generate_bash_script "c3"
 
-source $BASE_DIR/scripts/system/header.sh -t "Completed Generating MDS Bind User Assets"
+source $BASE_DIR/scripts/system/header.sh -t "Completed Generating LDAP Bind User Assets"
