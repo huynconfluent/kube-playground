@@ -1,7 +1,7 @@
 #!/bin/sh
 
 BASE_DIR=$(pwd)
-# check for our network in netstat
+# check for our network in netstat, this may not exist until something external is created (e.g. keycloak, broker, controlcenter)
 checkForRoute="netstat -rnf inet | grep 172.69"
 
 source $BASE_DIR/scripts/system/header.sh -t "docker-mac-net-connect checker"
@@ -13,6 +13,8 @@ if [ "$(eval $checkForRoute | wc -l)" -ge 1 ]; then
     printf "\n"
 else
     printf "\nRoute doesn't exist!"
+    printf "\nThis might not be a problem if nothing external is configured yet, e.g. idp"
+    printf "\nHowever if something external is deployed, then there might be an issue with docker-mac-net-connect"
     printf "\nRecommend stopping docker-mac-net-connect and running it manually to troubleshoot"
     printf "\n\n\tsudo brew services stop chipmk/tap/docker-mac-net-connect\n"
     printf "\n\tsudo docker-mac-net-connect\n\n"
