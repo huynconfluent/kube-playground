@@ -151,9 +151,15 @@ create_kube_cluster () {
 
     k3d_config="$BASE_DIR/configs/k3d/default.yaml"
 
-    printf "\nChecking for k3d version...\n"
-    k3d version || exit 1
-    printf "\n"
+    version_k3d="$(k3d version | sed -n 1p | awk '{print $3}' || exit 1)"
+    if [ ! -z "$K3S_IMAGE" ]; then
+        version_k3s=$(echo $K3S_IMAGE | sed -E "s/^.*:(.*)-.*/\1/")
+    else
+        version_k3s="$(k3d version | sed -n 2p | awk '{print $3}')"
+    fi
+
+    # pretty print
+    printf "k3d version: %s\nk3s version: %s\n\n" "$version_k3d" "$version_k3s"
 
     # check if cluster is already running or not
     if [ $(k3d cluster list | grep -c "${K3D_CLUSTER_NAME}") -ne 0 ]; then
@@ -161,7 +167,11 @@ create_kube_cluster () {
     else
         printf "Creating K3D Cluster.......\n"
         if [ -f "$k3d_config" ]; then
-            k3d cluster create --config $k3d_config --wait
+            if [ ! -z "$K3S_IMAGE" ]; then
+                k3d cluster create --config $k3d_config --image $K3S_IMAGE --wait
+            else
+                k3d cluster create --config $k3d_config --wait
+            fi
         else
             printf "\nCould not find %s so cannot create k3d cluster, exiting....\n" "$k3d_config"
             exit 1
