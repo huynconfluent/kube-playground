@@ -214,8 +214,8 @@ create_value_file () {
     remote_mds_endpoint="https://kafkabroker.confluent.svc.cluster.local:8090"
     cmf_mds_port="8090"
     cmf_mds_endpoint="https://cmf-service.${CMF_NAMESPACE}.svc.cluster.local:${cmf_mds_port}"
-    idp_jwks_endpoint_url="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/certs"
-    idp_token_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/token"
+    idp_jwks_endpoint_url="https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs"
+    idp_token_endpoint="https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
     idp_authorization_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth"
     idp_expected_issuer="https://keycloak.confluentdemo.io/realms/confluentdemo"
     ldap_endpoint="ldaps://ldap.identity.svc.cluster.local:636"
@@ -353,8 +353,8 @@ create_value_file () {
 
             # SSO UI
             yq -i ".cmf.mds.extra-configs.\"confluent.metadata.server.sso.mode\" = \"oidc\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.id\" = \"controlcenter\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.secret\" = \"controlcenter-secret\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.issuer\" = \"${idp_expected_issuer}\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.jwks.endpoint.uri\" = \"${idp_jwks_endpoint_url}\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.authorize.base.endpoint.uri\" = \"${idp_authorization_endpoint}\"" -o yaml "$gen_file"
@@ -422,6 +422,9 @@ create_value_file () {
         # ui
         yq -i '.cmf.ui.auth.basicAuthEnabled = true' -o yaml "$gen_file"
         yq -i '.cmf.ui.auth.ssoEnabled = false' -o yaml "$gen_file"
+
+        # jvmArgs
+        yq -i ".jvmArgs = \"-Djavax.net.ssl.trustStore=${truststore_location} -Djavax.net.ssl.trustStorePassword=${truststore_password}\"" -o yaml "$gen_file"
     fi
 
     # File Based Userstore
