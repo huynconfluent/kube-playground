@@ -438,7 +438,7 @@ else
 
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for cmf"
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
-    combined_san=$(echo "[\"cmf\"]")   
+    combined_san=$(echo "[\"cmf\",\"cmf.$KUBE_BASEDOMAIN\",\"cmf.confluent.svc.cluster.local\",\"*.cmf.confluent.svc.cluster.local\",\"cmf-service.confluent.svc.cluster.local\",\"*.cmf-service.confluent.svc.cluster.local\"]")   
     generate_key_and_trust "cmf" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
     # Generating User Certificates
