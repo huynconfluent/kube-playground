@@ -144,8 +144,9 @@ generate_bcfks_bash_script () {
 
 generate_mds_bash_script () {
 
-    mds_keypair_script="$GENERATED_DIR/cmd/keypair/create-mds-keypair.sh"
-    cmd="-n \$NAMESPACE create secret generic mds-keypair --from-file=mdsPublicKey.pem=$GENERATED_DIR/files/keypair/mds-keypair-public.pem --from-file=mdsTokenKeyPair.pem=$GENERATED_DIR/files/keypair/mds-keypair-private.pem"
+    component=$1
+    mds_keypair_script="$GENERATED_DIR/cmd/keypair/create-${component}-keypair.sh"
+    cmd="-n \$NAMESPACE create secret generic ${component}-keypair --from-file=mdsPublicKey.pem=$GENERATED_DIR/files/keypair/mds-keypair-public.pem --from-file=mdsTokenKeyPair.pem=$GENERATED_DIR/files/keypair/mds-keypair-private.pem"
     
     # uncomment to debug
     #printf "\nKubectl Command: eval kubectl|oc %s\n" "$cmd"
@@ -488,7 +489,8 @@ else
     export GEN_DIR=$BASE_DIR/generated/ssl
     source $BASE_DIR/scripts/ssl/create-mds-keypair.sh
     
-    generate_mds_bash_script
+    generate_mds_bash_script "mds"
+    generate_mds_bash_script "cmf"
     
     source $BASE_DIR/scripts/system/header.sh -t "Generating Bash Scripts"
     
