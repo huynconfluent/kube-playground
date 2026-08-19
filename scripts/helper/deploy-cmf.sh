@@ -218,7 +218,7 @@ create_value_file () {
     idp_token_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/token"
     idp_authorization_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth"
     idp_expected_issuer="https://keycloak.confluentdemo.io/realms/confluentdemo"
-    ldap_endpoint="ldaps://openldap.identity.svc.cluster.local:636"
+    ldap_endpoint="ldaps://ldap.identity.svc.cluster.local:636"
     cmf_super_user="cmf"
     cmf_super_user_password="cmf-secret"
     mds_private_key="/mnt/secrets/mds/mdsTokenKeyPair.pem"
