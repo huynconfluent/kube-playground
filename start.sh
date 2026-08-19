@@ -27,6 +27,7 @@ FIPS_ENABLED=false
 IDP_EXTRA_ARGS=""
 LDAP_EXTRA_ARGS=""
 VAULT_EXTRA_ARGS=""
+CMF_EXTRA_ARGS=""
 set -o allexport; source .env; set +o allexport
 
 # check for prerequisites
@@ -56,7 +57,7 @@ usage () {
     printf "Usage: $0 [-v] [CFK_VERSION] [-m] [string] [-e] [comma separated array] [-f] [-s] [-z] [-i] [-a]\n"
     printf "\t-v 0.1263.8|3.0.0                     (optional) Specifies CFK Version|Image Tag Version to deploy, otherwise latest is deployed\n"
     printf "\t-m [multipass|openshift]              (optional) deploy with multipass or Openshift local instead of local k3d\n"
-    printf "\t-e [ldap,idp,vault,flink]             (optional) deploy extras, comma seperated string array\n"
+    printf "\t-e [ldap,idp,vault,flink,cmf]         (optional) deploy extras, comma seperated string array\n"
     printf "\t-f                                    (optional) deploys CFK in FIPS mode\n"
     printf "\t-s                                    (optional) skip infrastructre deployment (no k3d, multipass, metallb, etc)\n"
     printf "\t-z                                    (optional) skip cfk deployment\n"
@@ -100,6 +101,9 @@ while getopts "m:e:siazfv:" opt; do
                         ;;
                     "flink")
                         DEPLOY_FLINK=true
+                        ;;
+                    "cmf")
+                        DEPLOY_CMF=true
                         ;;
                     *)
                         printf "-e Argument not recognized...\n"
@@ -298,6 +302,7 @@ if [ "$NO_INFRA" == "false" ]; then
             IDP_EXTRA_ARGS+="-o"
             LDAP_EXTRA_ARGS+="-o"
             VAULT_EXTRA_ARGS+="-o"
+            CMF_EXTRA_ARGS+="-o"
             create_openshift_cluster
             ;;
         *)
@@ -381,7 +386,15 @@ fi
 
 ###########################DEPLOY FLINK########################################
 if [ "$DEPLOY_FLINK" == "true" ]; then
-    source $BASE_DIR/scripts/helper/deploy-flink-setup.sh
+    #source $BASE_DIR/scripts/helper/deploy-flink-setup.sh
+    source $BASE_DIR/scripts/helper/deploy-cert-manager.sh -v "$CERT_MANAGER_VERSION"
+
+    source $BASE_DIR/scripts/helper/deploy-flink-operator.sh -v "$FLINK_OPERATOR_VERSION" -w "$CFK_NAMESPACE,$FLINK_OPERATOR_NAMESPACE"
+fi
+
+############################DEPLOY CMF#########################################
+if [ "$DEPLOY_CMF" == "true" ]; then
+    source $BASE_DIR/scripts/helper/deploy-cmf.sh -v "$CMF_VERSION" -n "$CMF_NAMESPACE" "$CMF_EXTRA_ARGS"
 fi
 
 # DONE!
