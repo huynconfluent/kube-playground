@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cmf-lb
+  labels:
+    app: cmf
+  namespace: confluent
+spec:
+  allocateLoadBalancerNodePorts: false
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: confluent-manager-for-apache-flink
