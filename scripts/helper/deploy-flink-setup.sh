@@ -24,7 +24,7 @@ usage() {
     printf "Usage: $0 [-c] [CERT_MANAGER_VERSION] [-f] [FLINK_OPERATOR_VERSION] [-m] [CMF_VERSION] [-o]\n"
     printf "\t-c 1.19.2         (optional) Cert Manager Version to deploy\n"
     printf "\t-f 1.130.2        (optional) Flink Operator Version to deploy\n"
-    printf "\t-m 2.3.1          (optional) Confluent Manager for Apache Flink Version to deploy\n"
+    printf "\t-m 2.4.1          (optional) Confluent Manager for Apache Flink Version to deploy\n"
     printf "\t-o                (optional) Deploy in Openshift\n"
     exit 1
 }
@@ -73,5 +73,6 @@ source $BASE_DIR/scripts/helper/deploy-flink-operator.sh -v "$FLINK_OPER_VER" -w
 if [ "$OPENSHIFT" == "true" ]; then
     source $BASE_DIR/scripts/helper/deploy-cmf.sh -v "$CMF_VER" -n "$CMF_NAMESPACE" -o
 else
+    # TODO: Add AuthN/AuthZ configurable options
     source $BASE_DIR/scripts/helper/deploy-cmf.sh -v "$CMF_VER" -n "$CMF_NAMESPACE"
 fi
