@@ -57,9 +57,11 @@ helm_repo () {
 # flink operator namespace
 create_namespace () {
 
-    if [ "$(kubectl get namespace | grep -ic $FLINK_OPERATOR_NAMESPACE)" -le 0 ]; then
-        printf "\nCreating Namespace %s for Cert Manager Deployment....\n" "${FLINK_OPERATOR_NAMESPACE}"
-        kubectl create namespace $FLINK_OPERATOR_NAMESPACE
+    namespace=$1
+
+    if [ "$(kubectl get namespace | grep -ic $namespace)" -le 0 ]; then
+        printf "\nCreating Namespace %s for Flink Operator....\n" "${namespace}"
+        kubectl create namespace $namespace
     else
         printf "\nNamespace exists, skipping creation....\n"
     fi
@@ -77,7 +79,6 @@ deploy_flink_operator () {
     # check if flink operator is already deployed
     if [ "$(kubectl -n $FLINK_OPERATOR_NAMESPACE get deployment --ignore-not-found=true $l_deployment_name | grep -ic '1/1')" -eq 0 ]; then
 
-        # TODO: verify that watched namespaces actually exist, otherwise installation fails
         # for openshift must add
         # --set podSecurityContext.runAsUser=null --set podSecurityContext.runAsGroup=null
         helm upgrade --install cp-flink-kubernetes-operator --version $FLINK_OPERATOR_VERSION \
@@ -118,8 +119,12 @@ printf "\tWatched Namespaces: %s\n\n" "$WATCHED_NAMESPACE"
 # ensure helm repo is installed
 helm_repo
 
-# create namespace
-create_namespace
+# create namespaces
+IFS=',' read -ra namespaces <<< "$WATCHED_NAMESPACE"
+
+for namespace in "${namespaces[@]}"; do
+    create_namespace "$namespace"
+done
 
 # deploy flink operator
 deploy_flink_operator
