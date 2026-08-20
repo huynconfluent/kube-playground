@@ -7,7 +7,7 @@ spec:
   dataVolumeCapacity: 10Gi
   image:
     application: confluentinc/cp-server:8.0.0.arm64
-    init: confluentinc/confluent-init-container:3.0.0.arm64
+    init: confluentinc/confluent-init-container:3.1.0.arm64
   configOverrides:
     server:
       # added as the replication listener configuration was missing and is needed for proper authentication
@@ -65,7 +65,7 @@ spec:
   replicas: 3
   image:
     application: confluentinc/cp-server:8.0.0.arm64
-    init: confluentinc/confluent-init-container:3.0.0.arm64
+    init: confluentinc/confluent-init-container:3.1.0.arm64
   dataVolumeCapacity: 10Gi
   tls:
     secretRef: tls-kafkabroker
