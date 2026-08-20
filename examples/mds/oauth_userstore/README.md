@@ -2,7 +2,7 @@
 
 This is an example of an IDP being the backing Userstore for MDS.
 
-Here we are specifically using CFK 3.0.0 and CP 8.0.0
+Here we are specifically using CFK 3.1.0 and CP 8.0.0
 
 ## Start
 
@@ -11,7 +11,7 @@ Here we are specifically using CFK 3.0.0 and CP 8.0.0
 ```
 cd kube-playground
 export BASE_DIR=$(pwd)
-./start.sh -v 3.0.0 -e idp
+./start.sh -v 3.1.0 -e idp
 ```
 
 2. Deploy Kubernertes Secrets
