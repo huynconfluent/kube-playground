@@ -280,18 +280,23 @@ create_value_file () {
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.ssl.key.password\" = \"${keystore_password}\"" -o yaml "$gen_file"
         fi
 
-        if [ "$CMF_REMOTE_MDS_TYPE" == "oauth" ]; then
+        if [ "$CMF_REMOTE_MDS_TYPE" == "sso" ]; then
             yq -i '.cmf.authorization.mdsRestConfig.authentication.type = "oauth"' -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"OAUTHBEARER\"" -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"controlcenter\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"controlcenter-secret\"" -o yaml "$gen_file"
+
+            yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
+            yq -i ".jvmArgs = \"-Djavax.net.ssl.trustStore=${truststore_location} -Djavax.net.ssl.trustStorePassword=${truststore_password}\"" -o yaml "$gen_file"
         fi
 
         if [ "$CMF_REMOTE_MDS_TYPE" == "basic" ]; then
-            yq -i '.cmf.authorization.mdsRestConfig.authentication.type = "basic"' -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.config.\"confluent.metadata.http.auth.credentials.provider\" = \"BASIC\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.config.\"confluent.metadata.basic.auth.user.info\" = \"${cmf_super_user}:${cmf_super_user_password}\"" -o yaml "$gen_file"
+            yq -i '.cmf.authorization.mdsRestConfig.authentication.type = "oauth"' -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"BASIC\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.basic.auth.user.info\" = \"${cmf_super_user}:${cmf_super_user_password}\"" -o yaml "$gen_file"
+
+            yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
         fi
     fi
 
@@ -319,43 +324,8 @@ create_value_file () {
         yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].readOnly = true" -o yaml "$gen_file"
         ((CMF_VOLUMEMOUNT_POSITION++))
 
-        # ssl config
-        yq -i ".cmf.ssl.keystore = \"${keystore_location}\"" -o yaml "$gen_file"
-        yq -i ".cmf.ssl.keystore-password = \"${keystore_password}\"" -o yaml "$gen_file"
-        yq -i ".cmf.ssl.truststore = \"${truststore_location}\"" -o yaml "$gen_file"
-        yq -i ".cmf.ssl.truststore-password = \"${truststore_password}\"" -o yaml "$gen_file"
         if [ "$CMF_REST_AUTH" == "mtls" ]; then
             yq -i '.cmf.ssl.client-auth = "need"' -o yaml "$gen_file"
-        fi
-
-        # mounted volumes
-        if [ $(echo $CMF_IMAGE_VERSION | sed -E "s/^([0-9]+)\.([0-9]+).*/\1\2/") -ge 24 ]; then
-            # CMF 2.4.x+
-            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"certs\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].secret.secretName = \"${cmf_cert_secretname}\"" -o yaml "$gen_file"
-            ((CMF_VOLUME_POSITION++))
-
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"certs\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/certs\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].readOnly = true" -o yaml "$gen_file"
-            ((CMF_VOLUMEMOUNT_POSITION++))
-        else
-            # CMF < 2.4.x, mount via configmap
-            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"keystore\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].configMap.name = \"${keystore_secret_name}\"" -o yaml "$gen_file"
-            ((CMF_VOLUME_POSITION++))
-
-            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"truststore\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].configMap.name = \"${truststore_secret_name}\"" -o yaml "$gen_file"
-            ((CMF_VOLUME_POSITION++))
-
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"truststore\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/certs\"" -o yaml "$gen_file"
-            ((CMF_VOLUMEMOUNT_POSITION++))
-
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"keystore\"" -o yaml "$gen_file"
-            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/certs\"" -o yaml "$gen_file"
-            ((CMF_VOLUMEMOUNT_POSITION++))
         fi
 
         # config based on user-store
@@ -406,6 +376,45 @@ create_value_file () {
 
             # jvmArgs
             yq -i ".jvmArgs = \"-Djavax.net.ssl.trustStore=${truststore_location} -Djavax.net.ssl.trustStorePassword=${truststore_password}\"" -o yaml "$gen_file"
+        fi
+    fi
+
+    # mount volume for certs
+    if [ "$CMF_EMBEDDED_MDS" == "true" ] || [ "$CMF_REMOTE_MDS" == "true" ]; then
+
+        # ssl config
+        yq -i ".cmf.ssl.keystore = \"${keystore_location}\"" -o yaml "$gen_file"
+        yq -i ".cmf.ssl.keystore-password = \"${keystore_password}\"" -o yaml "$gen_file"
+        yq -i ".cmf.ssl.truststore = \"${truststore_location}\"" -o yaml "$gen_file"
+        yq -i ".cmf.ssl.truststore-password = \"${truststore_password}\"" -o yaml "$gen_file"
+
+        if [ $(echo $CMF_IMAGE_VERSION | sed -E "s/^([0-9]+)\.([0-9]+).*/\1\2/") -ge 24 ]; then
+            # CMF 2.4.x+
+            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"certs\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].secret.secretName = \"${cmf_cert_secretname}\"" -o yaml "$gen_file"
+            ((CMF_VOLUME_POSITION++))
+
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"certs\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/certs\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].readOnly = true" -o yaml "$gen_file"
+            ((CMF_VOLUMEMOUNT_POSITION++))
+        else
+            # CMF < 2.4.x, mount via configmap
+            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"keystore\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].configMap.name = \"${keystore_secret_name}\"" -o yaml "$gen_file"
+            ((CMF_VOLUME_POSITION++))
+
+            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"truststore\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].configMap.name = \"${truststore_secret_name}\"" -o yaml "$gen_file"
+            ((CMF_VOLUME_POSITION++))
+
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"truststore\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/certs\"" -o yaml "$gen_file"
+            ((CMF_VOLUMEMOUNT_POSITION++))
+
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"keystore\"" -o yaml "$gen_file"
+            yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/certs\"" -o yaml "$gen_file"
+            ((CMF_VOLUMEMOUNT_POSITION++))
         fi
     fi
 
@@ -621,7 +630,7 @@ deploy_cmf () {
             # modify namespace
             yq -i ".metadata.namespace = \"${CMF_NAMESPACE}\"" -o yaml "$BASE_DIR/generated/cmf/cmf-loadbalancer.yaml"
             # set port to 443 if embedded MDS is enabled as we've configured SSL.
-            if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
+            if [ "$CMF_EMBEDDED_MDS" == "true" ] || [ "$CMF_REMOTE_MDS" == "true" ]; then
                 yq -i ".spec.ports[0].port = 443" -o yaml "$BASE_DIR/generated/cmf/cmf-loadbalancer.yaml"
             fi
 
@@ -661,14 +670,16 @@ if [ -z "$CMF_VALUES_FILE" ]; then
     fi
     
     # AuthZ Enabled?
-    if [ "$CMF_AUTHZ" == "cmf" ]; then
+    if [ "$CMF_AUTHZ" == "cmf" ] && [ "$CMF_EMBEDDED_MDS" == "true" ]; then
         printf "Authorization: Enabled\n"
     else
         printf "Authorization: Disabled\n"
     fi
 
     # Userstore
-    printf "MDS Userstore: %s\n" "$CMF_USERSTORE"
+    if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
+        printf "MDS Userstore: %s\n" "$CMF_USERSTORE"
+    fi
 else
     printf "Custom Values File: %s\n" "$CMF_VALUES_FILE"
 fi
