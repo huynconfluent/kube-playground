@@ -15,7 +15,7 @@ This is an example of No Userstore, using only mTLS and Bearer Authentication fo
 ```
 cd kube-playground
 export BASE_DIR=$(pwd)
-./start.sh -v 3.0.0
+./start.sh -v 3.1.0
 ```
 
 2. Deploy Kubernertes Secrets
