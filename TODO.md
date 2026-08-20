@@ -27,3 +27,4 @@
 - [x] Add Day2 CMF operations for TLS
 - [ ] Add way for using external DNS inside kubernetes for SSO cli login method
 - [ ] Add client properties file generator
+- [x] Add CMF 2.4.1+ Deployment (Generates values yaml used to deploy with UI and AuthN/AuthZ)
