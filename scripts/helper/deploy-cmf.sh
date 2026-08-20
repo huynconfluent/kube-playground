@@ -2,6 +2,8 @@
 
 # ./deploy-cmf.sh -v "CMF_VERSION" -n "CMF_NAMESPACE" -a basic|sso|mtls -m -v VALUES.YAML
 
+# TODO: Add configurable Database options, default is sqlite, 2.1.1 allows PostgreSQL, 2.2.0 allows Microsoft SQL, 2.4.0 allows IBM Db2
+
 OPTIND=1
 GEN_DIR="$BASE_DIR/generated"
 REQUIRED_PKG="kubectl helm yq"
@@ -266,7 +268,7 @@ create_value_file () {
     if [ "$CMF_EMBEDDED_MDS" == "false" ] && [ "$CMF_REMOTE_MDS" == "true" ]; then
         yq -i '.cmf.authorization.authority = "cp-mds"' -o yaml "$gen_file"
         # populate remote mds configs
-        yq -i ".cmf.authorization.mdsRestConfig.endpoint = \"${remote_mds_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authorization.mdsRestConfig.endpoint = \"${remote_mds_endpoint}\" | .cmf.authorization.mdsRestConfig.endpoint style=\"double\"" -o yaml "$gen_file"
        
         # if mds endpoint is https
         yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.ssl.truststore.location\" = \"${truststore_location}\"" -o yaml "$gen_file"
@@ -283,7 +285,7 @@ create_value_file () {
         if [ "$CMF_REMOTE_MDS_TYPE" == "sso" ]; then
             yq -i '.cmf.authorization.mdsRestConfig.authentication.type = "oauth"' -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"OAUTHBEARER\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\" | .cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"controlcenter\"" -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"controlcenter-secret\"" -o yaml "$gen_file"
 
@@ -294,7 +296,7 @@ create_value_file () {
         if [ "$CMF_REMOTE_MDS_TYPE" == "basic" ]; then
             yq -i '.cmf.authorization.mdsRestConfig.authentication.type = "oauth"' -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"BASIC\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.basic.auth.user.info\" = \"${cmf_super_user}:${cmf_super_user_password}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.basic.auth.user.info\" = \"${cmf_super_user}:${cmf_super_user_password}\" | .cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.basic.auth.user.info\" style=\"double\"" -o yaml "$gen_file"
 
             yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
         fi
@@ -305,7 +307,7 @@ create_value_file () {
         
         yq -i '.cmf.mds.enabled = true' -o yaml "$gen_file"
         yq -i ".cmf.mds.port = ${cmf_mds_port}" -o yaml "$gen_file"
-        yq -i ".cmf.mds.advertised-listeners = \"${cmf_mds_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.mds.advertised-listeners = \"${cmf_mds_endpoint}\" | .cmf.mds.advertised-listeners style=\"double\"" -o yaml "$gen_file"
 
         # must configure PEM-encodded RSA key, file must be mounted
         yq -i ".cmf.mds.token-key-path = \"${mds_private_key}\"" -o yaml "$gen_file"
@@ -341,31 +343,31 @@ create_value_file () {
             yq -i '.cmf.mds.authentication-method = "BEARER"' -o yaml "$gen_file"
 
             # IDP
-            yq -i ".cmf.mds.jwks-endpoint-url = \"${idp_jwks_endpoint_url}\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.expected-issuer = \"${idp_expected_issuer}\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.jwks-endpoint-url = \"${idp_jwks_endpoint_url}\" | .cmf.mds.jwks-endpoint-url style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.expected-issuer = \"${idp_expected_issuer}\" | .cmf.mds.expected-issuer style=\"double\"" -o yaml "$gen_file"
 
-            yq -i ".cmf.mds.super-users = \"User:${cmf_super_user}\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.super-users = \"User:${cmf_super_user}\" | .cmf.mds.super-users style=\"double\"" -o yaml "$gen_file"
 
             # SSO UI
             yq -i ".cmf.mds.extra-configs.\"confluent.metadata.server.sso.mode\" = \"oidc\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.id\" = \"controlcenter\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.secret\" = \"controlcenter-secret\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.issuer\" = \"${idp_expected_issuer}\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.jwks.endpoint.uri\" = \"${idp_jwks_endpoint_url}\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.authorize.base.endpoint.uri\" = \"${idp_authorization_endpoint}\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.token.base.endpoint.uri\" = \"${idp_token_endpoint}\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.issuer\" = \"${idp_expected_issuer}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.issuer\" style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.jwks.endpoint.uri\" = \"${idp_jwks_endpoint_url}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.jwks.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.authorize.base.endpoint.uri\" = \"${idp_authorization_endpoint}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.authorize.base.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.token.base.endpoint.uri\" = \"${idp_token_endpoint}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.token.base.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
 
             # Configure REST API to accept OAUTH
             yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
-            yq -i ".cmf.authentication.config.\"oauthbearer.jwks.endpoint.uri\" = \"${idp_jwks_endpoint_url}\"" -o yaml "$gen_file"
-            yq -i ".cmf.authentication.config.\"oauthbearer.expected.issuer\" = \"${idp_expected_issuer}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authentication.config.\"oauthbearer.jwks.endpoint.uri\" = \"${idp_jwks_endpoint_url}\" | .cmf.authentication.config.\"oauthbearer.jwks.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.authentication.config.\"oauthbearer.expected.issuer\" = \"${idp_expected_issuer}\" | .cmf.authentication.config.\"oauthbearer.expected.issuer\" style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.authentication.config.\"oauthbearer.sub.claim.name\" = \"sub\"" -o yaml "$gen_file"
 
             yq -i ".cmf.authentication.config.\"public.key.path\" = \"${mds_public_key}\"" -o yaml "$gen_file"
-            yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
 
             yq -i ".cmf.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"OAUTHBEARER\"" -o yaml "$gen_file"
-            yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
             yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
 
@@ -434,7 +436,7 @@ create_value_file () {
         yq -i '.cmf.mds.sasl-mechanism = "PLAIN"' -o yaml "$gen_file"
         
         # LDAP connection
-        yq -i ".cmf.mds.extra-configs.\"ldap.java.naming.provider.url\" = \"${ldap_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.mds.extra-configs.\"ldap.java.naming.provider.url\" = \"${ldap_endpoint}\" | .cmf.mds.extra-configs.\"ldap.java.naming.provider.url\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.mds.extra-configs.\"ldap.java.naming.security.principal\" = \"cn=admin,dc=confluentdemo,dc=io\"" -o yaml "$gen_file"
         yq -i ".cmf.mds.extra-configs.\"ldap.java.naming.security.credentials\" = \"ldapadmin-topsecret!\"" -o yaml "$gen_file"
         yq -i ".cmf.mds.extra-configs.\"ldap.java.naming.security.authentication\" = \"simple\"" -o yaml "$gen_file"
@@ -455,7 +457,7 @@ create_value_file () {
         # mds config
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"public.key.path\" = \"${mds_public_key}\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.enable.server.urls.refresh\" = \"false\"" -o yaml "$gen_file"
 
         yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
@@ -475,12 +477,12 @@ create_value_file () {
 
         yq -i '.cmf.mds.authentication-method = "BEARER"' -o yaml "$gen_file"
         
-        yq -i ".cmf.mds.super-users = \"User:${cmf_super_user}\"" -o yaml "$gen_file"
+        yq -i ".cmf.mds.super-users = \"User:${cmf_super_user}\" | .cmf.mds.super-users style=\"double\"" -o yaml "$gen_file"
 
         # mds config
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"public.key.path\" = \"/mnt/secrets/mds/mdsPublicKey.pem\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
 
         yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
 
@@ -511,14 +513,14 @@ create_value_file () {
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
 
         yq -i ".cmf.authentication.config.\"rest.servlet.initializor.classes\" = \"io.confluent.common.security.jetty.initializer.AuthenticationHandler\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"oauthbearer.jwks.endpoint.url\" = \"${idp_jwks_endpoint_url}\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"oauthbearer.expected.issuer\" = \"${idp_expected_issuer}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"oauthbearer.jwks.endpoint.url\" = \"${idp_jwks_endpoint_url}\" | .cmf.authentication.config.\"oauthbearer.jwks.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"oauthbearer.expected.issuer\" = \"${idp_expected_issuer}\" | .cmf.authentication.config.\"oauthbearer.expected.issuer\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"oauthbearer.sub.claim.name\" = \"sub\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"oauthbearer.groups.claim.name\" = \"groups\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.enable.serverurls.refresh\" = \"false\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"OAUTHBEARER\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
     fi
@@ -530,7 +532,7 @@ create_value_file () {
         yq -i '.cmf.authentication.type = "mtls"' -o yaml "$gen_file"
         
         # ssl principal mapping rules
-        yq -i ".cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" = \"RULE:^CN=(.*?),.*/$1/,DEFAULT\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" = \"RULE:^CN=(.*?),.*/$1/,DEFAULT\" | .cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" style=\"double\"" -o yaml "$gen_file"
 
         yq -i '.cmf.ssl.client-auth = "need"' -o yaml "$gen_file"
 
