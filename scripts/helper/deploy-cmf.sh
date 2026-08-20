@@ -571,10 +571,10 @@ deploy_cmf () {
                 exit 1
             fi
 
-            CMF_HELM_INSTALL_OPTS="--set encryption.key.kubernetesSecretName=cmf-encryption-key --set encryption.key.kubernetesSecretProperty=encryption-key --set cmf.sql.production=true"
+            CMF_HELM_INSTALL_OPTS="--set encryption.enabled=true --set encryption.key.kubernetesSecretName=cmf-encryption-key --set encryption.key.kubernetesSecretProperty=encryption-key --set cmf.sql.production=true"
         else
             # set encryption to false, default is false, but just in case
-            CMF_HELM_INSTALL_OPTS="--set cmf.sql.production=false"
+            CMF_HELM_INSTALL_OPTS="--set encryption.enabled=false --set cmf.sql.production=false"
         fi
 
         # for opneshift
