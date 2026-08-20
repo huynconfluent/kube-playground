@@ -39,7 +39,7 @@ usage() {
     printf "Usage: $0 [-v] [CMF_VERSION] [-n] [CMF_NAMESPACE] [-o] [-m] [-f] [VALUES_FILE]\n"
     printf "\t-v [string]           (required) Specifies CMF Version to deploy\n"
     printf "\t-f [string]           (optional) Specifies values.yaml to use for deployment\n"
-    printf "\t-a [string]           (optional) Specifies authentication method basic|sso|mtls\n"
+    printf "\t-a [string]           (optional) Specifies authentication method basic|sso|mtls, this is applicable for both emebdded and remote mds\n"
     printf "\t-m                    (optional) Enables Embedded MDS (will ignore remote flag if set)\n"
     printf "\t-z                    (optional when Embedded MDS is true) enable AuthZ\n"
     printf "\t-u [string]           (optional) Embedded MDS Userstore file|ldap_with_oauth|oauth|ldap|none\n"
@@ -73,7 +73,6 @@ while getopts "v:f:a:mzru:dn:o" opt; do
             CMF_AUTHZ="cmf"
             ;;
         r)
-            CMF_EMBEDDED_MDS="false"
             CMF_REMOTE_MDS="true"
             ;;
         u)
@@ -119,9 +118,20 @@ if [ -z "$CMF_IMAGE_VERSION" ] || [ -z "$CMF_NAMESPACE" ]; then
     usage
 fi
 
-if [ ! -z "$CMF_VALUES_FILE" ]; then
-    # if values file is set, null out
-    CMF_REST_AUTH=""
+#if [ ! -z "$CMF_VALUES_FILE" ]; then
+#    # if values file is set, null out
+#    CMF_REST_AUTH=""
+#fi
+
+if [ "$CMF_USERSTORE" == "OAUTH" ] || [ "$CMF_USERSTORE" == "LDAP_WITH_OAUTH" ]; then
+    CMF_REST_AUTH="sso"
+fi
+
+if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
+    CMF_REMOTE_MDS="false"
+else
+    # set Remote Auth type = CMF_REST_AUTH type
+    CMF_REMOTE_MDS_TYPE="$CMF_REST_AUTH"
 fi
 
 update_helm_repo () {
@@ -236,11 +246,16 @@ create_value_file () {
     printf "cmf:\n" > "$gen_file"
 
     # Adding logging verbosity line
-    yq -i ".cmf.logging.level.\"root\" = \"INFO\"" -o yaml "$gen_file"
-    yq -i ".cmf.logging.level.\"io.confluent.cmf.security\" = \"INFO\"" -o yaml "$gen_file"
+    yq -i ".cmf.logging.level.root = \"INFO\"" -o yaml "$gen_file"
+    # Increase security logging verbosity on mTLS
+    if [ "$CMF_REST_AUTH" == "mtls" ]; then
+        yq -i ".cmf.logging.level.\"io.confluent.cmf.security\" = \"DEBUG\"" -o yaml "$gen_file"
+    else
+        yq -i ".cmf.logging.level.\"io.confluent.cmf.security\" = \"INFO\"" -o yaml "$gen_file"
+    fi
 
     # Configuring AuthZ
-    if [ "$CMF_EMBEDDED_MDS" == "true" ] && [ "$CMF_AUTHZ" == "true" ]; then
+    if [ "$CMF_EMBEDDED_MDS" == "true" ] && [ "$CMF_AUTHZ" == "cmf" ]; then
         yq -i '.cmf.authorization.authority = "cmf"' -o yaml "$gen_file"
     fi
 
@@ -248,7 +263,7 @@ create_value_file () {
     if [ "$CMF_EMBEDDED_MDS" == "false" ] && [ "$CMF_REMOTE_MDS" == "true" ]; then
         yq -i '.cmf.authorization.authority = "cp-mds"' -o yaml "$gen_file"
         # populate remote mds configs
-        yq -i '.cmf.authorization.mdsRestConfig.endpoint = "${remote_mds_endpoint}"' -o yaml "$gen_file"
+        yq -i ".cmf.authorization.mdsRestConfig.endpoint = \"${remote_mds_endpoint}\"" -o yaml "$gen_file"
        
         # if mds endpoint is https
         yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.ssl.truststore.location\" = \"${truststore_location}\"" -o yaml "$gen_file"
@@ -341,8 +356,15 @@ create_value_file () {
         fi
 
         # config based on user-store
+        if [ "$CMF_USERSTORE" == "OAUTH" ]; then
+
+            yq -i '.cmf.ui.auth.basicAuthEnabled = false' -o yaml "$gen_file"
+        fi
+
         # user-store = OAUTH or LDAP_WITH_OAUTH
         if [ "$CMF_USERSTORE" == "OAUTH" ] || [ "$CMF_USERSTORE" == "LDAP_WITH_OAUTH" ]; then
+
+            yq -i ".cmf.mds.user-store = \"${CMF_USERSTORE}\"" -o yaml "$gen_file"
             yq -i '.cmf.mds.authentication-method = "BEARER"' -o yaml "$gen_file"
 
             # IDP
@@ -377,7 +399,6 @@ create_value_file () {
             yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
 
             # ui
-            yq -i '.cmf.ui.auth.basicAuthEnabled = false' -o yaml "$gen_file"
             yq -i '.cmf.ui.auth.ssoEnabled = true' -o yaml "$gen_file"
 
             # jvmArgs
@@ -392,6 +413,11 @@ create_value_file () {
         # bearer or basic?
         yq -i '.cmf.mds.authentication-method = "BEARER"' -o yaml "$gen_file"
 
+        # ui
+        yq -i '.cmf.ui.auth.ssoEnabled = false' -o yaml "$gen_file"
+    fi
+
+    if [ "$CMF_USERSTORE" == "LDAP" ] || [ "$CMF_USERSTORE" == "LDAP_WITH_OAUTH" ]; then
         yq -i '.cmf.mds.callback-handler-class = "io.confluent.security.auth.provider.ldap.LdapAuthenticateCallbackHandler"' -o yaml "$gen_file"
         yq -i '.cmf.mds.sasl-mechanism = "PLAIN"' -o yaml "$gen_file"
         
@@ -411,6 +437,9 @@ create_value_file () {
         yq -i ".cmf.mds.extra-configs.\"ldap.group.member.attribute\" = \"memberUid\"" -o yaml "$gen_file"
         yq -i ".cmf.mds.extra-configs.\"ldap.group.member.attribute.pattern\" = \"cn=(.*),ou=users,dc=confluentdemo,dc=io\"" -o yaml "$gen_file"
 
+        yq -i ".cmf.mds.extra-configs.\"ldap.refresh.interval.ms\" = \"10000\"" -o yaml "$gen_file"
+        yq -i ".cmf.mds.extra-configs.\"ldap.group.authorization.enable\" = \"true\"" -o yaml "$gen_file"
+
         # mds config
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"public.key.path\" = \"${mds_public_key}\"" -o yaml "$gen_file"
@@ -421,7 +450,6 @@ create_value_file () {
 
         # ui
         yq -i '.cmf.ui.auth.basicAuthEnabled = true' -o yaml "$gen_file"
-        yq -i '.cmf.ui.auth.ssoEnabled = false' -o yaml "$gen_file"
 
         # jvmArgs
         yq -i ".jvmArgs = \"-Djavax.net.ssl.trustStore=${truststore_location} -Djavax.net.ssl.trustStorePassword=${truststore_password}\"" -o yaml "$gen_file"
@@ -493,6 +521,10 @@ create_value_file () {
         yq -i ".cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" = \"RULE:^CN=(.*?),.*/$1/,DEFAULT\"" -o yaml "$gen_file"
 
         yq -i '.cmf.ssl.client-auth = "need"' -o yaml "$gen_file"
+
+        # disable UI
+        yq -i '.cmf.ui.auth.ssoEnabled = false' -o yaml "$gen_file"
+        yq -i '.cmf.ui.auth.basicAuthEnabled = false' -o yaml "$gen_file"
     fi
 
     printf "CMF Values File Generated!\n"
@@ -585,8 +617,10 @@ deploy_cmf () {
             cp "$BASE_DIR/configs/cmf/cmf-loadbalancer.yaml" "$BASE_DIR/generated/cmf/cmf-loadbalancer.yaml"
             # modify namespace
             yq -i ".metadata.namespace = \"${CMF_NAMESPACE}\"" -o yaml "$BASE_DIR/generated/cmf/cmf-loadbalancer.yaml"
-            # TODO: port set for 80 or 443
-            #yq -i ".spec.ports[].port = 80" -o yaml "$GEN_DIR/cmf/cmf-loadbalancer.yaml"
+            # set port to 443 if embedded MDS is enabled as we've configured SSL.
+            if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
+                yq -i ".spec.ports[0].port = 443" -o yaml "$BASE_DIR/generated/cmf/cmf-loadbalancer.yaml"
+            fi
 
             # apply yaml
             printf "Creating CMF Loadbalancer...\n"
@@ -606,12 +640,33 @@ source $BASE_DIR/scripts/system/header.sh -t "Deploying Confluent Manager for Ap
 
 printf "\nAttempting to install CMF\n"
 printf "\n\tHelm Version: %s\n\tNamespace: %s\n" "$CMF_VERSION" "$CMF_NAMESPACE"
-if [ ! -z "$CMF_REST_AUTH" ]; then
-    printf "Authentication Method: %s\n" "$CMF_REST_AUTH"
+
+if [ -z "$CMF_VALUES_FILE" ]; then
+
+    # Embedded MDS or CP/Kafka MDS
+    if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
+        printf "Embedded MDS: Enabled\n"
+    else
+        printf "Kafka MDS: Enabled\n"
+    fi
+
+    # AuthN method
+    if [ ! -z "$CMF_REST_AUTH" ]; then
+        printf "Authentication Method: %s\n" "$CMF_REST_AUTH"
+    else
+        printf "Authentication Method: None\n"
+    fi
+    
+    # AuthZ Enabled?
+    if [ "$CMF_AUTHZ" == "cmf" ]; then
+        printf "Authorization: Enabled\n"
+    else
+        printf "Authorization: Disabled\n"
+    fi
+
+    # Userstore
+    printf "MDS Userstore: %s\n" "$CMF_USERSTORE"
 else
-    printf "Authentication Method: None\n"
-fi
-if [ ! -z "$CMF_VALUES_FILE" ]; then
     printf "Custom Values File: %s\n" "$CMF_VALUES_FILE"
 fi
 
