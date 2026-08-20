@@ -118,13 +118,16 @@ if [ -z "$CMF_IMAGE_VERSION" ] || [ -z "$CMF_NAMESPACE" ]; then
     usage
 fi
 
-#if [ ! -z "$CMF_VALUES_FILE" ]; then
-#    # if values file is set, null out
-#    CMF_REST_AUTH=""
-#fi
-
 if [ "$CMF_USERSTORE" == "OAUTH" ] || [ "$CMF_USERSTORE" == "LDAP_WITH_OAUTH" ]; then
     CMF_REST_AUTH="sso"
+fi
+
+if [ "$CMF_USERSTORE" == "LDAP" ] && [ -z "$CMF_REST_AUTH" ]; then
+    CMF_REST_AUTH="basic"
+fi
+
+if [ "$CMF_USERSTORE" == "FILE" ] && [ -z "$CMF_REST_AUTH" ]; then
+    CMF_REST_AUTH="basic"
 fi
 
 if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
