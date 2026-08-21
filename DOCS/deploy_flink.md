@@ -134,9 +134,35 @@ export BASE_DIR=$(pwd)
 ./scripts/helper/deploy-cmf.sh -v 2.4.1 -n confluent -a sso -m -z -u oauth -d
 ```
 
+#### Create Rolebindings for CMF Users
+
+By default only the Super User will be able to create resources within CMF. This is limited to `cmf` user. In order for other users to be authorized, you will need to create their rolebindings.
+The below example will cover this for Embedded MDS in CMF. This will require the `confluent` cli or to manually make the REST calls.
+
+```
+# Login via the confluent cli
+confluent login --url https://cmf.confluentdemo.io:443 --certificate-authority-path $BASE_DIR/generated/ssl/files/cacerts.pem
+
+# Depending on the login method, it may prompt you to log into the IDP, otherwise you will be prompted for username and password
+
+# Once you are logged in you can create Rolebindings for individual users or to a group
+confluent iam rbac role-binding create \
+  --principal User:donnatroy \
+  --role SystemAdmin \
+  --cmf cmf
+
+# or group
+confluent iam rbac role-binding create \
+  --principal Group:flinkusers \
+  --role SystemAdmin \
+  --cmf cmf
+```
+
+Note that the CMF Cluster is is `cmf` when left unset during deployment it will be randomly a randomly generated UUID.
+
 ## Deploying Flink (Day 2 Setup)
 
-You can also deploy Flink Setup after initial CFK deployment.
+You can also deploy Flink Setup after initial CFK deployment. This will deploy CMF without any Authentication or Authorization.
 
 ```
 cd kube-playground
