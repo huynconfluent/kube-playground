@@ -228,7 +228,7 @@ create_value_file () {
     truststore_secret_name="cmf-server-truststore"
     remote_mds_endpoint="https://kafkabroker.confluent.svc.cluster.local:8090"
     cmf_mds_port="8090"
-    cmf_mds_endpoint="https://cmf-service.${CMF_NAMESPACE}.svc.cluster.local:${cmf_mds_port}"
+    cmf_mds_endpoint="http://localhost:${cmf_mds_port}"
     idp_jwks_endpoint_url="https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs"
     idp_token_endpoint="https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
     idp_authorization_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth"
