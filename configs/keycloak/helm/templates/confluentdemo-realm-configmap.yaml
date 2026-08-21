@@ -2699,9 +2699,9 @@ data:
                 "notBefore": 0,
                 "bearerOnly": false,
                 "consentRequired": false,
-                "standardFlowEnabled": false,
+                "standardFlowEnabled": true,
                 "implicitFlowEnabled": false,
-                "directAccessGrantsEnabled": false,
+                "directAccessGrantsEnabled": true,
                 "serviceAccountsEnabled": true,
                 "publicClient": false,
                 "frontchannelLogout": true,
@@ -2714,7 +2714,8 @@ data:
                     "backchannel.logout.session.required": "true",
                     "standard.token.exchange.enabled": "false",
                     "frontchannel.logout.session.required": "true",
-                    "oauth2.device.authorization.grant.enabled": "false",
+                    "post.logout.redirect.uris" : "+",
+                    "oauth2.device.authorization.grant.enabled": "true",
                     "display.on.consent.screen": "false",
                     "backchannel.logout.revoke.offline.tokens": "false"
                 },
@@ -2722,6 +2723,90 @@ data:
                 {},
                 "fullScopeAllowed": true,
                 "nodeReRegistrationTimeout": -1,
+                "protocolMappers" : [ {
+                  "id" : "4228e8cf-fbf1-4c9e-9b36-4382c467da7a",
+                  "name" : "Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-usersessionmodel-note-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "user.session.note" : "client_id",
+                    "introspection.token.claim" : "true",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                }, {
+                  "id" : "f8b23d6c-eef1-4b4b-8d4c-8e4a5a79880b",
+                  "name" : "groups",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-group-membership-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "full.path" : "false",
+                    "introspection.token.claim" : "true",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "groups"
+                  }
+                }, {
+                  "id" : "b8a4c5d2-805f-469b-8f17-b9177e20f95a",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "cmf",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "false",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                }, {
+                  "id" : "32e7be60-81db-4c0d-8c9f-e25bd8bde00d",
+                  "name" : "Client IP Address",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-usersessionmodel-note-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "user.session.note" : "clientAddress",
+                    "introspection.token.claim" : "true",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "clientAddress",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                }, {
+                  "id" : "ab479514-77f7-4d0d-987a-35ca41679524",
+                  "name" : "Client Host",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-usersessionmodel-note-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "user.session.note" : "clientHost",
+                    "introspection.token.claim" : "true",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "clientHost",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
                 "defaultClientScopes":
                 [
                     "web-origins",
