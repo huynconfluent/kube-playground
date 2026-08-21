@@ -232,6 +232,7 @@ create_value_file () {
     idp_jwks_endpoint_url="https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs"
     idp_token_endpoint="https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"
     idp_authorization_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth"
+    idp_device_endpoint="https://keycloak.confluentdemo.io/realms/confluentdemo/protocol/openid-connect/auth/device"
     idp_expected_issuer="https://keycloak.confluentdemo.io/realms/confluentdemo"
     ldap_endpoint="ldaps://ldap.identity.svc.cluster.local:636"
     cmf_super_user="cmf"
@@ -262,6 +263,9 @@ create_value_file () {
     # Configuring AuthZ
     if [ "$CMF_EMBEDDED_MDS" == "true" ] && [ "$CMF_AUTHZ" == "cmf" ]; then
         yq -i '.cmf.authorization.authority = "cmf"' -o yaml "$gen_file"
+
+        # Configure MDS Cluster ID
+        yq -i '.cmf.mds.cluster-id = "cmf"' -o yaml "$gen_file"
     fi
 
     # Configuring Remote AuthZ
@@ -286,8 +290,8 @@ create_value_file () {
             yq -i '.cmf.authorization.mdsRestConfig.authentication.type = "oauth"' -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"OAUTHBEARER\"" -o yaml "$gen_file"
             yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\" | .cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"controlcenter\"" -o yaml "$gen_file"
-            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"controlcenter-secret\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
+            yq -i ".cmf.authorization.mdsRestConfig.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
 
             yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
             yq -i ".jvmArgs = \"-Djavax.net.ssl.trustStore=${truststore_location} -Djavax.net.ssl.trustStorePassword=${truststore_password}\"" -o yaml "$gen_file"
@@ -350,12 +354,13 @@ create_value_file () {
 
             # SSO UI
             yq -i ".cmf.mds.extra-configs.\"confluent.metadata.server.sso.mode\" = \"oidc\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.id\" = \"controlcenter\"" -o yaml "$gen_file"
-            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.secret\" = \"controlcenter-secret\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.issuer\" = \"${idp_expected_issuer}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.issuer\" style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.jwks.endpoint.uri\" = \"${idp_jwks_endpoint_url}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.jwks.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.authorize.base.endpoint.uri\" = \"${idp_authorization_endpoint}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.authorize.base.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.token.base.endpoint.uri\" = \"${idp_token_endpoint}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.token.base.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.extra-configs.\"confluent.oidc.idp.device.authorization.endpoint.uri\" = \"${idp_device_endpoint}\" | .cmf.mds.extra-configs.\"confluent.oidc.idp.device.authorization.endpoint.uri\" style=\"double\"" -o yaml "$gen_file"
 
             # Configure REST API to accept OAUTH
             yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
@@ -483,6 +488,7 @@ create_value_file () {
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"public.key.path\" = \"/mnt/secrets/mds/mdsPublicKey.pem\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"confluent.metadata.enable.server.urls.refresh\" = \"false\"" -o yaml "$gen_file"
 
         yq -i '.cmf.kafka.oauthbearerAllowedUrls = "*"' -o yaml "$gen_file"
 
