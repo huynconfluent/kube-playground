@@ -350,7 +350,7 @@ create_value_file () {
             yq -i ".cmf.mds.jwks-endpoint-url = \"${idp_jwks_endpoint_url}\" | .cmf.mds.jwks-endpoint-url style=\"double\"" -o yaml "$gen_file"
             yq -i ".cmf.mds.expected-issuer = \"${idp_expected_issuer}\" | .cmf.mds.expected-issuer style=\"double\"" -o yaml "$gen_file"
 
-            yq -i ".cmf.mds.super-users = \"User:${cmf_super_user}\" | .cmf.mds.super-users style=\"double\"" -o yaml "$gen_file"
+            yq -i ".cmf.mds.super-users = \"User:${cmf_super_user};User:96555a11-010d-48e8-80dc-5115a9745429\" | .cmf.mds.super-users style=\"double\"" -o yaml "$gen_file"
 
             # SSO UI
             yq -i ".cmf.mds.extra-configs.\"confluent.metadata.server.sso.mode\" = \"oidc\"" -o yaml "$gen_file"
@@ -665,31 +665,31 @@ if [ -z "$CMF_VALUES_FILE" ]; then
 
     # Embedded MDS or CP/Kafka MDS
     if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
-        printf "Embedded MDS: Enabled\n"
+        printf "\tEmbedded MDS: Enabled\n"
     else
-        printf "Kafka MDS: Enabled\n"
+        printf "\tKafka MDS: Enabled\n"
     fi
 
     # AuthN method
     if [ ! -z "$CMF_REST_AUTH" ]; then
-        printf "Authentication Method: %s\n" "$CMF_REST_AUTH"
+        printf "\tAuthentication Method: %s\n" "$CMF_REST_AUTH"
     else
-        printf "Authentication Method: None\n"
+        printf "\tAuthentication Method: None\n"
     fi
     
     # AuthZ Enabled?
     if [ "$CMF_AUTHZ" == "cmf" ] && [ "$CMF_EMBEDDED_MDS" == "true" ]; then
-        printf "Authorization: Enabled\n"
+        printf "\tAuthorization: Enabled\n"
     else
-        printf "Authorization: Disabled\n"
+        printf "\tAuthorization: Disabled\n"
     fi
 
     # Userstore
     if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
-        printf "MDS Userstore: %s\n" "$CMF_USERSTORE"
+        printf "\tMDS Userstore: %s\n" "$CMF_USERSTORE"
     fi
 else
-    printf "Custom Values File: %s\n" "$CMF_VALUES_FILE"
+    printf "\tCustom Values File: %s\n" "$CMF_VALUES_FILE"
 fi
 
 if [ "$CMF_DRY_RUN" == "false" ]; then
