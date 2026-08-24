@@ -306,6 +306,20 @@ create_value_file () {
         fi
     fi
 
+    # if embedded mds or remote mds
+    if [ "$CMF_EMBEDDED_MDS" == "true" ] || [ "$CMF_REMOTE_MDS" == "true" ]; then
+        
+        # mounted volumes
+        yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"cmf-keypair\"" -o yaml "$gen_file"
+        yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].secret.secretName = \"cmf-keypair\"" -o yaml "$gen_file"
+        ((CMF_VOLUME_POSITION++))
+
+        yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"cmf-keypair\"" -o yaml "$gen_file"
+        yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/mds\"" -o yaml "$gen_file"
+        yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].readOnly = true" -o yaml "$gen_file"
+        ((CMF_VOLUMEMOUNT_POSITION++))
+    fi
+
     # if embedded mds, configure additional items
     if [ "$CMF_EMBEDDED_MDS" == "true" ]; then
         
@@ -319,16 +333,6 @@ create_value_file () {
         if [ "$CMF_USERSTORE" == "FILE" ] || [ "$CMF_USERSTORE" == "LDAP" ]; then
             yq -i ".cmf.mds.public-key-path = \"${mds_public_key}\"" -o yaml "$gen_file"
         fi
-
-        # mounted volumes
-        yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].name = \"cmf-keypair\"" -o yaml "$gen_file"
-        yq -i ".mountedVolumes.volumes[${CMF_VOLUME_POSITION}].secret.secretName = \"cmf-keypair\"" -o yaml "$gen_file"
-        ((CMF_VOLUME_POSITION++))
-
-        yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].name = \"cmf-keypair\"" -o yaml "$gen_file"
-        yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].mountPath = \"/mnt/secrets/mds\"" -o yaml "$gen_file"
-        yq -i ".mountedVolumes.volumeMounts[${CMF_VOLUMEMOUNT_POSITION}].readOnly = true" -o yaml "$gen_file"
-        ((CMF_VOLUMEMOUNT_POSITION++))
 
         if [ "$CMF_REST_AUTH" == "mtls" ]; then
             yq -i '.cmf.ssl.client-auth = "need"' -o yaml "$gen_file"
@@ -508,9 +512,19 @@ create_value_file () {
     fi
 
     # Configure CMF REST Basic
-    if [ "$CMF_REST_AUTH" == "basic" ]; then
-        #yq -i '.cmf.authentication.type = "basic"' -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"rest.servlet.initializor.classes\" = \"io.confluent.common.security.jetty.initializer.AuthenticationHandler\"" -o yaml "$gen_file"
+    if [ "$CMF_REST_AUTH" == "basic" ] && [ "$CMF_EMBEDDED_MDS" == "false" ]; then
+        yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
+
+        yq -i ".cmf.authentication.config.\"oauthbearer.expected.issuer\" = \"Confluent\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"oauthbearer.sub.claim.name\" = \"sub\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"oauthbearer.groups.claim.name\" = \"groups\"" -o yaml "$gen_file"
+
+        yq -i ".cmf.authentication.config.\"confluent.metadata.ssl.truststore.location\" = \"${truststore_location}\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"confluent.metadata.ssl.truststore.password\" = \"${truststore_password}\"" -o yaml "$gen_file"
+
+        yq -i '.cmf.ui.auth.ssoEnabled = false' -o yaml "$gen_file"
+        yq -i '.cmf.ui.auth.basicAuthEnabled = true' -o yaml "$gen_file"
+
     fi
 
     # Configure CMF REST SSO
@@ -518,17 +532,32 @@ create_value_file () {
         
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
 
-        yq -i ".cmf.authentication.config.\"rest.servlet.initializor.classes\" = \"io.confluent.common.security.jetty.initializer.AuthenticationHandler\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"oauthbearer.jwks.endpoint.url\" = \"${idp_jwks_endpoint_url}\" | .cmf.authentication.config.\"oauthbearer.jwks.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"oauthbearer.expected.issuer\" = \"${idp_expected_issuer}\" | .cmf.authentication.config.\"oauthbearer.expected.issuer\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"oauthbearer.sub.claim.name\" = \"sub\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"oauthbearer.groups.claim.name\" = \"groups\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
-        yq -i ".cmf.authentication.config.\"confluent.metadata.enable.serverurls.refresh\" = \"false\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.http.auth.credentials.provider\" = \"OAUTHBEARER\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" = \"${idp_token_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.oauthbearer.token.endpoint.url\" style=\"double\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.login.client.id\" = \"${cmf_super_user}\"" -o yaml "$gen_file"
         yq -i ".cmf.authentication.config.\"confluent.metadata.oauthbearer.login.client.secret\" = \"${cmf_super_user_password}\"" -o yaml "$gen_file"
+
+        yq -i '.cmf.ui.auth.ssoEnabled = true' -o yaml "$gen_file"
+        yq -i '.cmf.ui.auth.basicAuthEnabled = false' -o yaml "$gen_file"
+    fi
+
+    if [ "$CMF_REST_AUTH" == "basic" ] || [ "$CMF_REST_AUTH" == "sso" ]; then
+
+        yq -i ".cmf.authentication.config.\"rest.servlet.initializor.classes\" = \"io.confluent.common.security.jetty.initializer.AuthenticationHandler\"" -o yaml "$gen_file"
+
+        if [ "$CMF_EMBEDDED_MDS" == "false" ]; then
+            yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${remote_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
+        else
+            yq -i ".cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" = \"${cmf_mds_endpoint}\" | .cmf.authentication.config.\"confluent.metadata.bootstrap.server.urls\" style=\"double\"" -o yaml "$gen_file"
+        fi
+
+        yq -i ".cmf.authentication.config.\"confluent.metadata.enable.serverurls.refresh\" = \"false\"" -o yaml "$gen_file"
+ 
+        yq -i ".cmf.authentication.config.\"public.key.path\" = \"${mds_public_key}\"" -o yaml "$gen_file"
     fi
 
     # mtls
@@ -680,6 +709,8 @@ if [ -z "$CMF_VALUES_FILE" ]; then
     # AuthZ Enabled?
     if [ "$CMF_AUTHZ" == "cmf" ] && [ "$CMF_EMBEDDED_MDS" == "true" ]; then
         printf "\tAuthorization: Enabled\n"
+    elif [ "$CMF_REMOTE_MDS" == "true" ]; then
+        printf "\tAuthorization: Remote\n"
     else
         printf "\tAuthorization: Disabled\n"
     fi
