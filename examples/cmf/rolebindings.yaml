@@ -1,0 +1,41 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: group-flinkusers-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: flinkusers
+    type: group
+  role: SystemAdmin
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: group-flinkusers-cmf
+  namespace: confluent
+spec:
+  principal:
+    name: flinkusers
+    type: group
+  role: SystemAdmin
+  clustersScopeByIds:
+    cmfId: CMF-id
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: group-flinkusers-k8s
+  namespace: confluent
+spec:
+  principal:
+    name: flinkusers
+    type: group
+  role: ResourceOwner
+  resourcePatterns:
+    - name: "*"
+      resourceType: FlinkKubernetesCluster
+      patternType: LITERAL
+  clustersScopeByIds:
+    cmfId: CMF-id
