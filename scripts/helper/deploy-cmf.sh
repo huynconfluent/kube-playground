@@ -264,8 +264,8 @@ create_value_file () {
     if [ "$CMF_EMBEDDED_MDS" == "true" ] && [ "$CMF_AUTHZ" == "cmf" ]; then
         yq -i '.cmf.authorization.authority = "cmf"' -o yaml "$gen_file"
 
-        # Configure MDS Cluster ID
-        yq -i '.cmf.mds.cluster-id = "cmf"' -o yaml "$gen_file"
+        # Configure MDS Cluster ID, using CMF-id to be on par with CP-MDS id for cmf
+        yq -i '.cmf.mds.cluster-id = "CMF-id"' -o yaml "$gen_file"
     fi
 
     # Configuring Remote AuthZ
@@ -398,6 +398,8 @@ create_value_file () {
         yq -i ".cmf.ssl.keystore-password = \"${keystore_password}\"" -o yaml "$gen_file"
         yq -i ".cmf.ssl.truststore = \"${truststore_location}\"" -o yaml "$gen_file"
         yq -i ".cmf.ssl.truststore-password = \"${truststore_password}\"" -o yaml "$gen_file"
+        yq -i ".cmf.ssl.client-auth = \"want\" | .cmf.ssl.client-auth style=\"double\"" -o yaml "$gen_file"
+
 
         if [ $(echo $CMF_IMAGE_VERSION | sed -E "s/^([0-9]+)\.([0-9]+).*/\1\2/") -ge 24 ]; then
             # CMF 2.4.x+
@@ -569,7 +571,7 @@ create_value_file () {
         # ssl principal mapping rules
         yq -i ".cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" = \"RULE:^CN=(.*?),.*/$1/,DEFAULT\" | .cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" style=\"double\"" -o yaml "$gen_file"
 
-        yq -i '.cmf.ssl.client-auth = "need"' -o yaml "$gen_file"
+        yq -i ".cmf.ssl.client-auth = \"need\" | .cmf.ssl.client-auth style=\"double\"" -o yaml "$gen_file"
 
         # disable UI
         yq -i '.cmf.ui.auth.ssoEnabled = false' -o yaml "$gen_file"
