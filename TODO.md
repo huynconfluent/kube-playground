@@ -30,4 +30,4 @@
 - [x] Add CMF 2.4.1+ Deployment (Generates values yaml used to deploy with UI and AuthN/AuthZ)
   - [x] Get Remote MDS working
   - [x] Fix CMF SSO User to allow for SSO instead of using ControlCenter User
-  - [ ] Test CMFRestClass CRs for Embedded MDS and Remote MDS
+  - [x] Test CMFRestClass CRs for Embedded MDS and Remote MDS
