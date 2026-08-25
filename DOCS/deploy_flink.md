@@ -149,16 +149,16 @@ confluent login --url https://cmf.confluentdemo.io:443 --certificate-authority-p
 confluent iam rbac role-binding create \
   --principal User:donnatroy \
   --role SystemAdmin \
-  --cmf cmf
+  --cmf CMF-id
 
 # or group
 confluent iam rbac role-binding create \
   --principal Group:flinkusers \
   --role SystemAdmin \
-  --cmf cmf
+  --cmf CMF-id
 ```
 
-Note that the CMF Cluster is is `cmf` when left unset during deployment it will be randomly a randomly generated UUID.
+Note that the CMF Cluster is `CMF-id` (This is manually set in the values.yaml), when left unset during deployment it will be randomly a randomly generated UUID. When using CMF is configured with CP-MDS, it will be `CMF-id` by default.
 
 ## Deploying Flink (Day 2 Setup)
 
