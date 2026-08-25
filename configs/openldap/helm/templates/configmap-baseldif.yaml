@@ -778,6 +778,108 @@ data:
     objectClass: posixGroup
     cn: flinkusers
     gidNumber: 5008
+  11_auditors.ldif: |-
+    dn: cn=auditors,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: auditors
+    gidNumber: 5009
+  11_billing.ldif: |-
+    dn: cn=billing,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: billing
+    gidNumber: 5010
+  11_iot.ldif: |-
+    dn: cn=iot,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: iot
+    gidNumber: 5011
+  11_notifications.ldif: |-
+    dn: cn=notifications,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: notifications
+    gidNumber: 5012
+  11_purchasing.ldif: |-
+    dn: cn=purchasing,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: purchasing
+    gidNumber: 5013
+  11_employees.ldif: |-
+    dn: cn=employees,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: employees
+    gidNumber: 5014
+  11_operators.ldif: |-
+    dn: cn=operators,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: operators
+    gidNumber: 5015
+  11_administrators.ldif: |-
+    dn: cn=administrators,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: administrators
+    gidNumber: 5016
+  11_cpcomponents.ldif: |-
+    dn: cn=cp_components,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: cp_components
+    gidNumber: 5017
+  11_brokerapps.ldif: |-
+    dn: cn=broker_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: broker_apps
+    gidNumber: 5018
+  11_connectapps.ldif: |-
+    dn: cn=connect_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: connect_apps
+    gidNumber: 5019
+  11_controlcenterapps.ldif: |-
+    dn: cn=controlcenter_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: controlcenter_apps
+    gidNumber: 5020
+  11_controllerapps.ldif: |-
+    dn: cn=controller_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: controller_apps
+    gidNumber: 5021
+  11_flinkapps.ldif: |-
+    dn: cn=flink_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: flink_apps
+    gidNumber: 5022
+  11_ksqlapps.ldif: |-
+    dn: cn=ksql_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: ksql_apps
+    gidNumber: 5023
+  11_restproxyapps.ldif: |-
+    dn: cn=restproxy_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: restproxy_apps
+    gidNumber: 5024
+  11_schemaregistryapps.ldif: |-
+    dn: cn=schemaregistry_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    objectClass: top
+    objectClass: posixGroup
+    cn: schemaregistry_apps
+    gidNumber: 5025
 
   12_addgroup.ldif: |-
     dn: cn=service,ou=groups,{{ .Values.openldap.base_dn }}
@@ -823,6 +925,10 @@ data:
     dn: cn=developers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=kafkacli,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=krpdeveloper,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
@@ -844,6 +950,8 @@ data:
     dn: cn=krpusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=alicelookingglass,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=kafkarestproxy,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=krpconsumer,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=krpproducer,ou=users,{{ .Values.openldap.base_dn }}
@@ -853,6 +961,8 @@ data:
     dn: cn=connectusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=connect,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=connectconsumer,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=connectproducer,ou=users,{{ .Values.openldap.base_dn }}
@@ -862,6 +972,8 @@ data:
     dn: cn=srusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=schemaregistry,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=srconsumer,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=srproducer,ou=users,{{ .Values.openldap.base_dn }}
@@ -871,6 +983,8 @@ data:
     dn: cn=ksqlusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=ksqldb,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=ksqlconsumer,ou=users,{{ .Values.openldap.base_dn }}
@@ -881,22 +995,153 @@ data:
     dn: cn=readonlyusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
-    memberuid: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=devuser,ou=users,{{ .Values.openldap.base_dn }}
 
     dn: cn=adminusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=connectadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqladmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sradmin,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
-    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
 
     dn: cn=flinkusers,ou=groups,{{ .Values.openldap.base_dn }}
     changetype: modify
     add: memberuid
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=flink,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=flinkconsumer,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=flinkproducer,ou=users,{{ .Values.openldap.base_dn }}
     memberuid: cn=flinkadmin,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=administrators,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=superuser,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=auditors,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=alicelookingglass,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=auditlogger,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=cp_components,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=controlcenter,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flink,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkabroker,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkacontroller,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkarestproxy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldb,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=metricsreporter,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=replicator,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=schemaregistry,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=zookeeper,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=broker_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=auditlogger,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkabroker,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=metricsreporter,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=connect_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=connect,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=connectproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=replicator,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=controlcenter_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=controlcenter,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=controller_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=auditlogger,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=kafkacontroller,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=mds,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=metricsreporter,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=flink_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=flink,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=flinkproducer,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=ksql_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=ksqladmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlcli,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqlproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldb,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ksqldeveloper,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=restproxy_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=kafkarestproxy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpadmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=krpdeveloper,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=schemaregistry_apps,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=schemaregistry,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sradmin,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srconsumer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srproducer,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=srexporter,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=billing,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=iot,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=notifications,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=purchasing,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=employees,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=charliesheen,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=donnatroy,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=ororomunroe,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=sambridges,ou=users,{{ .Values.openldap.base_dn }}
+    memberuid: cn=alicelookingglass,ou=users,{{ .Values.openldap.base_dn }}
+
+    dn: cn=operators,ou=groups,{{ .Values.openldap.base_dn }}
+    changetype: modify
+    add: memberuid
+    memberuid: cn=barnierubble,ou=users,{{ .Values.openldap.base_dn }}
