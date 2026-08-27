@@ -513,6 +513,12 @@ create_value_file () {
         ((CMF_VOLUMEMOUNT_POSITION++))
     fi
 
+    # No Userstore
+    if [ "$CMF_USERSTORE" == "NONE" ]; then
+        
+        yq -i '.cmf.mds.authentication-method = "BEARER"' -o yaml "$gen_file"
+    fi
+
     # Configure CMF REST Basic
     if [ "$CMF_REST_AUTH" == "basic" ] && [ "$CMF_EMBEDDED_MDS" == "false" ]; then
         yq -i '.cmf.authentication.type = "oauth"' -o yaml "$gen_file"
