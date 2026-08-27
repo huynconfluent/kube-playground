@@ -517,6 +517,7 @@ create_value_file () {
     if [ "$CMF_USERSTORE" == "NONE" ]; then
         
         yq -i '.cmf.mds.authentication-method = "BEARER"' -o yaml "$gen_file"
+        yq -i ".cmf.mds.super-users = \"User:${cmf_super_user}\" | .cmf.mds.super-users style=\"double\"" -o yaml "$gen_file"
     fi
 
     # Configure CMF REST Basic
@@ -575,7 +576,7 @@ create_value_file () {
         yq -i '.cmf.authentication.type = "mtls"' -o yaml "$gen_file"
         
         # ssl principal mapping rules
-        yq -i ".cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" = \"RULE:^CN=(.*?),.*/$1/,DEFAULT\" | .cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" style=\"double\"" -o yaml "$gen_file"
+        yq -i ".cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" = \"RULE:^CN=(.*?),.*/\$1/,DEFAULT\" | .cmf.authentication.config.\"auth.ssl.principal.mapping.rules\" style=\"double\"" -o yaml "$gen_file"
 
         yq -i ".cmf.ssl.client-auth = \"need\" | .cmf.ssl.client-auth style=\"double\"" -o yaml "$gen_file"
 
