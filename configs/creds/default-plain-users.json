@@ -37,11 +37,11 @@
   "cpc": "cpc-secret",
   "superuser": "superuser-secret",
   "baduser": "baduser-secret",
-  "barnierubble": "barnie-secret",
-  "charliesheen": "charlie-secret",
-  "donnatroy": "donna-secret",
-  "ororomunroe": "ororo-secret",
-  "sambridges": "sam-secret",
-  "alicelookingglass": "alice-secret",
+  "barnierubble": "barnierubble-secret",
+  "charliesheen": "charliesheen-secret",
+  "donnatroy": "donnatroy-secret",
+  "ororomunroe": "ororomunroe-secret",
+  "sambridges": "sambridges-secret",
+  "alicelookingglass": "alicelookingglass-secret",
   "devuser": "devuser-secret"
 }
