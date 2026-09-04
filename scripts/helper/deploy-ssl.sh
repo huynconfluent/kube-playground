@@ -431,6 +431,11 @@ else
     combined_san=$(echo "[\"kafkarestclass\"]")   
     generate_key_and_trust "kafkarestclass" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
+    combined_san=$(echo "[\"gateway\",\"gateway.$KUBE_BASEDOMAIN\",\"gateway.confluent.svc.cluster.local\",\"*.gateway.confluent.svc.cluster.local\",\"*.gateway.$KUBE_BASEDOMAIN\"]")   
+    generate_key_and_trust "gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
     source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for cpc"
     l_component_base='{"C": "US","O":"Confluent Demo","OU":"CFK Service"}'
     combined_san=$(echo "[\"cpc\"]")   
@@ -530,7 +535,7 @@ else
     # if not make directory
     # generate new yaml based on existing cas
     
-    COMP="mds metricsreporter auditlogger kafkarestclass kafkacli krpconsumer krpproducer krpadmin krpdeveloper connectconsumer connectproducer connectadmin srconsumer srproducer sradmin srexporter ksqlcli ksqlconsumer ksqlproducer ksqladmin ksqldeveloper flinkconsumer flinkproducer flinkadmin cmf cpc"
+    COMP="mds metricsreporter auditlogger kafkarestclass kafkacli krpconsumer krpproducer krpadmin krpdeveloper connectconsumer connectproducer connectadmin srconsumer srproducer sradmin srexporter ksqlcli ksqlconsumer ksqlproducer ksqladmin ksqldeveloper flinkconsumer flinkproducer flinkadmin cmf cpc gateway"
     
     for component in ${COMP[@]}; do
     
