@@ -29,4 +29,4 @@ donnatroy-gateway:donnatroy:donnatroy-secret
 ororomunroe-gateway:ororomunroe:ororomunroe-secret
 sambridges-gateway:sambridges:sambridges-secret
 alicelookingglass-gateway:alicelookingglass:alicelookingglass-secret
-devuser-gateway:devuser:devuser-gateway-secret"
+devuser-gateway:devuser:devuser-secret
