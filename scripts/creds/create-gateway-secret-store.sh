@@ -60,7 +60,7 @@ generate_bash_script () {
     literal_string=$1
     secret_name="gateway-secret-store"
     cmd="-n \$NAMESPACE create secret generic $secret_name $literal_string"
-    file_name="create-gateway-secret-store.sh"
+    file_name="create-gateway-secret-store-secret.sh"
     gen_path="$CMD_DIR/$file_name"
 
     # uncomment to debug
