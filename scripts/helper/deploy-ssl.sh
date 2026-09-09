@@ -487,6 +487,47 @@ else
     combined_san=$(echo "[\"alicelookingglass\"]")   
     generate_key_and_trust "alicelookingglass" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
 
+    # Generating Gateway Service Certificates
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for confluent-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"confluent-gateway\"]")   
+    generate_key_and_trust "confluent-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkabroker-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"kafkabroker-gateway\"]")   
+    generate_key_and_trust "kafkabroker-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for kafkacli-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"kafkacli-gateway\"]")   
+    generate_key_and_trust "kafkacli-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for ksqladmin-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"ksqladmin-gateway\"]")   
+    generate_key_and_trust "ksqladmin-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for krpadmin-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"krpadmin-gateway\"]")   
+    generate_key_and_trust "krpadmin-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for connectadmin-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"connectadmin-gateway\"]")   
+    generate_key_and_trust "connectadmin-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for sradmin-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"sradmin-gateway\"]")   
+    generate_key_and_trust "sradmin-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
+    source $BASE_DIR/scripts/system/header.sh -t "Creating SSL Certificates for flinkadmin-gateway"
+    l_component_base='{"C": "US","O":"Confluent Demo","OU":"Confluent Gateway"}'
+    combined_san=$(echo "[\"flinkadmin-gateway\"]")   
+    generate_key_and_trust "flinkadmin-gateway" "$l_component_base" "$combined_san" "$l_ca_cert" "$l_ca_key"
+
     printf "\nSSL Certificate Generation complete!\n"
     
     source $BASE_DIR/scripts/system/header.sh -t "Generating MDS Keypair"
