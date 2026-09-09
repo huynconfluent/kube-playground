@@ -832,6 +832,19 @@ data:
                 {}
             },
             {
+                "id" : "d94228b6-333c-49ab-a85d-72784f83d34a",
+                "name" : "gateway_access",
+                "path" : "/gateway_access",
+                "subGroups" :
+                [],
+                "attributes" :
+                {},
+                "realmRoles" :
+                [],
+                "clientRoles" :
+                {}
+            },
+            {
                 "id": "37c80c5a-289d-4db5-a7f3-f864a48afb85",
                 "name": "krpusers",
                 "path": "/krpusers",
@@ -1333,6 +1346,21 @@ data:
                 ]
             },
             {
+                "id" : "45dc5faa-34c2-4cba-b914-7948133e80d5",
+                "username" : "service-account-confluent-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967796069,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "confluent-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/administrators", "/gateway_access", "/service" ]
+            },
+            {
                 "id": "e3ccc701-3c4e-4732-b995-387e6c7e597e",
                 "username": "service-account-connect",
                 "emailVerified": false,
@@ -1384,6 +1412,21 @@ data:
                     "/connectusers",
                     "/service"
                 ]
+            },
+            {
+                "id" : "981934b2-dfc2-4933-9de2-3e09220cb56a",
+                "username" : "service-account-connectadmin-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967606338,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "connectadmin-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/cp_components/connect_apps", "/gateway_access", "/service" ]
             },
             {
                 "id": "943f2976-2989-459d-9a66-e3acb6131dc0",
@@ -1542,6 +1585,21 @@ data:
                 ]
             },
             {
+                "id" : "a28be149-7ce3-456b-b739-fbd193da2799",
+                "username" : "service-account-flinkadmin-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967707805,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "flinkadmin-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/cp_components/flink_apps", "/gateway_access", "/service" ]
+            },
+            {
                 "id": "e7d9cad5-865d-4ea3-be06-ce1a4d66d9ae",
                 "username": "service-account-flinkconsumer",
                 "emailVerified": false,
@@ -1620,6 +1678,21 @@ data:
                 ]
             },
             {
+                "id" : "f6dc9e80-654d-43bd-840f-8a5a93db01b5",
+                "username" : "service-account-kafkabroker-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967341705,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "kafkabroker-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/cp_components/broker_apps", "/gateway_access", "/service" ]
+            },
+            {
                 "id": "04bc4359-1b24-40e2-8e8d-ef695b010f91",
                 "username": "service-account-kafkacli",
                 "emailVerified": false,
@@ -1642,6 +1715,21 @@ data:
                 [
                     "/service"
                 ]
+            },
+            {
+                "id" : "35918161-9622-4f01-9858-666ac1aaaad8",
+                "username" : "service-account-kafkacli-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967410105,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "kafkacli-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/gateway_access", "/service" ]
             },
             {
                 "id": "b8c4e6bb-1aa7-491e-abed-90b7e64442b7",
@@ -1747,6 +1835,21 @@ data:
                 ]
             },
             {
+                "id" : "e30f0e9e-0321-4045-ac08-957f1f1a4f3c",
+                "username" : "service-account-krpadmin-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967555433,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "krpadmin-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/gateway_access", "/cp_components/restproxy_apps", "/service" ]
+            },
+            {
                 "id": "c0c4674c-e110-4ee8-847a-f7d2ef3e5330",
                 "username": "service-account-krpconsumer",
                 "emailVerified": false,
@@ -1850,6 +1953,21 @@ data:
                     "/ksqlusers",
                     "/service"
                 ]
+            },
+            {
+                "id" : "704b8a9c-f7bf-4089-be85-1d357a7bd5a3",
+                "username" : "service-account-ksqladmin-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967471482,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "ksqladmin-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/gateway_access", "/cp_components/ksql_apps" ]
             },
             {
                 "id": "c1b13bbc-778d-456b-8cfe-659fc40136b5",
@@ -2116,6 +2234,21 @@ data:
                     "/service",
                     "/srusers"
                 ]
+            },
+            {
+                "id" : "9d1284a3-bf84-446e-b60d-af7ffe83aed4",
+                "username" : "service-account-sradmin-gateway",
+                "emailVerified" : false,
+                "createdTimestamp" : 1788967655429,
+                "enabled" : true,
+                "totp" : false,
+                "serviceAccountClientId" : "sradmin-gateway",
+                "credentials" : [ ],
+                "disableableCredentialTypes" : [ ],
+                "requiredActions" : [ ],
+                "realmRoles" : [ "default-roles-confluentdemo" ],
+                "notBefore" : 0,
+                "groups" : [ "/gateway_access", "/cp_components/schemaregistry_apps", "/service" ]
             },
             {
                 "id": "bf53bba4-0812-415f-9861-5cceff24e18f",
@@ -2826,6 +2959,64 @@ data:
                 ]
             },
             {
+                "id" : "164e1baa-659b-4d20-8a64-a504b9cf4285",
+                "clientId" : "confluent-gateway",
+                "name" : "confluent-gateway",
+                "description" : "confluent-gateway service account",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "confluent-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967796",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "40cae9e5-ed3d-476f-93e5-98aa4dc22913",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "confluent-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+            },
+            {
                 "id": "542e3691-dfdf-4241-933f-4217456d85ca",
                 "clientId": "connect",
                 "name": "Connect",
@@ -2986,6 +3177,64 @@ data:
                     "offline_access",
                     "microprofile-jwt"
                 ]
+            },
+            {
+                "id" : "c2b825fb-4840-4e14-ad5c-b96546492747",
+                "clientId" : "connectadmin-gateway",
+                "name" : "connectadmin-gateway",
+                "description" : "Gateway account for connectadmin",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "connectadmin-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967606",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "8ea80b7b-46c7-47a3-b273-0d39fef13747",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "connectadmin-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
             },
             {
                 "id": "27b2bee5-5fb3-417d-8dc2-3207df9570e9",
@@ -3393,6 +3642,64 @@ data:
                 ]
             },
             {
+                "id" : "fdce42c0-13bd-41e4-86d5-ff443374dcaa",
+                "clientId" : "flinkadmin-gateway",
+                "name" : "flinkadmin-gateway",
+                "description" : "Gateway account for flinkadmin",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "flinkadmin-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967707",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "d6891e28-3efd-44d1-8101-31b4123e29f5",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "flinkadmin-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+            },
+            {
                 "id": "17b596dc-d148-4a10-883d-3f7837676ddd",
                 "clientId": "flinkconsumer",
                 "name": "Flink Consumer",
@@ -3636,6 +3943,64 @@ data:
                 ]
             },
             {
+                "id" : "f21bb4d4-a49b-43c0-a89a-f253d5089b32",
+                "clientId" : "kafkabroker-gateway",
+                "name" : "kafkabroker-gateway",
+                "description" : "Gateway account for kafkabroker",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "kafkabroker-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967341",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "2dd38fad-5af8-4727-beee-fb23423f97ff",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "kafkabroker-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+            },
+            {
                 "id": "3be9c6a6-0659-4976-a536-24b32ee8002e",
                 "clientId": "kafkacli",
                 "name": "Kafka Cli",
@@ -3715,6 +4080,64 @@ data:
                     "offline_access",
                     "microprofile-jwt"
                 ]
+            },
+            {
+                "id" : "9f0606e9-5ca5-40c4-b547-bb6894bc9e3a",
+                "clientId" : "kafkacli-gateway",
+                "name" : "kafkacli-gateway",
+                "description" : "Gateway account for kafkacli",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "kafkacli-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967410",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "51d4223c-6878-4927-98ce-0884c00391fa",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "kafkacli-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
             },
             {
                 "id": "ffa4fa4e-1f21-40ed-a74d-c3324f8ae1d2",
@@ -4129,6 +4552,64 @@ data:
                 ]
             },
             {
+                "id" : "dcba26bb-f5be-4787-877a-a0e25e1a89c7",
+                "clientId" : "krpadmin-gateway",
+                "name" : "krpadmin-gateway",
+                "description" : "Gateway account for krpadmin",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "krpadmin-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967555",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "3a004e99-501f-4499-8cd7-387cc1eb96f4",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "krpadmin-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+            },
+            {
                 "id": "4a263c73-c448-459f-8e76-cb5b35b075f9",
                 "clientId": "krpconsumer",
                 "name": "Kafka Rest Proxy Consumer",
@@ -4451,6 +4932,64 @@ data:
                     "offline_access",
                     "microprofile-jwt"
                 ]
+            },
+            {
+                "id" : "a3e017de-0d28-473e-9d97-3881bf39b037",
+                "clientId" : "ksqladmin-gateway",
+                "name" : "ksqladmin-gateway",
+                "description" : "Gateway account for ksqladmin",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "ksqladmin-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967471",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "eafd98b0-afbf-4f3e-bb10-ecc305d9b834",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "ksqladmin-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
             },
             {
                 "id": "c840854b-5345-4446-bee8-1f4e058ddca3",
@@ -5310,6 +5849,64 @@ data:
                     "offline_access",
                     "microprofile-jwt"
                 ]
+            },
+            {
+                "id" : "3ed6317d-1ea5-4805-9235-fe3155a6be9b",
+                "clientId" : "sradmin-gateway",
+                "name" : "sradmin-gateway",
+                "description" : "Gateway account for sradmin",
+                "rootUrl" : "",
+                "adminUrl" : "",
+                "baseUrl" : "",
+                "surrogateAuthRequired" : false,
+                "enabled" : true,
+                "alwaysDisplayInConsole" : false,
+                "clientAuthenticatorType" : "client-secret",
+                "secret" : "sradmin-gateway-secret",
+                "redirectUris" : [ "/*" ],
+                "webOrigins" : [ "/*" ],
+                "notBefore" : 0,
+                "bearerOnly" : false,
+                "consentRequired" : false,
+                "standardFlowEnabled" : false,
+                "implicitFlowEnabled" : false,
+                "directAccessGrantsEnabled" : false,
+                "serviceAccountsEnabled" : true,
+                "publicClient" : false,
+                "frontchannelLogout" : true,
+                "protocol" : "openid-connect",
+                "attributes" : {
+                  "realm_client" : "false",
+                  "oidc.ciba.grant.enabled" : "false",
+                  "client.secret.creation.time" : "1788967655",
+                  "backchannel.logout.session.required" : "true",
+                  "standard.token.exchange.enabled" : "false",
+                  "oauth2.device.authorization.grant.enabled" : "false",
+                  "backchannel.logout.revoke.offline.tokens" : "false"
+                },
+                "authenticationFlowBindingOverrides" : { },
+                "fullScopeAllowed" : true,
+                "nodeReRegistrationTimeout" : -1,
+                "protocolMappers" : [ {
+                  "id" : "dcae1a44-7067-44af-9ba2-1581e7b6af1d",
+                  "name" : "Override Sub with Client ID",
+                  "protocol" : "openid-connect",
+                  "protocolMapper" : "oidc-hardcoded-claim-mapper",
+                  "consentRequired" : false,
+                  "config" : {
+                    "introspection.token.claim" : "true",
+                    "claim.value" : "sradmin-gateway",
+                    "userinfo.token.claim" : "true",
+                    "id.token.claim" : "true",
+                    "lightweight.claim" : "false",
+                    "access.token.claim" : "true",
+                    "claim.name" : "sub",
+                    "jsonType.label" : "String",
+                    "access.tokenResponse.claim" : "false"
+                  }
+                } ],
+                "defaultClientScopes" : [ "web-origins", "service_account", "acr", "roles", "profile", "basic", "email" ],
+                "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
             },
             {
                 "id": "f135e248-2c21-4345-b5d1-1358be7e968c",
