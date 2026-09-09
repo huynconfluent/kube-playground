@@ -1967,7 +1967,7 @@ data:
                 "requiredActions" : [ ],
                 "realmRoles" : [ "default-roles-confluentdemo" ],
                 "notBefore" : 0,
-                "groups" : [ "/gateway_access", "/cp_components/ksql_apps" ]
+                "groups" : [ "/gateway_access", "/cp_components/ksql_apps", "/service" ]
             },
             {
                 "id": "c1b13bbc-778d-456b-8cfe-659fc40136b5",
