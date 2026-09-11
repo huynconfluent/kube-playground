@@ -69,5 +69,17 @@ eval $BASE_DIR/scripts/creds/create-bearer-auth.sh -n "$NAMESPACE" -u "$BASE_DIR
 # create oidcClientSecret.txt assets
 eval $BASE_DIR/scripts/creds/create-oidc-client-auth.sh -n "$NAMESPACE" -u "controlcenter" -p "controlcenter-secret" -c
 
+# create gateway userstore for credential swap
+eval $BASE_DIR/scripts/creds/create-gateway-secret-store.sh -n "$NAMESPACE" -f "$BASE_DIR/configs/creds/default-gateway-swap-creds.txt" -c
+eval $BASE_DIR/scripts/creds/create-gateway-store-config.sh -n "$NAMESPACE"
+
+# create gateway cluster auth
+eval $BASE_DIR/scripts/creds/create-gateway-cluster-auth.sh -n "$NAMESPACE" -c
+
+# create gateway client auth
+eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a plain -f "$BASE_DIR/configs/creds/default-gateway-client-creds.txt" -c
+eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a scram -f "$BASE_DIR/configs/creds/default-gateway-client-creds.txt"
+eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a oauth
+
 # done
 source $BASE_DIR/scripts/system/header.sh -t "Completed Auto Generating Credential Secrets"
