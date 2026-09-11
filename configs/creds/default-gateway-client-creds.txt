@@ -1,0 +1,8 @@
+kafkabroker-gateway:kafkabroker-gateway-secret
+kafkacli-gateway:kafkacli-gateway-secret
+ksqladmin-gateway:ksqladmin-gateway-secret
+krpadmin-gateway:krpadmin-gateway-secret
+connectadmin-gateway:connectadmin-gateway-secret
+sradmin-gateway:sradmin-gateway-secret
+flinkadmin-gateway:flinkadmin-gateway-secret
+confluent-gateway:confluent-gateway-secret
