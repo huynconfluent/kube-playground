@@ -53,7 +53,14 @@ generate_bash_script () {
     # generate a jaas vs json?
     auth_type=$1
     file_path="$GEN_DIR/files/$auth_type-jaas.conf"
-    secret_name="gca-${auth_type}-jaas"
+    if [ "$auth_type" == "plain" ]; then
+        secret_name="gateway-cluster-pjaas"
+    elif [ "$auth_type" == "oauth" ]; then
+        secret_name="gateway-cluster-ojaas"
+    else
+        printf "Auth Type not recognized: %s, exiting...\n"
+        exit 1
+    fi
     cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$auth_type-jaas.conf=$file_path"
     file_name="create-gateway-cluster-$auth_type-secret.sh"
     gen_path="$GEN_DIR/cmd/$file_name"
