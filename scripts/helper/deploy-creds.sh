@@ -71,6 +71,7 @@ eval $BASE_DIR/scripts/creds/create-oidc-client-auth.sh -n "$NAMESPACE" -u "cont
 
 # create gateway userstore for credential swap
 eval $BASE_DIR/scripts/creds/create-gateway-secret-store.sh -n "$NAMESPACE" -f "$BASE_DIR/configs/creds/default-gateway-swap-creds.txt" -c
+eval $BASE_DIR/scripts/creds/create-gateway-anonymous-secret-swap.sh -n "$NAMESPACE"
 eval $BASE_DIR/scripts/creds/create-gateway-store-config.sh -n "$NAMESPACE"
 
 # create gateway cluster auth
