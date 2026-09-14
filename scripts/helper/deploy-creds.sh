@@ -73,7 +73,9 @@ eval $BASE_DIR/scripts/creds/create-oidc-client-auth.sh -n "$NAMESPACE" -u "cont
 eval $BASE_DIR/scripts/creds/create-gateway-secret-store.sh -n "$NAMESPACE" -f "$BASE_DIR/configs/creds/default-gateway-swap-creds.txt" -c
 eval $BASE_DIR/scripts/creds/create-gateway-anonymous-secret-swap.sh -n "$NAMESPACE"
 eval $BASE_DIR/scripts/creds/create-gateway-store-config.sh -n "$NAMESPACE"
-
+# create gateway vault store config
+eval $BASE_DIR/scripts/creds/create-gateway-vault-store-secret.sh -n "$NAMESPACE" -u "http://vault.$HASHICORP_VAULT_NAMESPACE.svc.cluster.local:8200" -t "topsecret-vault-root-token"
+ 
 # create gateway cluster auth
 eval $BASE_DIR/scripts/creds/create-gateway-cluster-auth.sh -n "$NAMESPACE" -c
 
