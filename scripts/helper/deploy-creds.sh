@@ -78,7 +78,7 @@ eval $BASE_DIR/scripts/creds/create-gateway-cluster-auth.sh -n "$NAMESPACE" -c
 
 # create gateway client auth
 eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a plain -f "$BASE_DIR/configs/creds/default-gateway-client-creds.txt" -c
-eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a scram -f "$BASE_DIR/configs/creds/default-gateway-client-creds.txt"
+eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a scram -f "$BASE_DIR/configs/creds/default-gateway-client-admin-creds.txt"
 eval $BASE_DIR/scripts/creds/create-gateway-client-auth.sh -n "$NAMESPACE" -a oauth
 
 # done
