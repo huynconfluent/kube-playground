@@ -134,6 +134,9 @@ addHostRecord () {
         if [ "$(echo $name | grep -c mds)" -ge 1 ]; then
             # handle mds naming convention
             l_name=$(echo "$name" | sed -E "s/^([a-zA-Z]*-mds)([0-9-]*)(-bootstrap-lb|-lb)+$/mds\2.$KUBE_BASEDOMAIN/")
+        elif [ "$(echo $name | grep -c confluent-gateway)" -ge 1 ]; then
+            # handle gateway naming convention
+            l_name="gateway.${KUBE_BASEDOMAIN}"
         else
             l_name=$(echo "$name" | sed -E "s/^([a-zA-Z]*)([0-9-]*)(-bootstrap-lb|-lb)+$/\1\2.$KUBE_BASEDOMAIN/")
         fi
