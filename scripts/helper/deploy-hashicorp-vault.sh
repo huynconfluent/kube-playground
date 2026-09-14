@@ -11,7 +11,9 @@ HASHICORP_VAULT_HELM_NAME="vault"
 HASHICORP_VAULT_HELM_REPO="https://helm.releases.hashicorp.com"
 OPENSHIFT=false
 CUSTOM_VALUES=false
-HELM_VALUES_FILE="$BASE_DIR/configs/hashicorp/openshift.yaml"
+HELM_VALUES_FILE=""
+DEFAULT_VALUES_FILE="$BASE_DIR/configs/hashicorp/default-values.yaml"
+OPENSHIFT_VALUES_FILE="$BASE_DIR/configs/hashicorp/openshift.yaml"
 OPTIND=1
 set -o allexport; source .env; set +o allexport
 
@@ -50,8 +52,25 @@ while getopts "v:o" opt; do
     esac
 done
 
+# For openshift if no values provided, use default
+if [ "$CUSTOM_VALUES" == "false" ]; then
+    if [ "$OPENSHIFT" == "true" ]; then
+        HELM_VALUES_FILE=$OPENSHIFT_VALUES_FILE
+    else
+        HELM_VALUES_FILE=$DEFAULT_VALUES_FILE
+    fi
+else
+    # check that provided values file is valid
+    if [ ! -f "$HELM_VALUES_FILE" ]; then
+        printf "Values file provided is not a file, exiting...\n"
+        exit 1
+    fi
+fi
+
 #printf "\n====Deploying Hashicorp Vault====\n"
 source $BASE_DIR/scripts/system/header.sh -t "Deploying Hashicorp Vault"
+
+printf "\n\tHelm Values File: %s\n\tNamespace: %s\n\n" "$HELM_VALUES_FILE" "$HASHICORP_VAULT_NAMESPACE"
 
 # adding repo
 helm repo add $HASHICORP_VAULT_REPO_NAME $HASHICORP_VAULT_HELM_REPO
@@ -68,12 +87,8 @@ if [ $(kubectl -n $HASHICORP_VAULT_NAMESPACE get sts 2>&1 | grep -ic "${HASHICOR
    
     printf "\nDeploying %s in %s Namespace.......\n" "$HASHICROP_VAULT_HELM_NAME" "$HASHICORP_VAULT_NAMESPACE"
 
-    # Specifying a custom file for openshift
-    if [ "$OPENSHIFT" == "true" ]; then
-        helm upgrade --install $HASHICORP_VAULT_HELM_NAME -f $HELM_VALUES_FILE $HASHICORP_VAULT_REPO_NAME/vault -n $HASHICORP_VAULT_NAMESPACE
-    else
-        helm upgrade --install $HASHICORP_VAULT_HELM_NAME --set='server.dev.enabled=true' $HASHICORP_VAULT_REPO_NAME/vault -n $HASHICORP_VAULT_NAMESPACE
-    fi
+    # deploy using default values file, openshift values file or provided values file
+    helm upgrade --install $HASHICORP_VAULT_HELM_NAME -f $HELM_VALUES_FILE $HASHICORP_VAULT_REPO_NAME/vault -n $HASHICORP_VAULT_NAMESPACE
 
     if [ $(echo $?) -ne 0 ]; then
         printf "\nEncountered an error, exiting....\n"
