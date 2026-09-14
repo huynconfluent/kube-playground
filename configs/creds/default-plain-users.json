@@ -43,5 +43,6 @@
   "ororomunroe": "ororomunroe-secret",
   "sambridges": "sambridges-secret",
   "alicelookingglass": "alicelookingglass-secret",
-  "devuser": "devuser-secret"
+  "devuser": "devuser-secret",
+  "confluent-gateway": "confluent-gateway-secret"
 }
