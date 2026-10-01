@@ -57,7 +57,7 @@ fi
 generate_bash_script () {
 
     secret_name="gateway-vault-config"
-    cmd="-n \$NAMESPACE create secret generic $secret_name --from-literal=$VAULT_ENDPOINT --from-literal=authToken=$VAULT_ROOT_TOKEN --from-literal=prefixPath=secret/ --from-literal=separator=/"
+    cmd="-n \$NAMESPACE create secret generic $secret_name --from-literal=address=$VAULT_ENDPOINT --from-literal=authToken=$VAULT_ROOT_TOKEN --from-literal=prefixPath=secret/ --from-literal=separator=/"
     file_name="create-gateway-vault-config-secret.sh"
     gen_path="$CMD_DIR/$file_name"
 
