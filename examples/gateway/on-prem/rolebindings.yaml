@@ -1,0 +1,59 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: confluent-gateway-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: confluent-gateway
+    type: user
+  role: ResourceOwner
+  resourcePatterns:
+    - name: anonymous
+      resourceType: Topic
+      patternType: PREFIXED
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: confluent-gateway-cg-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: confluent-gateway
+    type: user
+  role: ResourceOwner
+  resourcePatterns:
+    - name: "*"
+      resourceType: Group
+      patternType: LITERAL
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: kafkacli-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: kafkacli
+    type: user
+  role: ResourceOwner
+  resourcePatterns:
+    - name: kafkacli
+      resourceType: Topic
+      patternType: PREFIXED
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: ConfluentRolebinding
+metadata:
+  name: kafkacli-cg-kafka
+  namespace: confluent
+spec:
+  principal:
+    name: kafkacli
+    type: user
+  role: ResourceOwner
+  resourcePatterns:
+    - name: kafkacli
+      resourceType: Group
+      patternType: PREFIXED

@@ -1,0 +1,65 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Gateway
+metadata:
+  name: confluent-gateway
+  namespace: confluent
+spec:
+  podTemplate:
+    envVars:
+      - name: GATEWAY_OPTS
+        value: "-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/certs,https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token -Djavax.net.ssl.trustStore=/mnt/secrets/jks-gateway/truststore.jks -Djavax.net.ssl.trustStorePassword=topsecret"
+  mountedSecrets:
+    - secretRef: jks-gateway
+  secretStores:
+    - name: file-store
+      provider:
+        type: File
+        configSecretRef: gateway-store-config
+        clientCredentialsRef: gateway-secret-store
+  replicas: 1
+  image:
+    application: confluentinc/cpc-gateway:1.3.0
+    init: confluentinc/confluent-init-container:3.3.0
+  externalAccess:
+    type: loadBalancer
+    loadBalancer:
+      domain: gateway.confluentdemo.io
+  streamingDomains:
+    - name: gateway-sasl-oauth-kafka
+      type: kafka
+      kafkaCluster:
+        name: gateway-demo-cluster
+        bootstrapServers:
+          - id: SASL_SSL
+            endpoint: SASL_SSL://kafkabroker.confluent.svc.cluster.local:9071
+            tls:
+              secretRef: tls-kafkabroker
+        nodeIdRanges:
+          - name: pool-1
+            start: 0
+            end: 2
+  routes:
+    - name: route-1
+      endpoint: gateway.confluentdemo.io:9092
+      brokerIdentificationStrategy:
+        type: port
+      streamingDomain:
+        name: gateway-sasl-oauth-kafka
+        bootstrapServerId: SASL_SSL
+      security:
+        auth: swap
+        secretStore: file-store
+        client:
+          authentication:
+            type: plain
+            jaasConfigPassThrough:
+              secretRef: gateway-client-pjaas
+          tls:
+            secretRef: tls-gateway
+        cluster:
+          authentication:
+            type: oauth
+            jaasConfigPassThrough:
+              secretRef: gateway-cluster-ojaas
+            oauthSettings:
+              tokenEndpointUri: "https://keycloak.identity.svc.cluster.local/realms/confluentdemo/protocol/openid-connect/token"

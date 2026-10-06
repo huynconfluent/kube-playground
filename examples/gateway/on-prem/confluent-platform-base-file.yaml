@@ -1,0 +1,138 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: KRaftController
+metadata:
+  name: kafkacontroller
+  namespace: confluent
+spec:
+  dataVolumeCapacity: 10Gi
+  image:
+    application: confluentinc/cp-server:8.3.0
+    init: confluentinc/confluent-init-container:3.3.0
+  listeners:
+    controller:
+      authentication:
+        type: mtls
+        principalMappingRules:
+          - "RULE:.*CN=([a-zA-Z0-9.-]*).*$/$1/"
+          - "DEFAULT"
+      tls:
+        enabled: true
+        secretRef: tls-kafkacontroller
+    replication:
+      enabled: true
+      authentication:
+        type: mtls
+      tls:
+        enabled: true
+        secretRef: tls-kafkacontroller
+  authorization:
+    type: rbac
+    superUsers:
+      - User:kafkabroker
+      - User:kafkacontroller
+      - User:kafkarestclass
+  dependencies:
+    mdsKafkaCluster:
+      bootstrapEndpoint: kafkabroker.confluent.svc.cluster.local:9071
+      authentication:
+        type: mtls
+        sslClientAuthentication: true
+      tls:
+        enabled: true
+  tls:
+    secretRef: tls-kafkacontroller
+  replicas: 3
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafkabroker
+  namespace: confluent
+spec:
+  authorization:
+    type: rbac
+    superUsers:
+      - User:kafkabroker
+      - User:kafkacontroller
+      - User:kafkarestclass
+  replicas: 3
+  image:
+    application: confluentinc/cp-server:8.3.0
+    init: confluentinc/confluent-init-container:3.3.0
+  dataVolumeCapacity: 10Gi
+  tls:
+    secretRef: tls-kafkabroker
+  listeners:
+    internal:
+      authentication:
+        type: mtls
+        principalMappingRules:
+          - "RULE:.*CN=([a-zA-Z0-9.-]*).*$/$1/"
+          - "DEFAULT"
+      tls:
+        enabled: true
+        secretRef: tls-kafkabroker
+    custom:
+      - name: sasl-plain
+        port: 9995
+        tls:
+          enabled: true
+          secretRef: tls-kafkabroker
+        authentication:
+          type: plain
+          jaasConfig:
+            secretRef: ssp-kafkabroker-json
+  services:
+    mds:
+      impersonation:
+        admins:
+          # for impersonation
+          - User:kafkabroker
+          - User:mds
+          - User:kafkarestclass
+      tls:
+        enabled: true
+        secretRef: tls-kafkabroker
+      tokenKeyPair:
+        secretRef: mds-keypair
+      authentication:
+        type: bearer
+      provider:
+        file:
+          secretRef: cleartext-userstore
+        mtls:
+          sslClientAuthentication: "requested"
+          principalMappingRules:
+            - "RULE:.*CN=([a-zA-Z0-9.-]*).*$/$1/"
+            - "DEFAULT"
+  dependencies:
+    kafkaRest:
+      authentication:
+        type: mtls
+        sslClientAuthentication: true
+      tls:
+        enabled: true
+        secretRef: tls-kafkabroker
+    kRaftController:
+      controllerListener:
+        tls:
+          enabled: true
+        authentication:
+          type: mtls
+      clusterRef:
+        name: kafkacontroller
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaRestClass
+metadata:
+  name: default
+  namespace: confluent
+spec:
+  kafkaClusterRef:
+    name: kafkabroker
+    namespace: confluent
+  kafkaRest:
+    authentication:
+      type: mtls
+    tls:
+      secretRef: tls-kafkarestclass
