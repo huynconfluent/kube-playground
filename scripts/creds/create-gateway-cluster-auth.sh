@@ -61,7 +61,12 @@ generate_bash_script () {
         printf "Auth Type not recognized: %s, exiting...\n"
         exit 1
     fi
-    cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$auth_type-jaas.conf=$file_path"
+    # Note: This is necessary because the oauth jaas file needs to be named oauth-jass.conf instead of oauth-jaas.conf
+    if [ "$auth_type" == "oauth" ]; then
+        cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$auth_type-jass.conf=$file_path"
+    else
+        cmd="-n \$NAMESPACE create secret generic $secret_name --from-file=$auth_type-jaas.conf=$file_path"
+    fi
     file_name="create-gateway-cluster-$auth_type-secret.sh"
     gen_path="$GEN_DIR/cmd/$file_name"
 

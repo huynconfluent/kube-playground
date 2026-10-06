@@ -126,7 +126,8 @@ generate_bash_script () {
         fi
 
     elif [ "$auth_type" == "oauth" ]; then
-        cmd+=" --from-literal=oauth-jaas.conf='org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;'"
+        # NOTE: CFK Operator expects oauth-jass.conf instead of oauth-jaas.conf, seems like a bug
+        cmd+=" --from-literal=oauth-jass.conf='org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;'"
     elif [ "$auth_type" == "scram" ]; then
         if [ -f "$CREDS_PATH" ]; then
             l_username=$(head -n 1 $CREDS_PATH | awk -F ":" '{ printf $1 }')
