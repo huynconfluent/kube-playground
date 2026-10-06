@@ -17,7 +17,6 @@
 - [ ] Add REST helper scripts (get Bearer Token)
 - [x] Add Flink Deployment
 - [ ] ~~Add USM deployment~~
-- [ ] Add setup for Confluent Private Cloud Gateway
 - [x] Add FIPs asset generation
 - [x] Added File Based Userstore creation
 - [x] Add oidcClientSecret.txt deployment
@@ -31,3 +30,8 @@
   - [x] Get Remote MDS working
   - [x] Fix CMF SSO User to allow for SSO instead of using ControlCenter User
   - [x] Test CMFRestClass CRs for Embedded MDS and Remote MDS
+- [x] Add Confluent Gateway Deployment
+  - [x] Create Gateway SSL Client certs for mTLS
+  - [x] Create Gateway Credentials to connect to Kafka SASL/PLAIN and SASL/OAUTHBEARER
+  - [x] Update Keycloak for new set of gateway credentials
+  - [x] Configure Vault Integration for secret store, required for SCRAM to store credentials
