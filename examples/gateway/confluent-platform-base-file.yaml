@@ -6,8 +6,8 @@ metadata:
 spec:
   dataVolumeCapacity: 10Gi
   image:
-    application: confluentinc/cp-server:8.3.0.arm64
-    init: confluentinc/confluent-init-container:3.3.0.arm64
+    application: confluentinc/cp-server:8.3.0
+    init: confluentinc/confluent-init-container:3.3.0
   listeners:
     controller:
       authentication:
@@ -57,8 +57,8 @@ spec:
       - User:kafkarestclass
   replicas: 3
   image:
-    application: confluentinc/cp-server:8.3.0.arm64
-    init: confluentinc/confluent-init-container:3.3.0.arm64
+    application: confluentinc/cp-server:8.3.0
+    init: confluentinc/confluent-init-container:3.3.0
   dataVolumeCapacity: 10Gi
   tls:
     secretRef: tls-kafkabroker
