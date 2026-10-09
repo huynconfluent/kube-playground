@@ -1,0 +1,49 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Gateway
+metadata:
+  name: confluent-gateway
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cpc-gateway:1.3.0
+    init: confluentinc/confluent-init-container:3.3.0
+  externalAccess:
+    type: loadBalancer
+    loadBalancer:
+      domain: gateway.confluentdemo.io
+  streamingDomains:
+    - name: gateway-sasl-oauth-kafka
+      type: kafka
+      kafkaCluster:
+        name: gateway-demo-cluster
+        bootstrapServers:
+          - id: SASL_SSL
+            endpoint: SASL_SSL://kafkabroker.confluent.svc.cluster.local:9071
+            tls:
+              secretRef: tls-kafkabroker
+        nodeIdRanges:
+          - name: pool-1
+            start: 0
+            end: 2
+  routes:
+    - name: route-1
+      endpoint: gateway.confluentdemo.io:9092
+      brokerIdentificationStrategy:
+        type: port
+      streamingDomain:
+        name: gateway-sasl-oauth-kafka
+        bootstrapServerId: SASL_SSL
+      security:
+        auth: passthrough
+        client:
+          authentication:
+            type: oauth
+            oauthSettings:
+              jwksEndpointUri: "https://placeholder.invalid/jwks"
+              audience: "placeholder"
+          tls:
+            secretRef: tls-gateway
+        cluster:
+          extensionHeaders:
+            logicalCluster: "CLUSTER_ID"

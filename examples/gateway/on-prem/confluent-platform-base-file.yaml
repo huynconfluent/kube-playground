@@ -6,8 +6,8 @@ metadata:
 spec:
   dataVolumeCapacity: 10Gi
   image:
-    application: confluentinc/cp-server:8.3.0
-    init: confluentinc/confluent-init-container:3.3.0
+    application: confluentinc/cp-server:8.3.0.arm64
+    init: confluentinc/confluent-init-container:3.3.0.arm64
   listeners:
     controller:
       authentication:
@@ -57,11 +57,17 @@ spec:
       - User:kafkarestclass
   replicas: 3
   image:
-    application: confluentinc/cp-server:8.3.0
-    init: confluentinc/confluent-init-container:3.3.0
+    application: confluentinc/cp-server:8.3.0.arm64
+    init: confluentinc/confluent-init-container:3.3.0.arm64
   dataVolumeCapacity: 10Gi
   tls:
     secretRef: tls-kafkabroker
+  configOverrides:
+    server:
+      - listener.security.protocol.map=CONTROLLER:SSL,EXTERNAL:PLAINTEXT,INTERNAL:SSL,REPLICATION:SSL,SASL-PLAIN:SASL_SSL,SASL-SCRAM:SASL_SSL,TOKEN:SSL,TOKENSASL:SASL_SSL
+      - listener.name.sasl-scram.sasl.enabled.mechanisms=SCRAM-SHA-256
+      - listener.name.sasl-scram.sasl.mechanism=SCRAM-SHA-256
+      - listener.name.sasl-scram.scram-sha-256.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username='kafkabroker' password='kafkabroker-secret';
   listeners:
     internal:
       authentication:
@@ -82,6 +88,18 @@ spec:
           type: plain
           jaasConfig:
             secretRef: ssp-kafkabroker-json
+      - name: sasl-scram
+        port: 9996
+        tls:
+          enabled: true
+          secretRef: tls-kafkabroker
+        authentication:
+          type: mtls
+          mtls:
+            principalMappingRules:
+              - "RULE:.*CN=([a-zA-Z0-9.-]*).*$/$1/"
+              - "DEFAULT"
+            sslClientAuthentication: "requested"
   services:
     mds:
       impersonation:
