@@ -91,7 +91,7 @@ kubectl apply -f gateway-swap-file-none-plain.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Test `kafka-topics` to `gateway.confluentdemo.io:9092`
@@ -121,7 +121,7 @@ kubectl apply -f gateway-swap-file-plain-plain.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our PLAIN User Client Properties File
@@ -166,7 +166,7 @@ kubectl apply -f gateway-swap-file-plain-oauth.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our PLAIN User Client Properties File
@@ -214,7 +214,7 @@ kubectl apply -f gateway-swap-vault-scram-plain.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Add our SCRAM Admin Credential into Vault
@@ -300,7 +300,7 @@ kubectl apply -f gateway-swap-vault-scram-oauth.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Add our SCRAM Admin Credential into Vault
@@ -383,7 +383,7 @@ kubectl apply -f gateway-swap-file-mtls-plain.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our MTLS User Client Properties File
@@ -427,7 +427,7 @@ kubectl apply -f gateway-swap-file-mtls-oauth.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our MTLS User Client Properties File
@@ -471,7 +471,7 @@ kubectl apply -f gateway-swap-file-oauth-oauth.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our OAUTH User Client Properties File
@@ -525,7 +525,7 @@ kubectl apply -f gateway-swap-file-plain-plain.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our OAUTH User Client Properties File
@@ -572,7 +572,7 @@ kubectl apply -f gateway-passthrough-sasl-plain.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our PLAIN User Client Properties File
@@ -617,7 +617,7 @@ kubectl apply -f gateway-passthrough-sasl-scram.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create Kafkabroker mTLS Properties File inside Broker Pod
@@ -691,7 +691,7 @@ kubectl apply -f gateway-passthrough-sasl-oauth.yaml
 2. Adding Host Records for ExternalAccess
 
 ```
-../../../scripts/helper/add-hosts-records.sh
+../../scripts/helper/add-hosts-records.sh
 ```
 
 3. Create our OAUTH User Client Properties File
